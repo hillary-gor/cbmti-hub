@@ -1,22 +1,26 @@
 // Redirect user after login
-'use server'
-
 import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
 
-export async function getUserAndRole() {
+export async function GET() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-  if (!user) return null
-
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('users')
-    .select('id, full_name, role')
+    .select('role')
     .eq('id', user.id)
     .single()
 
-  if (error || !data) return null
+  if (!data?.role) redirect('/unauthorized')
 
-  return data
+  switch (data.role) {
+    case 'student': return redirect('/dashboard/student')
+    case 'instructor': return redirect('/dashboard/instructor')
+    case 'admin': return redirect('/dashboard/admin')
+    default: return redirect('/unauthorized')
+  }
 }
+
 
