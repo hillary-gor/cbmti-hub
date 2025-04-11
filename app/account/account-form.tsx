@@ -1,149 +1,160 @@
-"use client";
-import { useCallback, useEffect, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
-import { type User } from "@supabase/supabase-js";
-import Avatar from "./avatar";
+'use client'
 
-export default function AccountForm({ user }: { user: User | null }) {
-  const supabase = createClient();
-  const [loading, setLoading] = useState(true);
-  const [fullname, setFullname] = useState<string | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
-  const [website, setWebsite] = useState<string | null>(null);
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null);
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { createClient } from '@/utils/supabase/client'
+import Avatar from './avatar'
+import PasswordInputWithLiveCheck from '@/components/form/PasswordInputWithLiveCheck'
 
-  const getProfile = useCallback(async () => {
-    try {
-      setLoading(true);
+const schema = z.object({
+  fullname: z.string().min(1, 'Full name is required'),
+  username: z.string().min(3, 'Username must be at least 3 characters'),
+  website: z.string().url('Enter a valid URL').optional().or(z.literal('')),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(60, 'Password must be at most 60 characters')
+    .regex(/[A-Z]/, 'Must contain an uppercase letter')
+    .regex(/[a-z]/, 'Must contain a lowercase letter')
+    .regex(/[0-9]/, 'Must contain a number')
+    .regex(/[^A-Za-z0-9]/, 'Must contain a special symbol'),
+})
 
-      const {
-        data,
-        error: fetchError,
-        status,
-      } = await supabase
-        .from("profiles")
-        .select(`full_name, username, website, avatar_url`)
-        .eq("id", user?.id)
-        .single();
+type FormData = z.infer<typeof schema>
 
-      if (fetchError && status !== 406) {
-        console.log(fetchError);
-        throw fetchError;
-      }
+type Props = {
+  userId: string
+  email: string
+}
 
-      if (data) {
-        setFullname(data.full_name);
-        setUsername(data.username);
-        setWebsite(data.website);
-        setAvatarUrl(data.avatar_url);
-      }
-    } catch {
-      alert("Error loading user data!");
-    } finally {
-      setLoading(false);
-    }
-  }, [user, supabase]);
+export default function AccountForm({ userId, email }: Props) {
+  const supabase = createClient()
+  const [avatarUrl, setAvatarUrl] = useState<string>('')
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  })
 
   useEffect(() => {
-    getProfile();
-  }, [user, getProfile]);
+    async function loadUserProfile() {
+      const { data } = await supabase
+        .from('users')
+        .select('full_name, username, website, avatar_url')
+        .eq('id', userId)
+        .single()
 
-  async function updateProfile({
-    username,
-    fullname,
-    website,
-    avatar_url,
-  }: {
-    username: string | null;
-    fullname: string | null;
-    website: string | null;
-    avatar_url: string | null;
-  }) {
-    try {
-      setLoading(true);
-
-      const { error: updateError } = await supabase.from("profiles").upsert({
-        id: user?.id as string,
-        full_name: fullname,
-        username,
-        website,
-        avatar_url,
-        updated_at: new Date().toISOString(),
-      });
-
-      if (updateError) throw updateError;
-
-      alert("Profile updated!");
-    } catch {
-      alert("Error updating the data!");
-    } finally {
-      setLoading(false);
+      if (data) {
+        setValue('fullname', data.full_name ?? '')
+        setValue('username', data.username ?? '')
+        setValue('website', data.website ?? '')
+        setAvatarUrl(data.avatar_url ?? '')
+      }
     }
+
+    loadUserProfile()
+  }, [supabase, userId, setValue])
+
+  const onSubmit = async (data: FormData) => {
+    await supabase.from('users').upsert({
+      id: userId,
+      full_name: data.fullname,
+      username: data.username,
+      website: data.website,
+      avatar_url: avatarUrl,
+      updated_at: new Date().toISOString(),
+    })
+
+    alert('Profile updated!')
   }
 
   return (
-    <div className="form-widget">
-      <Avatar
-        uid={user?.id ?? null}
-        url={avatar_url}
-        size={150}
-        onUpload={(url) => {
-          setAvatarUrl(url);
-          updateProfile({ fullname, username, website, avatar_url: url });
-        }}
-      />
+    <div className="max-w-xl mx-auto mt-10 p-6 bg-white dark:bg-gray-900 shadow rounded-2xl">
+      <h2 className="text-xl font-semibold mb-6 text-gray-800 dark:text-white">Account Settings</h2>
 
-      <div>
-        <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={user?.email} disabled />
-      </div>
-      <div>
-        <label htmlFor="fullName">Full Name</label>
-        <input
-          id="fullName"
-          type="text"
-          value={fullname || ""}
-          onChange={(e) => setFullname(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="username">Username</label>
-        <input
-          id="username"
-          type="text"
-          value={username || ""}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="website">Website</label>
-        <input
-          id="website"
-          type="url"
-          value={website || ""}
-          onChange={(e) => setWebsite(e.target.value)}
+      <div className="flex justify-center mb-6">
+        <Avatar
+          uid={userId}
+          url={avatarUrl}
+          size={120}
+          avatarChangedCallback={(path) => setAvatarUrl(path)}
         />
       </div>
 
-      <div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+          <input
+            type="email"
+            value={email}
+            disabled
+            className="w-full mt-1 p-2 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+          <input
+            type="text"
+            {...register('fullname')}
+            className="w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          />
+          {errors.fullname && <p className="text-red-500 text-sm mt-1">{errors.fullname.message}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
+          <input
+            type="text"
+            {...register('username')}
+            className="w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          />
+          {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Website</label>
+          <input
+            type="url"
+            {...register('website')}
+            className="w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          />
+          {errors.website && <p className="text-red-500 text-sm mt-1">{errors.website.message}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+          <PasswordInputWithLiveCheck
+            value={watch('password') || ''}
+            onValidPassword={(valid, val) => setValue('password', val)}
+            error={errors.password?.message}
+          />
+        </div>
+
         <button
-          className="button primary block"
-          onClick={() =>
-            updateProfile({ fullname, username, website, avatar_url })
-          }
-          disabled={loading}
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition"
         >
-          {loading ? "Loading ..." : "Update"}
+          {isSubmitting ? 'Saving...' : 'Update Profile'}
         </button>
-      </div>
 
-      <div>
         <form action="/auth/signout" method="post">
-          <button className="button block" type="submit">
-            Sign out
+          <button
+            type="submit"
+            className="w-full mt-2 bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-800 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600"
+          >
+            Sign Out
           </button>
         </form>
-      </div>
+      </form>
     </div>
-  );
+  )
 }
