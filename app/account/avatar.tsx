@@ -9,57 +9,71 @@ type Props = {
   uid: string
   url: string | null
   size?: number
-  avatarChangedCallback?: (path: string) => void
+  avatarChangedCallback?: (publicUrl: string) => void
 }
 
-export default function Avatar({ uid, url, size = 100, avatarChangedCallback }: Props) {
+export default function Avatar({
+  uid,
+  url,
+  size = 100,
+  avatarChangedCallback,
+}: Props) {
   const supabase = createClient()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(url)
   const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
-    if (!url) return
-
-    const downloadImage = async () => {
-      const { data, error } = await supabase.storage.from('avatars').download(url)
-      if (!error && data) {
-        const objectUrl = URL.createObjectURL(data)
-        setAvatarUrl(objectUrl)
-      }
+    if (url) {
+      setAvatarUrl(url)
     }
-
-    downloadImage()
-  }, [url, supabase])
+  }, [url])
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true)
 
       const file = event.target.files?.[0]
-      if (!file) return
+      if (!file) {
+        alert('Please select a file to upload.')
+        return
+      }
+
+      const allowedTypes = ['image/jpeg', 'image/png']
+      if (!allowedTypes.includes(file.type)) {
+        alert('Only JPG and PNG formats are allowed.')
+        return
+      }
 
       const fileExt = file.name.split('.').pop()
       const filePath = `${uid}/${Date.now()}.${fileExt}`
 
-      const { error } = await supabase.storage.from('avatars').upload(filePath, file, {
-        upsert: true,
-      })
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, {
+          upsert: true,
+        })
 
-      if (error) {
-        console.error('Upload error:', error)
+      if (uploadError) {
+        console.error('❌ Upload error:', uploadError)
+        alert('Failed to upload. Check bucket access.')
         return
       }
 
-      const { data } = await supabase.storage.from('avatars').download(filePath)
-      if (data) {
-        const objectUrl = URL.createObjectURL(data)
-        setAvatarUrl(objectUrl)
-      }
+      const { data: publicUrlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath)
 
-      avatarChangedCallback?.(filePath)
+      const publicUrl = publicUrlData?.publicUrl
+
+      if (publicUrl) {
+        setAvatarUrl(publicUrl)
+        avatarChangedCallback?.(publicUrl)
+      } else {
+        console.error('⚠️ No public URL returned')
+      }
     } catch (err) {
-      alert('Failed to upload avatar.')
-      console.error(err)
+      console.error('Unexpected upload error:', err)
+      alert('Something went wrong while uploading.')
     } finally {
       setUploading(false)
     }
