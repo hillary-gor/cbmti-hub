@@ -19,3 +19,20 @@ export async function getUserAndRole() {
 
   return data
 }
+
+export async function getLecturer() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return null
+
+  const { data: lecturer, error } = await supabase
+    .from("lecturers")
+    .select("id, department, user_id")
+    .eq("user_id", user.id)
+    .single()
+
+  if (error || !lecturer) return null
+
+  return lecturer
+}
