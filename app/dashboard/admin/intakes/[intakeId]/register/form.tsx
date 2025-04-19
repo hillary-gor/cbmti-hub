@@ -21,9 +21,14 @@ export function EnrollmentForm({ intakeId, students, courses }: Props) {
   );
 
   return (
-    <form action={formAction} className="space-y-6 max-w-md bg-white dark:bg-zinc-900 p-6 rounded-lg shadow-md">
+    <form
+      action={formAction}
+      encType="multipart/form-data"
+      className="space-y-6 max-w-md bg-white dark:bg-zinc-900 p-6 rounded-lg shadow-md"
+    >
       <input type="hidden" name="intakeId" value={intakeId} />
 
+      {/* Student select */}
       <div className="space-y-2">
         <label htmlFor="studentId" className="block text-sm font-medium">
           Student
@@ -40,11 +45,9 @@ export function EnrollmentForm({ intakeId, students, courses }: Props) {
             <option key={s.id} value={s.id}>{s.reg_number}</option>
           ))}
         </select>
-        {state?.error?.studentId && (
-          <p className="text-red-600 text-sm">{state.error.studentId.join(', ')}</p>
-        )}
       </div>
 
+      {/* Course select */}
       <div className="space-y-2">
         <label htmlFor="courseId" className="block text-sm font-medium">
           Course
@@ -61,17 +64,26 @@ export function EnrollmentForm({ intakeId, students, courses }: Props) {
             <option key={c.id} value={c.id}>{c.title}</option>
           ))}
         </select>
-        {state?.error?.courseId && (
-          <p className="text-red-600 text-sm">{state.error.courseId.join(', ')}</p>
-        )}
       </div>
 
+      {/* Upload admission docs */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">Admission Documents (PDF or ZIP)</label>
+        <input
+          type="file"
+          name="admission_docs"
+          accept=".pdf,.zip"
+          required
+          className="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 focus:outline-none"
+        />
+      </div>
+
+      {/* Errors */}
       {state?.error?.general && (
         <p className="text-sm text-red-600">{state.error.general}</p>
       )}
-
       {state?.success && (
-        <p className="text-sm text-green-600">✅ Student successfully enrolled!</p>
+        <p className="text-sm text-green-600">✅ Student successfully enrolled and documents uploaded!</p>
       )}
 
       <button
