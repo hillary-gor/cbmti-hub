@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         hostname: 'gowiaewbjsdsvihqmsyg.supabase.co',
         pathname: '/storage/v1/object/public/assets/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'gowiaewbjsdsvihqmsyg.supabase.co',
+        pathname: '/storage/v1/object/public/student-documents/**',
+      },
       // Add more buckets here
     ],
   },
