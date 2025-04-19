@@ -18,9 +18,10 @@ type FormData = z.infer<typeof schema>
 type Props = {
   userId: string
   email: string
+  role: 'student' | 'admin' | 'super_admin'
 }
 
-export default function AccountForm({ userId, email }: Props) {
+export default function AccountForm({ userId, email, role }: Props) {
   const supabase = createClient()
   const router = useRouter()
 
@@ -73,7 +74,7 @@ export default function AccountForm({ userId, email }: Props) {
       data: { user },
     } = await supabase.auth.getUser()
 
-    const role = user?.user_metadata?.role || 'student'
+    const userRole = user?.user_metadata?.role || 'student'
 
     const { data: userRecord } = await supabase
       .from('users')
@@ -82,13 +83,16 @@ export default function AccountForm({ userId, email }: Props) {
       .single()
 
     if (!userRecord?.profile_completed) {
-      router.push(`/dashboard/${role}`)
+      router.push(`/dashboard/${userRole}`)
     }
   }
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white dark:bg-gray-900 shadow rounded-2xl">
-      <h2 className="text-xl font-semibold mb-6 text-gray-800 dark:text-white">Account Settings</h2>
+      <h2 className="text-xl font-semibold mb-1 text-gray-800 dark:text-white">Account Settings</h2>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 text-center">
+        Logged in as <strong className="capitalize">{role}</strong>
+      </p>
 
       <div className="flex justify-center mb-6">
         <Avatar
