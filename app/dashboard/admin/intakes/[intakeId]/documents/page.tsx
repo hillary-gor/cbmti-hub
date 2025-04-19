@@ -1,6 +1,6 @@
-import { notFound } from 'next/navigation';
-import { createClient } from '@/utils/supabase/server';
-import { generateSignedUrl } from './actions';
+import { notFound } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
+import { generateSignedUrl, deleteFileDirect } from "./actions";
 
 type PageProps = {
   params: { intakeId: string };
@@ -24,7 +24,7 @@ export default async function DocumentsPage({ params }: PageProps) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from('student_attachments')
+    .from("student_attachments")
     .select(
       `
       id,
@@ -40,16 +40,14 @@ export default async function DocumentsPage({ params }: PageProps) {
       )
     `
     )
-    .order('uploaded_at', { ascending: false });
+    .order("uploaded_at", { ascending: false });
 
   if (error || !data) {
     notFound();
   }
 
-  // Type-safe cast
   const typed = data as unknown as SupabaseFileRecord[];
 
-  // No predicate needed — just null check
   const filesForIntake = typed.filter(
     (f) => f.student?.intake_id === params.intakeId
   );
@@ -64,7 +62,9 @@ export default async function DocumentsPage({ params }: PageProps) {
       </div>
 
       {filesForIntake.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No uploaded documents yet.</p>
+        <p className="text-sm text-muted-foreground">
+          No uploaded documents yet.
+        </p>
       ) : (
         <div className="overflow-x-auto border rounded-lg">
           <table className="min-w-full text-sm text-left">
@@ -82,26 +82,53 @@ export default async function DocumentsPage({ params }: PageProps) {
                 filesForIntake.map(async (file) => {
                   const url = await generateSignedUrl(file.file_path);
                   return (
-                    <tr key={file.id} className="border-t hover:bg-muted/30 transition">
+                    <tr
+                      key={file.id}
+                      className="border-t hover:bg-muted/30 transition"
+                    >
                       <td className="px-4 py-2">
                         {file.student?.reg_number} – {file.student?.full_name}
                       </td>
                       <td className="px-4 py-2">{file.file_name}</td>
                       <td className="px-4 py-2 capitalize">
-                        {file.category.replace('_', ' ')}
+                        {file.category.replace("_", " ")}
                       </td>
                       <td className="px-4 py-2 text-muted-foreground">
                         {new Date(file.uploaded_at).toLocaleDateString()}
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-2 space-x-2 flex">
                         <a
                           href={url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 underline"
                         >
-                          View / Download
+                          View
                         </a>
+
+                        <form action={deleteFileDirect}>
+                          <input type="hidden" name="id" value={file.id} />
+                          <input
+                            type="hidden"
+                            name="filePath"
+                            value={file.file_path}
+                          />
+                          <button
+                            type="submit"
+                            className="text-red-600 underline hover:text-red-700"
+                            onClick={(e) => {
+                              if (
+                                !confirm(
+                                  "Are you sure you want to delete this file?"
+                                )
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </form>
                       </td>
                     </tr>
                   );
