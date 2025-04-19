@@ -1,35 +1,42 @@
-import { createClient } from "@/utils/supabase/server";
-import { notFound } from "next/navigation";
+import { createClient } from '@/utils/supabase/server'
+import { notFound } from 'next/navigation'
 
 type PageProps = {
-  params: { intakeId: string };
-};
+  params: { intakeId: string }
+  searchParams?: {
+    q?: string
+    course?: string
+  }
+}
 
 type SupabaseEnrollment = {
-  id: string;
+  id: string
   students: {
-    reg_number: string;
-    full_name: string;
-    email: string;
-  } | null;
+    reg_number: string
+    full_name: string
+    email: string
+  } | null
   courses: {
-    title: string;
-  } | null;
-};
+    title: string
+  } | null
+}
 
 type EnrolledStudent = {
-  id: string;
-  reg_number: string;
-  full_name: string;
-  email: string;
-  course_title: string;
-};
+  id: string
+  reg_number: string
+  full_name: string
+  email: string
+  course_title: string
+}
 
-export default async function IntakeStudentsPage({ params }: PageProps) {
-  const supabase = await createClient();
+export default async function IntakeStudentsPage({
+  params,
+  searchParams,
+}: PageProps) {
+  const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from("enrollments")
+    .from('enrollments')
     .select(
       `
       id,
@@ -43,23 +50,38 @@ export default async function IntakeStudentsPage({ params }: PageProps) {
       )
     `
     )
-    .eq("intake_id", params.intakeId)
-    .order("created_at", { ascending: false });
+    .eq('intake_id', params.intakeId)
+    .order('created_at', { ascending: false })
 
   if (error) {
-    console.error("[INTAKE_STUDENTS_ERROR]", error.message);
-    notFound();
+    console.error('[INTAKE_STUDENTS_ERROR]', error.message)
+    notFound()
   }
 
-  const typedData = data as unknown as SupabaseEnrollment[];
+  const typedData = data as unknown as SupabaseEnrollment[]
 
   const students: EnrolledStudent[] = typedData.map((record) => ({
     id: record.id,
-    reg_number: record.students?.reg_number ?? "—",
-    full_name: record.students?.full_name ?? "—",
-    email: record.students?.email ?? "—",
-    course_title: record.courses?.title ?? "—",
-  }));
+    reg_number: record.students?.reg_number ?? '—',
+    full_name: record.students?.full_name ?? '—',
+    email: record.students?.email ?? '—',
+    course_title: record.courses?.title ?? '—',
+  }))
+
+  const query = searchParams?.q?.toLowerCase() ?? ''
+  const courseFilter = searchParams?.course?.toLowerCase() ?? ''
+
+  const filtered = students.filter((s) => {
+    const matchesQuery =
+      s.full_name.toLowerCase().includes(query) ||
+      s.reg_number.toLowerCase().includes(query)
+
+    const matchesCourse = courseFilter
+      ? s.course_title.toLowerCase() === courseFilter
+      : true
+
+    return matchesQuery && matchesCourse
+  })
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4 space-y-6">
@@ -70,12 +92,50 @@ export default async function IntakeStudentsPage({ params }: PageProps) {
         </p>
       </div>
 
-      {students.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No students enrolled yet.
+      {/* 🔍 Filters */}
+      <form className="flex flex-col sm:flex-row gap-4 items-start sm:items-end max-w-2xl">
+        <div className="w-full">
+          <label className="text-sm font-medium">Search</label>
+          <input
+            type="search"
+            name="q"
+            placeholder="Search reg no or name"
+            defaultValue={searchParams?.q ?? ''}
+            className="w-full rounded-md border px-3 py-2 text-sm"
+          />
+        </div>
+
+        <div className="w-full">
+          <label className="text-sm font-medium">Filter by course</label>
+          <select
+            name="course"
+            defaultValue={searchParams?.course ?? ''}
+            className="w-full rounded-md border px-3 py-2 text-sm"
+          >
+            <option value="">All courses</option>
+            {[...new Set(students.map((s) => s.course_title))].map((title) => (
+              <option key={title} value={title}>
+                {title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="bg-primary text-white px-4 py-2 rounded-md text-sm"
+        >
+          Apply
+        </button>
+      </form>
+
+      {/* Table */}
+      {filtered.length === 0 ? (
+        <p className="text-sm text-muted-foreground mt-6">
+          No matching students found.
         </p>
       ) : (
-        <div className="overflow-x-auto border rounded-lg">
+        <div className="overflow-x-auto border rounded-lg mt-6">
           <table className="min-w-full text-sm text-left">
             <thead className="bg-muted">
               <tr>
@@ -86,7 +146,7 @@ export default async function IntakeStudentsPage({ params }: PageProps) {
               </tr>
             </thead>
             <tbody>
-              {students.map((s) => (
+              {filtered.map((s) => (
                 <tr
                   key={s.id}
                   className="border-t hover:bg-muted/30 transition"
@@ -102,5 +162,5 @@ export default async function IntakeStudentsPage({ params }: PageProps) {
         </div>
       )}
     </div>
-  );
+  )
 }
