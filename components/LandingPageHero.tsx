@@ -1,8 +1,9 @@
-'use client'
+"use client";
 
-import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import { motion } from 'framer-motion'
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -12,7 +13,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="space-y-6"
         >
           <h1 className="text-4xl sm:text-5xl font-bold leading-tight text-foreground text-balance">
@@ -20,15 +21,18 @@ export default function Hero() {
           </h1>
 
           <p className="text-muted-foreground text-lg max-w-prose">
-            Register, learn, and thrive through our seamless digital student portal.
+            Register, learn, and thrive through our seamless digital student
+            portal.
           </p>
 
-          <Button
-            size="lg"
-            className="bg-[#329EE8] text-white hover:bg-[#2b8ed3] transition"
-          >
-            Get Started
-          </Button>
+          <Link href="/signup">
+            <Button
+              size="lg"
+              className="bg-[#329EE8] text-white hover:bg-[#2b8ed3] transition"
+            >
+              Get Started
+            </Button>
+          </Link>
 
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 pt-6 text-sm text-foreground font-medium">
             <li>📅 Digital Timetables</li>
@@ -44,19 +48,21 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
           className="relative w-full h-full"
         >
           <Image
-            src="/images/student-hero.jpg" // Use your image here
-            alt="Confident healthcare student"
+            src="https://gowiaewbjsdsvihqmsyg.supabase.co/storage/v1/object/public/assets//truphosa-baker-eddie-etisi.svg"
+            alt="Baker and Eddie from Code Blue Medical"
             width={800}
             height={800}
             className="w-full h-auto object-cover rounded-xl shadow-lg"
             priority
+            placeholder="blur"
+            blurDataURL="/blur/truphosa-blur.png"
           />
         </motion.div>
       </div>
     </section>
-  )
+  );
 }
