@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CBMTI Hub",
-  description: "",
+  description: "Empowering Healthcare Students Across Kenya",
 };
 
 export default function RootLayout({
