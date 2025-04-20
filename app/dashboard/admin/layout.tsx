@@ -1,55 +1,38 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
-import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import {
-  Home,
-  Settings,
-  LayoutDashboard,
-  Book,
-  Users,
-  FilePlus2,
-  FileText,
-  FileSignature,
-  Menu,
-  X,
-} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { redirect, usePathname } from 'next/navigation'
 import { getUserAndRole } from '@/lib/auth'
+import { Menu, X } from 'lucide-react'
+import Link from 'next/link'
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+const navItems = [
+  { label: '🏠 Dashboard', href: '/dashboard/admin' },
+  { label: '📚 Intakes', href: '/dashboard/admin/intakes' },
+  { label: '👨‍🎓 Students', href: '/dashboard/admin/students' },
+  { label: '👥 Staff Accounts', href: '/dashboard/admin/staff' },
+  { label: '⚙️ Settings', href: '/dashboard/settings' },
+]
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [, setUser] = useState<{ role: string } | null>(null)
   const pathname = usePathname()
-  const [user, setUser] = useState<{ role: string } | null>(null)
 
   useEffect(() => {
     ;(async () => {
-      const data = await getUserAndRole()
-      if (!data) return redirect('/login')
-      setUser(data)
+      const u = await getUserAndRole()
+      if (!u) redirect('/login')
+      if (u.role !== 'admin') redirect('/unauthorized')
+      setUser(u)
     })()
   }, [])
 
-  const toggleSidebar = () => setIsOpen((prev) => !prev)
-
-  const navItems = [
-    { label: 'Home', href: '/dashboard', icon: Home },
-    { label: 'Settings', href: '/dashboard/settings', icon: Settings },
-  ]
-
-  const adminNavItems = [
-    { label: 'Admin Dashboard', href: '/dashboard/admin', icon: LayoutDashboard },
-    { label: 'Intakes', href: '/dashboard/admin/intakes', icon: Book },
-    { label: 'Students', href: '/dashboard/admin/students', icon: Users },
-    { label: 'Enrollments', href: '/dashboard/admin/intakes/[intakeId]/enrollments', icon: FilePlus2 },
-    { label: 'Register Students', href: '/dashboard/admin/intakes/[intakeId]/register', icon: FileText },
-    { label: 'Documents', href: '/dashboard/admin/intakes/[intakeId]/documents', icon: FileSignature },
-  ]
+  const toggleSidebar = () => setIsOpen(prev => !prev)
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-background">
-      {/* Mobile Toggle Button */}
+      {/* Mobile toggle */}
       <button
         onClick={toggleSidebar}
         className="fixed top-4 left-4 z-50 lg:hidden bg-white dark:bg-zinc-800 border p-2 rounded-md"
@@ -63,54 +46,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        <h2 className="text-xl font-bold mb-4">CBMTI Hub</h2>
+        <h2 className="text-xl font-bold mb-6">CBMTI Admin</h2>
         <nav className="space-y-3 text-sm">
-          {navItems.map((item) => (
-            <NavItem key={item.href} href={item.href} icon={item.icon} label={item.label} pathname={pathname} />
-          ))}
-
-          {user?.role === 'admin' && (
-            <>
-              <div className="border-t border-gray-300 my-4" />
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Admin</h3>
-              {adminNavItems.map((item) => (
-                <NavItem key={item.href} href={item.href} icon={item.icon} label={item.label} pathname={pathname} />
-              ))}
-            </>
-          )}
+          {navItems.map(item => {
+            const isActive = pathname === item.href
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`block px-3 py-2 rounded-md font-medium transition ${
+                  isActive
+                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-white'
+                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-zinc-800'
+                }`}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
         </nav>
       </aside>
 
-      {/* Main Content */}
+      {/* Content */}
       <main className="flex-1 p-6 ml-0 lg:ml-64">{children}</main>
     </div>
-  )
-}
-
-function NavItem({
-  href,
-  label,
-  icon: Icon,
-  pathname,
-}: {
-  href: string
-  label: string
-  icon: React.ElementType
-  pathname: string
-}) {
-  const isActive = pathname === href
-
-  return (
-    <Link
-      href={href}
-      className={`flex items-center gap-2 px-3 py-2 rounded-md transition text-sm font-medium ${
-        isActive
-          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-white'
-          : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-zinc-800'
-      }`}
-    >
-      <Icon className="w-4 h-4" />
-      <span>{label}</span>
-    </Link>
   )
 }
