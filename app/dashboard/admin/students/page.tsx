@@ -1,6 +1,6 @@
-import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { fetchAllStudents } from './actions'
 
 type StudentRow = {
   id: string
@@ -18,28 +18,15 @@ type StudentRow = {
 }
 
 export default async function AdminStudentsPage() {
-  const supabase = await createClient()
+  let students: StudentRow[] = []
 
-  const { data, error } = await supabase
-    .from('students')
-    .select(`
-      id,
-      full_name,
-      reg_number,
-      status,
-      enrollment_year,
-      serial_no,
-      courses(code),
-      intakes(label)
-    `)
-    .order('created_at', { ascending: false })
-
-  if (error) {
-    console.error('[ADMIN_STUDENTS_ERROR]', JSON.stringify(error, null, 2))
+  try {
+    const data = await fetchAllStudents()
+    students = (data ?? []) as StudentRow[]
+  } catch (err) {
+    console.error('[ADMIN_STUDENTS_ERROR]', err)
     return <div className="text-red-600">⚠️ Failed to load students</div>
   }
-
-  const students = (data ?? []) as StudentRow[]
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
