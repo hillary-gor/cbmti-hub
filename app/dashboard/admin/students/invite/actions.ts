@@ -23,9 +23,13 @@ export async function inviteUser(formData: FormData) {
 
   const { email } = parsed.data
 
+  // Require email confirmation before account is activated
   const { error } = await supabaseAdmin.auth.admin.createUser({
     email,
-    email_confirm: false, // <-- triggers invite email via your SMTP config
+    email_confirm: true, // <-- important: require user to confirm email
+    user_metadata: {
+      role: 'student',
+    },
   })
 
   if (error) {

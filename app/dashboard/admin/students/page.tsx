@@ -1,63 +1,96 @@
-import { createClient } from '@/utils/supabase/server';
-import { notFound } from 'next/navigation';
+import { createClient } from '@/utils/supabase/server'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
-type Student = {
-  id: string;
-  reg_number: string;
-  full_name?: string;
-  email?: string;
-  phone?: string;
-  created_at: string;
-};
+type StudentRow = {
+  id: string
+  full_name: string | null
+  reg_number: string | null
+  status: string
+  enrollment_year: number
+  serial_no: number | null
+  courses?: {
+    code: string | null
+  }[]
+  intakes?: {
+    label: string | null
+  }[]
+}
 
 export default async function AdminStudentsPage() {
-  const supabase = await createClient();
+  const supabase = await createClient()
 
-  const { data: students, error } = await supabase
+  const { data, error } = await supabase
     .from('students')
-    .select('id, reg_number, full_name, email, phone, created_at')
-    .order('created_at', { ascending: false });
+    .select(`
+      id,
+      full_name,
+      reg_number,
+      status,
+      enrollment_year,
+      serial_no,
+      courses(code),
+      intakes(label)
+    `)
+    .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('[ADMIN_STUDENTS_ERROR]', error.message);
-    notFound();
+    console.error('[ADMIN_STUDENTS_ERROR]', JSON.stringify(error, null, 2))
+    return <div className="text-red-600">⚠️ Failed to load students</div>
   }
 
+  const students = (data ?? []) as StudentRow[]
+
   return (
-    <div className="max-w-6xl mx-auto py-10 px-4 space-y-6">
-      <div className="flex flex-col gap-1">
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">All Students</h1>
-        <p className="text-sm text-muted-foreground">
-          List of all registered students in the system
-        </p>
+        <Button asChild>
+          <Link href="/dashboard/admin/students/new">➕ Add Student</Link>
+        </Button>
       </div>
 
-      <div className="overflow-x-auto border rounded-lg">
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-muted">
+      <div className="overflow-x-auto">
+        <table className="min-w-full border text-sm">
+          <thead className="bg-gray-100 text-left">
             <tr>
-              <th className="px-4 py-2 font-semibold">Reg Number</th>
-              <th className="px-4 py-2 font-semibold">Full Name</th>
-              <th className="px-4 py-2 font-semibold">Email</th>
-              <th className="px-4 py-2 font-semibold">Phone</th>
-              <th className="px-4 py-2 font-semibold">Joined</th>
+              <th className="p-3 border">Name</th>
+              <th className="p-3 border">Reg Number</th>
+              <th className="p-3 border">Course</th>
+              <th className="p-3 border">Intake</th>
+              <th className="p-3 border">Status</th>
+              <th className="p-3 border">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {students.map((s: Student) => (
-              <tr key={s.id} className="border-t hover:bg-muted/30 transition">
-                <td className="px-4 py-2">{s.reg_number}</td>
-                <td className="px-4 py-2">{s.full_name ?? '—'}</td>
-                <td className="px-4 py-2">{s.email ?? '—'}</td>
-                <td className="px-4 py-2">{s.phone ?? '—'}</td>
-                <td className="px-4 py-2 text-muted-foreground">
-                  {new Date(s.created_at).toLocaleDateString()}
+            {students.length > 0 ? (
+              students.map((s) => (
+                <tr key={s.id} className="border-t">
+                  <td className="p-3">{s.full_name ?? '—'}</td>
+                  <td className="p-3">{s.reg_number ?? `CBMTI-${s.serial_no}`}</td>
+                  <td className="p-3">{s.courses?.[0]?.code ?? '—'}</td>
+                  <td className="p-3">{s.intakes?.[0]?.label ?? '—'}</td>
+                  <td className="p-3 capitalize">{s.status}</td>
+                  <td className="p-3">
+                    <Link
+                      href={`/dashboard/admin/students/${s.id}/edit`}
+                      className="text-blue-600 hover:underline text-sm"
+                    >
+                      Edit
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="p-4 text-center text-gray-500">
+                  No students found.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
     </div>
-  );
+  )
 }

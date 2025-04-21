@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 
 const schema = z.object({
-  email: z.string().email(),
+  email: z.string().email({ message: 'Please enter a valid email address' }),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -24,7 +24,11 @@ export default function InviteStudentPage() {
     resolver: zodResolver(schema),
   })
 
-  const [result, setResult] = useState<{ success?: boolean; error?: string; email?: string }>({})
+  const [result, setResult] = useState<{
+    success?: boolean
+    error?: string
+    email?: string
+  }>({})
 
   const onSubmit = async (values: FormValues) => {
     const formData = new FormData()
@@ -33,18 +37,30 @@ export default function InviteStudentPage() {
     const res = await inviteUser(formData)
     setResult(res)
 
-    if (res.success) reset()
+    if (res.success) {
+      reset()
+    }
   }
 
   return (
     <div className="max-w-md mx-auto py-10 px-4 space-y-6">
       <h1 className="text-2xl font-bold">Invite a Student</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium">Email</label>
-          <Input id="email" type="email" {...register('email')} />
-          {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div className="space-y-1">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-900">
+            Email address
+          </label>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="student@example.com"
+            {...register('email')}
+          />
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email.message}</p>
+          )}
         </div>
 
         <Button type="submit" disabled={isSubmitting} className="w-full">
@@ -52,13 +68,15 @@ export default function InviteStudentPage() {
         </Button>
 
         {result.error && (
-          <p className="text-red-600 text-sm mt-2">{result.error}</p>
+          <div className="text-sm text-red-600 mt-2">
+            ❌ {result.error}
+          </div>
         )}
 
-        {result.success && (
-          <p className="text-green-600 text-sm mt-2">
+        {result.success && result.email && (
+          <div className="text-sm text-green-600 mt-2">
             ✅ Invite sent to <strong>{result.email}</strong>
-          </p>
+          </div>
         )}
       </form>
     </div>
