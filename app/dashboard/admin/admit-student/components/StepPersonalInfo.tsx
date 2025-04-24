@@ -2,22 +2,55 @@
 
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
+import { useState } from 'react';
 import { admitStudentSchema } from '../admit-student-zod-schema';
+import { createClient } from '@/utils/supabase/client';
 
 type FormData = z.infer<typeof admitStudentSchema>;
 
 export default function StepPersonalInfo() {
   const {
     register,
+    setValue,
     formState: { errors },
   } = useFormContext<FormData>();
+
+  const [uploading, setUploading] = useState(false);
+  const supabase = createClient();
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const filePath = `students/${Date.now()}-${file.name}`;
+
+    const { error } = await supabase.storage
+      .from('student-documents')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+    if (error) {
+      console.error('File upload failed:', error.message);
+      setUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from('student-documents').getPublicUrl(filePath);
+    if (data?.publicUrl) {
+      setValue('merged_file_url', data.publicUrl, { shouldValidate: true });
+    }
+
+    setUploading(false);
+  };
 
   const getErrorMessage = (fieldName: keyof FormData) => {
     const error = errors[fieldName];
     return typeof error?.message === 'string' ? error.message : null;
   };
 
-  // Fields where we know the names are keys of FormData
   const fields: { label: string; name: keyof FormData; type?: string; optional?: boolean }[] = [
     { label: 'Full Name', name: 'full_name' },
     { label: 'Date of Birth', name: 'date_of_birth', type: 'date' },
@@ -29,7 +62,6 @@ export default function StepPersonalInfo() {
     { label: 'Postal Code', name: 'postal_code', optional: true },
     { label: 'Town / City', name: 'town_city', optional: true },
     { label: 'Nationality', name: 'nationality' },
-    { label: 'Merged File URL', name: 'merged_file_url', type: 'url', optional: true },
   ];
 
   return (
@@ -49,6 +81,24 @@ export default function StepPersonalInfo() {
           )}
         </div>
       ))}
+
+      {/* File Upload Field */}
+      <div>
+        <label className="block font-medium">Upload Merged Admission File (PDF)</label>
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={handleFileUpload}
+          className="input w-full"
+        />
+        <input type="hidden" {...register('merged_file_url')} />
+        {uploading && <p className="text-blue-500 text-sm mt-1">Uploading...</p>}
+        {getErrorMessage('merged_file_url') && (
+          <p className="text-red-500 text-sm mt-1">
+            {getErrorMessage('merged_file_url')}
+          </p>
+        )}
+      </div>
 
       <div>
         <label className="block font-medium">Gender</label>
