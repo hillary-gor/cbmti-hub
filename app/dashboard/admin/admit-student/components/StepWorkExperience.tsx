@@ -1,7 +1,7 @@
 'use client';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 
-export const StepWorkExperience = () => {
+const StepWorkExperience = () => {
   const { control, register } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -23,3 +23,5 @@ export const StepWorkExperience = () => {
     </div>
   );
 };
+
+export default StepWorkExperience;

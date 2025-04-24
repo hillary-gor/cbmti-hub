@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// 🧾 students (extended fields only)
+// students (extended fields only)
 export const studentSchema = z.object({
   gender: z.enum(["Male", "Female", "Other"]),
   date_of_birth: z
@@ -23,7 +23,7 @@ export const studentSchema = z.object({
   merged_file_url: z.string().url().optional(),
 });
 
-// 📋 application_info
+// application_info
 export const applicationInfoSchema = z.object({
   course: z.string().trim(),
   intake_month: z.string().trim(),
@@ -90,7 +90,7 @@ export const refereeSchema = z.object({
   postal_code: z.string().regex(/^\d{5}$/),
 });
 
-// ✅ consent_acknowledgments
+// consent_acknowledgments
 export const consentSchema = z.object({
   accepted_admission_policies: z.boolean(),
   accepted_fee_policies: z.boolean(),
@@ -101,7 +101,7 @@ export const consentSchema = z.object({
   consent_communication_policy: z.boolean(),
 });
 
-// 📜 course_specific_declarations
+// course_specific_declarations
 export const declarationSchema = z.object({
   course_name: z.string().trim(),
   accepted_offer: z.boolean(),
@@ -113,7 +113,7 @@ export const declarationSchema = z.object({
   no_refund_policy: z.boolean(),
 });
 
-// 👪 guardian_declarations
+// guardian_declarations
 export const guardianDeclarationSchema = z.object({
   guardian_full_name: z.string().trim(),
   guardian_id_number: z.string().trim(),
@@ -121,7 +121,7 @@ export const guardianDeclarationSchema = z.object({
   guardian_agrees_to_terms: z.boolean(),
 });
 
-// ✅ final full student schema used in form + insert
+// final full student schema used in form + insert
 export const admitStudentSchema = z.object({
   full_name: z.string().trim().min(2),
   course_id: z.string(),
@@ -133,16 +133,26 @@ export const admitStudentSchema = z.object({
   ...studentSchema.shape,
 
   application_info: applicationInfoSchema,
+
   next_of_kin: contactSchema.extend({
     relationship: z.string().trim().min(2),
   }),
+
   emergency_contact: contactSchema,
   guardian_declaration: guardianDeclarationSchema,
+
   education_background: z
     .array(educationSchema)
     .min(1, "At least one education entry is required"),
+
   work_experience: z.array(workExperienceSchema).optional(),
+
   referees: z
     .array(refereeSchema)
     .min(1, "At least one referee is required"),
+
+  // NEW additions (only this part is new)
+  consent_acknowledgments: consentSchema,
+  course_specific_declarations: declarationSchema,
 });
+
