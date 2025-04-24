@@ -1,12 +1,12 @@
 "use client"
 
-import { useFormState } from "react-dom"
+import { useActionState } from "react" 
 import { createCourse } from "../actions"
 
 const initialState = { success: false, errors: {} }
 
-export function CourseForm() {
-  const [state, formAction] = useFormState(createCourse, initialState)
+function CourseForm() {
+  const [state, formAction] = useActionState(createCourse, initialState)
 
   return (
     <form action={formAction} className="space-y-4">
@@ -31,3 +31,5 @@ export function CourseForm() {
     </form>
   )
 }
+
+export default CourseForm

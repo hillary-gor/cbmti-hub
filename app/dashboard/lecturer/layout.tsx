@@ -1,7 +1,7 @@
 // app/dashboard/lecturer/layout.tsx
 import { getUserAndRole } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { LecturerSidebar } from "./components/LecturerSidebar"
+import LecturerSidebar from "./components/LecturerSidebar"
 import type { ReactNode } from "react"
 
 export default async function LecturerLayout({ children }: { children: ReactNode }) {

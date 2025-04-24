@@ -1,4 +1,4 @@
-import { CourseForm } from "./components/CourseForm"
+import CourseForm from "./components/CourseForm"
 import { CourseCard } from "./components/CourseCard"
 import { getLecturer } from "@/lib/auth"
 import { createClient } from "@/utils/supabase/server"
