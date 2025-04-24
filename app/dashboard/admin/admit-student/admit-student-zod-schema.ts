@@ -20,6 +20,7 @@ export const studentSchema = z.object({
   postal_code: z.string().regex(/^\d{5}$/, "Invalid postal code").optional(),
   town_city: z.string().trim().optional(),
   nationality: z.string().trim().min(2),
+  merged_file_url: z.string().url().optional(),
 });
 
 // 📋 application_info
