@@ -133,6 +133,38 @@ const steps = [
   { label: 'Review & Submit', component: StepReviewSubmit },
 ];
 
+// ✅ Explicit field mapping per step (adjust as needed)
+const stepFieldMap: Record<number, string[]> = {
+  0: [
+    'full_name', 'gender', 'date_of_birth', 'national_id',
+    'marital_status', 'email', 'phone_number', 'religion',
+    'address', 'postal_code', 'town_city', 'nationality', 'merged_file_url'
+  ],
+  1: [
+    'application_info.course', 'application_info.intake_month',
+    'application_info.intake_year', 'application_info.session',
+    'application_info.mode_of_study', 'application_info.study_center',
+    'application_info.payment_method', 'application_info.payment_reference',
+    'application_info.disability_status', 'application_info.disability_type'
+  ],
+  2: [
+    'next_of_kin.full_name', 'next_of_kin.relationship', 'next_of_kin.phone_number',
+    'next_of_kin.email', 'next_of_kin.address',
+    'emergency_contact.full_name', 'emergency_contact.phone_number',
+    'emergency_contact.email', 'emergency_contact.address'
+  ],
+  3: [
+    'guardian_declaration.guardian_full_name',
+    'guardian_declaration.guardian_id_number',
+    'guardian_declaration.guardian_email',
+    'guardian_declaration.guardian_agrees_to_terms'
+  ],
+  4: ['education_background'],
+  5: [], // work_experience is optional
+  6: ['referees'],
+  7: [], // review/submit step — no validation
+};
+
 export default function AdmitStudentForm() {
   const [stepIndex, setStepIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -144,8 +176,12 @@ export default function AdmitStudentForm() {
   });
 
   const next = async () => {
-    const valid = await methods.trigger();
-    if (valid) setStepIndex((i) => Math.min(i + 1, steps.length - 1));
+    const fieldsToValidate = stepFieldMap[stepIndex];
+    const valid = await methods.trigger(fieldsToValidate as Parameters<typeof methods.trigger>[0]);
+ // casting avoids TS error
+    if (valid) {
+      setStepIndex((i) => Math.min(i + 1, steps.length - 1));
+    }
   };
 
   const back = () => setStepIndex((i) => Math.max(i - 1, 0));

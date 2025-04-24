@@ -34,6 +34,8 @@ const StepEducationBackground = () => {
     return typeof error?.message === 'string' ? error.message : null;
   };
 
+  const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
+
   return (
     <div className="space-y-6">
       {fields.map((field, index) => (
@@ -48,6 +50,7 @@ const StepEducationBackground = () => {
               {getErrorMessage(index, 'school_name')}
             </p>
           </div>
+
           <div>
             <input
               {...register(`education_background.${index}.qualification`)}
@@ -58,6 +61,7 @@ const StepEducationBackground = () => {
               {getErrorMessage(index, 'qualification')}
             </p>
           </div>
+
           <div>
             <input
               {...register(`education_background.${index}.examining_body`)}
@@ -68,24 +72,40 @@ const StepEducationBackground = () => {
               {getErrorMessage(index, 'examining_body')}
             </p>
           </div>
+
+          {/* From Year */}
           <div>
-            <input
-              {...register(`education_background.${index}.from_year`)}
-              type="number"
+            <label className="block font-medium">From Year</label>
+            <select
+              {...register(`education_background.${index}.from_year`, { valueAsNumber: true })}
               className="input"
-              placeholder="From Year"
-            />
+            >
+              <option value="">Select Year</option>
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
             <p className="text-red-500 text-sm">
               {getErrorMessage(index, 'from_year')}
             </p>
           </div>
+
+          {/* To Year */}
           <div>
-            <input
-              {...register(`education_background.${index}.to_year`)}
-              type="number"
+            <label className="block font-medium">To Year</label>
+            <select
+              {...register(`education_background.${index}.to_year`, { valueAsNumber: true })}
               className="input"
-              placeholder="To Year"
-            />
+            >
+              <option value="">Select Year</option>
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
             <p className="text-red-500 text-sm">
               {getErrorMessage(index, 'to_year')}
             </p>
