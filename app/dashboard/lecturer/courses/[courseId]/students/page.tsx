@@ -1,32 +1,24 @@
-// app/dashboard/lecturer/courses/[courseId]/students/page.tsx
-import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
+import { getCourseEnrollments } from "./actions"
 import { StudentTable } from "./components/StudentTable"
 
-export default async function CourseStudentsPage({
-  params,
-}: {
-  params: { courseId: string }
-}) {
-  const supabase = await createClient()
+type CourseStudentsPageProps = {
+  params: {
+    courseId: string
+  }
+}
 
-  const { data: course } = await supabase
-    .from("courses")
-    .select("id, title")
-    .eq("id", params.courseId)
-    .single()
+export default async function CourseStudentsPage({ params }: CourseStudentsPageProps) {
+  const enrollments = await getCourseEnrollments(params.courseId)
 
-  if (!course) notFound()
-
-  const { data: enrollments } = await supabase
-    .from("course_enrollments")
-    .select("id, joined_at, students (id, full_name, email)")
-    .eq("course_id", course.id)
+  if (!enrollments || enrollments.length === 0) {
+    return notFound()
+  }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Enrolled Students</h2>
-      <StudentTable enrollments={enrollments ?? []} />
+    <div className="space-y-6">
+      <h1 className="text-2xl font-semibold">Enrolled Students</h1>
+      <StudentTable enrollments={enrollments} />
     </div>
   )
 }
