@@ -18,14 +18,13 @@ interface AssignFormProps {
   studentId: string;
   courses: { id: string; title: string }[];
   intakes: { id: string; label: string }[];
-  generatedRegNumber: string;
+  // ⛔ removed generatedRegNumber from props
 }
 
 export function AssignForm({
   studentId,
   courses,
   intakes,
-  generatedRegNumber,
 }: AssignFormProps) {
   const [state, formAction] = useActionState(assignStudentToCourse, initialState);
   const [showModal, setShowModal] = useState(false);
@@ -46,20 +45,7 @@ export function AssignForm({
     <>
       <form action={formAction} className="space-y-4">
         <input type="hidden" name="studentId" value={studentId} />
-        <input type="hidden" name="reg_number" value={generatedRegNumber} />
-
-        <div>
-          <label htmlFor="reg_number_display" className="block text-sm mb-1">
-            Registration Number
-          </label>
-          <input
-            id="reg_number_display"
-            type="text"
-            value={generatedRegNumber}
-            disabled
-            className="input w-full bg-muted text-muted-foreground"
-          />
-        </div>
+        {/* ⛔ removed hidden reg_number */}
 
         <div>
           <label htmlFor="courseId" className="block text-sm mb-1">

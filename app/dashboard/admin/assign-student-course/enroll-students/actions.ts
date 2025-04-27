@@ -12,7 +12,7 @@ const assignSchema = z.object({
   studentId: z.string().uuid(),
   courseId: z.string().uuid(),
   intakeId: z.string().uuid(),
-  reg_number: z.string(),
+  // ⛔ removed reg_number from the schema
 });
 
 export default async function assignStudentToCourse(
@@ -23,7 +23,7 @@ export default async function assignStudentToCourse(
     studentId: formData.get("studentId"),
     courseId: formData.get("courseId"),
     intakeId: formData.get("intakeId"),
-    reg_number: formData.get("reg_number"),
+    // ⛔ removed reg_number from raw form parsing
   };
 
   const parse = assignSchema.safeParse(raw);
@@ -31,7 +31,7 @@ export default async function assignStudentToCourse(
     return { success: false, error: "Invalid input data." };
   }
 
-  const { studentId, courseId, intakeId, reg_number } = parse.data;
+  const { studentId, courseId, intakeId } = parse.data;
 
   const supabase = await createClient();
 
@@ -40,11 +40,12 @@ export default async function assignStudentToCourse(
     .update({
       course_id: courseId,
       intake_id: intakeId,
-      reg_number: reg_number,
+      // ⛔ no reg_number update anymore
     })
     .eq("id", studentId);
 
   if (error) {
+    console.error("Supabase Update Error:", error);
     return { success: false, error: "Failed to assign student. Please try again." };
   }
 
