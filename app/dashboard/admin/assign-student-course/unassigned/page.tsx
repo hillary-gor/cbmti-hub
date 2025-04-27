@@ -1,23 +1,22 @@
-import Link from "next/link"
-import { createClient } from "@/utils/supabase/server"
+import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
 
 interface Student {
-  id: string
-  full_name: string
-  email: string
-  created_at: string
+  id: string;
+  full_name: string;
+  email: string;
+  created_at: string;
 }
 
 export default async function UnassignedStudentsPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { data: students, error } = await supabase
-  .from("students")
-  .select("id, full_name, email, created_at")
-  .or("course_id.is.null,intake_id.is.null")
+    .from("students")
+    .select("id, full_name, email, created_at")
+    .or("course_id.is.null,intake_id.is.null");
 
-
-  if (error) throw new Error(error.message)
+  if (error) throw new Error(error.message);
 
   return (
     <div className="space-y-6">
@@ -34,7 +33,10 @@ export default async function UnassignedStudentsPage() {
         </thead>
         <tbody>
           {students?.map((student: Student) => (
-            <tr key={student.id} className="border-t hover:bg-accent transition">
+            <tr
+              key={student.id}
+              className="border-t hover:bg-accent transition"
+            >
               <td className="px-4 py-2">{student.full_name}</td>
               <td className="px-4 py-2">{student.email}</td>
               <td className="px-4 py-2 text-muted-foreground">
@@ -53,5 +55,5 @@ export default async function UnassignedStudentsPage() {
         </tbody>
       </table>
     </div>
-  )
+  );
 }

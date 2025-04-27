@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import Navbar from '@/components/Navbar'
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import Navbar from "@/components/Navbar";
 
 export default function LandingPage() {
   return (
@@ -20,7 +20,8 @@ export default function LandingPage() {
           Empowering Healthcare Students Across Kenya
         </h1>
         <p className="text-lg text-muted-foreground max-w-xl">
-          Register, learn, and thrive through our seamless digital student portal.
+          Register, learn, and thrive through our seamless digital student
+          portal.
         </p>
         <div className="mt-6">
           <Button size="lg">Get Started</Button>
@@ -32,8 +33,18 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-2xl font-bold mb-12">Everything You Need</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8 text-left">
-            {["Digital Timetables", "E-learning Modules", "Online Exams", "Automated Certificates", "Clinical Placement", "Secure Login"].map((item, i) => (
-              <div key={i} className="bg-muted rounded-xl p-6 shadow hover:shadow-md transition">
+            {[
+              "Digital Timetables",
+              "E-learning Modules",
+              "Online Exams",
+              "Automated Certificates",
+              "Clinical Placement",
+              "Secure Login",
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="bg-muted rounded-xl p-6 shadow hover:shadow-md transition"
+              >
                 <h3 className="font-semibold text-lg">{item}</h3>
               </div>
             ))}
@@ -42,18 +53,28 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="bg-gray-100 dark:bg-gray-800 py-20 px-6">
+      <section
+        id="testimonials"
+        className="bg-gray-100 dark:bg-gray-800 py-20 px-6"
+      >
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl font-bold mb-8">What Students Say</h2>
-          <blockquote className="italic mb-4">“Code Blue made it easy to pay fees and follow up on classes.” – Mary, Nairobi</blockquote>
-          <blockquote className="italic">“No stress. Just login and see everything in one place.” – James, Kisumu</blockquote>
+          <blockquote className="italic mb-4">
+            “Code Blue made it easy to pay fees and follow up on classes.” –
+            Mary, Nairobi
+          </blockquote>
+          <blockquote className="italic">
+            “No stress. Just login and see everything in one place.” – James,
+            Kisumu
+          </blockquote>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="text-center text-sm text-muted-foreground py-6 border-t">
-        &copy; {new Date().getFullYear()} Code Blue Medical Training Institute. All rights reserved.
+        &copy; {new Date().getFullYear()} Code Blue Medical Training Institute.
+        All rights reserved.
       </footer>
     </div>
-  )
+  );
 }

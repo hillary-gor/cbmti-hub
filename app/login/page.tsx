@@ -1,16 +1,20 @@
-'use client'
+"use client";
 
-import { loginWithEmailPassword, loginWithMagicLink, loginWithGoogle } from './actions'
-import { LoadingButton } from '@/components/ui/loading-button'
-import Image from 'next/image'
+import {
+  loginWithEmailPassword,
+  loginWithMagicLink,
+  loginWithGoogle,
+} from "./actions";
+import { LoadingButton } from "@/components/ui/loading-button";
+import Image from "next/image";
 
-const logoUrl = 'https://gowiaewbjsdsvihqmsyg.supabase.co/storage/v1/object/public/assets//logo.svg'
+const logoUrl =
+  "https://gowiaewbjsdsvihqmsyg.supabase.co/storage/v1/object/public/assets//logo.svg";
 
 export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-background px-4">
       <div className="w-full max-w-sm space-y-6 bg-white dark:bg-zinc-900 shadow-xl p-6 rounded-2xl border border-gray-200 dark:border-zinc-800">
-        
         {/* Logo */}
         <div className="flex justify-center">
           <Image
@@ -23,15 +27,18 @@ export default function LoginPage() {
           />
         </div>
 
-         {/* Heading */}
-         <div className="text-center text-lg font-bold text-gray-800 dark:text-white">
+        {/* Heading */}
+        <div className="text-center text-lg font-bold text-gray-800 dark:text-white">
           CBMTI Hub
         </div>
 
         {/* Email + Password Login */}
         <form className="space-y-4" action={loginWithEmailPassword}>
           <div className="space-y-2">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Email
             </label>
             <input
@@ -45,7 +52,10 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Password
             </label>
             <input
@@ -58,15 +68,25 @@ export default function LoginPage() {
             />
           </div>
 
-          <LoadingButton logoUrl={logoUrl} type="submit" className="w-full bg-[#329EE8] hover:bg-[#258ed2] text-white">
+          <LoadingButton
+            logoUrl={logoUrl}
+            type="submit"
+            className="w-full bg-[#329EE8] hover:bg-[#258ed2] text-white"
+          >
             Log In
           </LoadingButton>
         </form>
 
         {/* Magic Link */}
-        <form className="space-y-4 pt-6 border-t border-gray-200 dark:border-zinc-800" action={loginWithMagicLink}>
+        <form
+          className="space-y-4 pt-6 border-t border-gray-200 dark:border-zinc-800"
+          action={loginWithMagicLink}
+        >
           <div className="space-y-2">
-            <label htmlFor="magic-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor="magic-email"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Or log in via magic link
             </label>
             <input
@@ -91,13 +111,16 @@ export default function LoginPage() {
 
         {/* Google OAuth */}
         <form action={loginWithGoogle}>
-          <LoadingButton logoUrl={logoUrl} type="submit" variant="outline" className="w-full border">
+          <LoadingButton
+            logoUrl={logoUrl}
+            type="submit"
+            variant="outline"
+            className="w-full border"
+          >
             Continue with Google
           </LoadingButton>
         </form>
-
-       
       </div>
     </main>
-  )
+  );
 }

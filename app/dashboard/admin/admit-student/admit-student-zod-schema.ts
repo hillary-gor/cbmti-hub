@@ -5,10 +5,9 @@ export const studentSchema = z.object({
   gender: z.enum(["Male", "Female", "Other"]),
   date_of_birth: z
     .string()
-    .refine(
-      (val) => !isNaN(Date.parse(val)) && new Date(val) < new Date(),
-      { message: "Date must be valid and in the past" }
-    ),
+    .refine((val) => !isNaN(Date.parse(val)) && new Date(val) < new Date(), {
+      message: "Date must be valid and in the past",
+    }),
   national_id: z.string().regex(/^\d{6,10}$/, "Invalid national ID"),
   marital_status: z.enum(["Single", "Married", "Divorced", "Other"]),
   email: z.string().email(),
@@ -17,7 +16,10 @@ export const studentSchema = z.object({
     .regex(/^\+?254[0-9]{9}$/, "Invalid phone number (use +254...)"),
   religion: z.string().trim().optional(),
   address: z.string().trim().min(2),
-  postal_code: z.string().regex(/^\d{5}$/, "Invalid postal code").optional(),
+  postal_code: z
+    .string()
+    .regex(/^\d{5}$/, "Invalid postal code")
+    .optional(),
   town_city: z.string().trim().optional(),
   nationality: z.string().trim().min(2),
   merged_file_url: z.string().url().optional(),
@@ -70,9 +72,7 @@ export const workExperienceSchema = z
 export const contactSchema = z.object({
   full_name: z.string().trim(),
   relationship: z.string().trim().optional(),
-  phone_number: z
-    .string()
-    .regex(/^\+?254[0-9]{9}$/, "Invalid phone number"),
+  phone_number: z.string().regex(/^\+?254[0-9]{9}$/, "Invalid phone number"),
   email: z.string().email().optional(),
   address: z.string().trim(),
   id_or_passport_no: z.string().trim().optional(),
@@ -82,9 +82,7 @@ export const contactSchema = z.object({
 export const refereeSchema = z.object({
   full_name: z.string().trim(),
   email: z.string().email(),
-  phone_number: z
-    .string()
-    .regex(/^\+?254[0-9]{9}$/, "Invalid phone number"),
+  phone_number: z.string().regex(/^\+?254[0-9]{9}$/, "Invalid phone number"),
   address: z.string().trim(),
   town_city: z.string().trim(),
   postal_code: z.string().regex(/^\d{5}$/),
@@ -147,12 +145,9 @@ export const admitStudentSchema = z.object({
 
   work_experience: z.array(workExperienceSchema).optional(),
 
-  referees: z
-    .array(refereeSchema)
-    .min(1, "At least one referee is required"),
+  referees: z.array(refereeSchema).min(1, "At least one referee is required"),
 
   // NEW additions (only this part is new)
   consent_acknowledgments: consentSchema,
   course_specific_declarations: declarationSchema,
 });
-

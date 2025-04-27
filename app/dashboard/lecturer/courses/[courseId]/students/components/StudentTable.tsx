@@ -1,18 +1,18 @@
 // app/dashboard/lecturer/courses/[courseId]/students/components/StudentTable.tsx
-import Image from "next/image"
+import Image from "next/image";
 
 type Props = {
   enrollments: {
-    id: string
-    enrolled_at: string
+    id: string;
+    enrolled_at: string;
     student: {
-      id: string
-      full_name: string
-      email: string
-      avatar_url?: string
-    }
-  }[]
-}
+      id: string;
+      full_name: string;
+      email: string;
+      avatar_url?: string;
+    };
+  }[];
+};
 
 export function StudentTable({ enrollments }: Props) {
   return (
@@ -49,5 +49,5 @@ export function StudentTable({ enrollments }: Props) {
         </tbody>
       </table>
     </div>
-  )
+  );
 }

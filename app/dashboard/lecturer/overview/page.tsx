@@ -1,8 +1,8 @@
-import { getLecturerOverview } from "./queries"
-import { StatCard } from "./components/StatCard"
+import { getLecturerOverview } from "./queries";
+import { StatCard } from "./components/StatCard";
 
 export default async function LecturerOverviewPage() {
-  const stats = await getLecturerOverview()
+  const stats = await getLecturerOverview();
 
   return (
     <section className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -25,5 +25,5 @@ export default async function LecturerOverviewPage() {
         color="amber"
       />
     </section>
-  )
+  );
 }

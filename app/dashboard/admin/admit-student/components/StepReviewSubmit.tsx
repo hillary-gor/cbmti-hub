@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useFormContext } from 'react-hook-form';
-import { z } from 'zod';
-import { admitStudentSchema } from '../admit-student-zod-schema';
+import { useFormContext } from "react-hook-form";
+import { z } from "zod";
+import { admitStudentSchema } from "../admit-student-zod-schema";
 
 type FormData = z.infer<typeof admitStudentSchema>;
 
@@ -40,11 +40,15 @@ const StepReviewSubmit = () => {
           <strong>Marital Status:</strong> {values.marital_status}
         </li>
         <li>
-          <strong>Address:</strong> {values.address}, {values.town_city} {values.postal_code}
+          <strong>Address:</strong> {values.address}, {values.town_city}{" "}
+          {values.postal_code}
         </li>
 
         <li>
-          <strong>Course Selected:</strong> {values.application_info.course || <span className="text-red-500">Missing</span>}
+          <strong>Course Selected:</strong>{" "}
+          {values.application_info.course || (
+            <span className="text-red-500">Missing</span>
+          )}
         </li>
         <li>
           <strong>Study Mode:</strong> {values.application_info.mode_of_study}
@@ -53,17 +57,26 @@ const StepReviewSubmit = () => {
           <strong>Study Center:</strong> {values.application_info.study_center}
         </li>
         <li>
-          <strong>Payment Ref:</strong> {values.application_info.payment_reference}
+          <strong>Payment Ref:</strong>{" "}
+          {values.application_info.payment_reference}
         </li>
 
         <li>
-          <strong>Guardian:</strong> {values.guardian_declaration.guardian_full_name} ({values.guardian_declaration.guardian_email})
+          <strong>Guardian:</strong>{" "}
+          {values.guardian_declaration.guardian_full_name} (
+          {values.guardian_declaration.guardian_email})
         </li>
 
         <li>
-          <strong>Uploaded Document:</strong><br />
+          <strong>Uploaded Document:</strong>
+          <br />
           {values.merged_file_url ? (
-            <a href={values.merged_file_url} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">
+            <a
+              href={values.merged_file_url}
+              className="text-blue-600 underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               View Uploaded File
             </a>
           ) : (

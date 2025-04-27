@@ -1,18 +1,20 @@
-import { notFound } from "next/navigation"
-import { getCourseEnrollments } from "./actions"
-import { StudentTable } from "./components/StudentTable"
+import { notFound } from "next/navigation";
+import { getCourseEnrollments } from "./actions";
+import { StudentTable } from "./components/StudentTable";
 
 type CourseStudentsPageProps = {
   params: {
-    courseId: string
-  }
-}
+    courseId: string;
+  };
+};
 
-export default async function CourseStudentsPage({ params }: CourseStudentsPageProps) {
-  const enrollments = await getCourseEnrollments(params.courseId)
+export default async function CourseStudentsPage({
+  params,
+}: CourseStudentsPageProps) {
+  const enrollments = await getCourseEnrollments(params.courseId);
 
   if (!enrollments || enrollments.length === 0) {
-    return notFound()
+    return notFound();
   }
 
   return (
@@ -20,5 +22,5 @@ export default async function CourseStudentsPage({ params }: CourseStudentsPageP
       <h1 className="text-2xl font-semibold">Enrolled Students</h1>
       <StudentTable enrollments={enrollments} />
     </div>
-  )
+  );
 }

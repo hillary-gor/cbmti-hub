@@ -1,8 +1,8 @@
-'use server';
+"use server";
 
-import { z } from 'zod';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { z } from "zod";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 /**
  * Supabase Server Client (inline)
@@ -26,7 +26,7 @@ const createClient = async () => {
           }
         },
       },
-    }
+    },
   );
 };
 
@@ -34,19 +34,22 @@ const createClient = async () => {
  * SCHEMA - inline Zod full validation for student admission
  */
 const studentSchema = z.object({
-  gender: z.enum(['Male', 'Female', 'Other']),
+  gender: z.enum(["Male", "Female", "Other"]),
   date_of_birth: z
     .string()
-    .refine(val => !isNaN(Date.parse(val)) && new Date(val) < new Date(), {
-      message: 'Date must be valid and in the past',
+    .refine((val) => !isNaN(Date.parse(val)) && new Date(val) < new Date(), {
+      message: "Date must be valid and in the past",
     }),
-  national_id: z.string().regex(/^\d{6,10}$/, 'Invalid national ID'),
-  marital_status: z.enum(['Single', 'Married', 'Divorced', 'Other']),
+  national_id: z.string().regex(/^\d{6,10}$/, "Invalid national ID"),
+  marital_status: z.enum(["Single", "Married", "Divorced", "Other"]),
   email: z.string().email(),
-  phone_number: z.string().regex(/^\+?254[0-9]{9}$/, 'Invalid phone number'),
+  phone_number: z.string().regex(/^\+?254[0-9]{9}$/, "Invalid phone number"),
   religion: z.string().trim().optional(),
   address: z.string().trim().min(2),
-  postal_code: z.string().regex(/^\d{5}$/, 'Invalid postal code').optional(),
+  postal_code: z
+    .string()
+    .regex(/^\d{5}$/, "Invalid postal code")
+    .optional(),
   town_city: z.string().trim().optional(),
   nationality: z.string().trim().min(2),
   merged_file_url: z.string().url().optional(),
@@ -65,33 +68,37 @@ const applicationInfoSchema = z.object({
   disability_type: z.string().trim().optional(),
 });
 
-const educationSchema = z.object({
-  school_name: z.string().trim(),
-  qualification: z.string().trim(),
-  examining_body: z.string().trim(),
-  index_no: z.string().trim().optional(),
-  from_year: z.number().min(1900),
-  to_year: z.number().min(1900),
-}).refine((data) => data.from_year <= data.to_year, {
-  message: 'To year must be greater than or equal to from year',
-  path: ['to_year'],
-});
+const educationSchema = z
+  .object({
+    school_name: z.string().trim(),
+    qualification: z.string().trim(),
+    examining_body: z.string().trim(),
+    index_no: z.string().trim().optional(),
+    from_year: z.number().min(1900),
+    to_year: z.number().min(1900),
+  })
+  .refine((data) => data.from_year <= data.to_year, {
+    message: "To year must be greater than or equal to from year",
+    path: ["to_year"],
+  });
 
-const workExperienceSchema = z.object({
-  employer: z.string().trim(),
-  designation: z.string().trim(),
-  nature_of_assignment: z.string().trim(),
-  from_year: z.number().min(1900),
-  to_year: z.number().min(1900),
-}).refine((data) => data.from_year <= data.to_year, {
-  message: 'To year must be after from year',
-  path: ['to_year'],
-});
+const workExperienceSchema = z
+  .object({
+    employer: z.string().trim(),
+    designation: z.string().trim(),
+    nature_of_assignment: z.string().trim(),
+    from_year: z.number().min(1900),
+    to_year: z.number().min(1900),
+  })
+  .refine((data) => data.from_year <= data.to_year, {
+    message: "To year must be after from year",
+    path: ["to_year"],
+  });
 
 const contactSchema = z.object({
   full_name: z.string().trim(),
   relationship: z.string().trim().optional(),
-  phone_number: z.string().regex(/^\+?254[0-9]{9}$/, 'Invalid phone number'),
+  phone_number: z.string().regex(/^\+?254[0-9]{9}$/, "Invalid phone number"),
   email: z.string().email().optional(),
   address: z.string().trim(),
   id_or_passport_no: z.string().trim().optional(),
@@ -100,7 +107,7 @@ const contactSchema = z.object({
 const refereeSchema = z.object({
   full_name: z.string().trim(),
   email: z.string().email(),
-  phone_number: z.string().regex(/^\+?254[0-9]{9}$/, 'Invalid phone number'),
+  phone_number: z.string().regex(/^\+?254[0-9]{9}$/, "Invalid phone number"),
   address: z.string().trim(),
   town_city: z.string().trim(),
   postal_code: z.string().regex(/^\d{5}$/),
@@ -167,7 +174,7 @@ export const admitStudent = async (formData: unknown) => {
   if (!parsed.success) {
     return {
       success: false,
-      message: 'Validation failed',
+      message: "Validation failed",
       errors: parsed.error.flatten(),
     };
   }
@@ -203,7 +210,7 @@ export const admitStudent = async (formData: unknown) => {
   } = parsed.data;
 
   const { data: student, error: studentError } = await supabase
-    .from('students')
+    .from("students")
     .insert({
       full_name,
       course_id,
@@ -224,13 +231,13 @@ export const admitStudent = async (formData: unknown) => {
       nationality,
       merged_file_url,
     })
-    .select('id')
+    .select("id")
     .single();
 
   if (studentError || !student?.id) {
     return {
       success: false,
-      message: 'Failed to insert student record',
+      message: "Failed to insert student record",
       error: studentError?.message,
     };
   }
@@ -238,37 +245,45 @@ export const admitStudent = async (formData: unknown) => {
   const student_id = student.id;
 
   const relatedInserts = [
-    supabase.from('application_info').insert({ ...application_info, student_id }),
-    supabase.from('next_of_kin').insert({ ...next_of_kin, student_id }),
-    supabase.from('emergency_contacts').insert({ ...emergency_contact, student_id }),
-    supabase.from('guardian_declarations').insert({ ...guardian_declaration, student_id }),
-    supabase.from('education_background').insert(
-      education_background.map((item) => ({ ...item, student_id }))
-    ),
+    supabase
+      .from("application_info")
+      .insert({ ...application_info, student_id }),
+    supabase.from("next_of_kin").insert({ ...next_of_kin, student_id }),
+    supabase
+      .from("emergency_contacts")
+      .insert({ ...emergency_contact, student_id }),
+    supabase
+      .from("guardian_declarations")
+      .insert({ ...guardian_declaration, student_id }),
+    supabase
+      .from("education_background")
+      .insert(education_background.map((item) => ({ ...item, student_id }))),
     work_experience?.length
-      ? supabase.from('work_experience').insert(
-          work_experience.map((item) => ({ ...item, student_id }))
-        )
+      ? supabase
+          .from("work_experience")
+          .insert(work_experience.map((item) => ({ ...item, student_id })))
       : null,
-    supabase.from('referees').insert(
-      referees.map((item) => ({ ...item, student_id }))
-    ),
-    supabase.from('consent_acknowledgments').insert({ ...consent_acknowledgments, student_id }),
-    supabase.from('course_declarations').insert({ ...course_specific_declarations, student_id }),
+    supabase
+      .from("referees")
+      .insert(referees.map((item) => ({ ...item, student_id }))),
+    supabase
+      .from("consent_acknowledgments")
+      .insert({ ...consent_acknowledgments, student_id }),
+    supabase
+      .from("course_declarations")
+      .insert({ ...course_specific_declarations, student_id }),
   ].filter(Boolean);
 
   const results = await Promise.allSettled(relatedInserts);
 
   const hasError = results.some(
-    (res) =>
-      res.status === 'rejected' ||
-      ('value' in res && res.value?.error)
+    (res) => res.status === "rejected" || ("value" in res && res.value?.error),
   );
 
   if (hasError) {
     return {
       success: false,
-      message: 'One or more related inserts failed',
+      message: "One or more related inserts failed",
       results,
     };
   }
@@ -276,6 +291,6 @@ export const admitStudent = async (formData: unknown) => {
   return {
     success: true,
     student_id,
-    message: 'Student admitted successfully',
+    message: "Student admitted successfully",
   };
 };

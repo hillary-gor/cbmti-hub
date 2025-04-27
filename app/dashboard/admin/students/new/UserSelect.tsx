@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   Command,
@@ -6,24 +6,24 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { useState } from "react"
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 type Props = {
-  users: { id: string; email: string; full_name: string }[]
-}
+  users: { id: string; email: string; full_name: string }[];
+};
 
 export function UserSelect({ users }: Props) {
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
-  const selected = users.find((u) => u.id === selectedUserId)
+  const selected = users.find((u) => u.id === selectedUserId);
 
   return (
     <div className="space-y-1">
@@ -58,5 +58,5 @@ export function UserSelect({ users }: Props) {
 
       <input type="hidden" name="user_id" value={selectedUserId ?? ""} />
     </div>
-  )
+  );
 }

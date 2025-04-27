@@ -1,42 +1,42 @@
-import { createClient } from '@/utils/supabase/server'
-import { notFound } from 'next/navigation'
+import { createClient } from "@/utils/supabase/server";
+import { notFound } from "next/navigation";
 
 type PageProps = {
-  params: { intakeId: string }
+  params: { intakeId: string };
   searchParams?: {
-    q?: string
-    course?: string
-  }
-}
+    q?: string;
+    course?: string;
+  };
+};
 
 type SupabaseEnrollment = {
-  id: string
+  id: string;
   students: {
-    reg_number: string
-    full_name: string
-    email: string
-  } | null
+    reg_number: string;
+    full_name: string;
+    email: string;
+  } | null;
   courses: {
-    title: string
-  } | null
-}
+    title: string;
+  } | null;
+};
 
 type EnrolledStudent = {
-  id: string
-  reg_number: string
-  full_name: string
-  email: string
-  course_title: string
-}
+  id: string;
+  reg_number: string;
+  full_name: string;
+  email: string;
+  course_title: string;
+};
 
 export default async function IntakeStudentsPage({
   params,
   searchParams,
 }: PageProps) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from('enrollments')
+    .from("enrollments")
     .select(
       `
       id,
@@ -48,40 +48,40 @@ export default async function IntakeStudentsPage({
       courses (
         title
       )
-    `
+    `,
     )
-    .eq('intake_id', params.intakeId)
-    .order('created_at', { ascending: false })
+    .eq("intake_id", params.intakeId)
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error('[INTAKE_STUDENTS_ERROR]', error.message)
-    notFound()
+    console.error("[INTAKE_STUDENTS_ERROR]", error.message);
+    notFound();
   }
 
-  const typedData = data as unknown as SupabaseEnrollment[]
+  const typedData = data as unknown as SupabaseEnrollment[];
 
   const students: EnrolledStudent[] = typedData.map((record) => ({
     id: record.id,
-    reg_number: record.students?.reg_number ?? '—',
-    full_name: record.students?.full_name ?? '—',
-    email: record.students?.email ?? '—',
-    course_title: record.courses?.title ?? '—',
-  }))
+    reg_number: record.students?.reg_number ?? "—",
+    full_name: record.students?.full_name ?? "—",
+    email: record.students?.email ?? "—",
+    course_title: record.courses?.title ?? "—",
+  }));
 
-  const query = searchParams?.q?.toLowerCase() ?? ''
-  const courseFilter = searchParams?.course?.toLowerCase() ?? ''
+  const query = searchParams?.q?.toLowerCase() ?? "";
+  const courseFilter = searchParams?.course?.toLowerCase() ?? "";
 
   const filtered = students.filter((s) => {
     const matchesQuery =
       s.full_name.toLowerCase().includes(query) ||
-      s.reg_number.toLowerCase().includes(query)
+      s.reg_number.toLowerCase().includes(query);
 
     const matchesCourse = courseFilter
       ? s.course_title.toLowerCase() === courseFilter
-      : true
+      : true;
 
-    return matchesQuery && matchesCourse
-  })
+    return matchesQuery && matchesCourse;
+  });
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4 space-y-6">
@@ -100,7 +100,7 @@ export default async function IntakeStudentsPage({
             type="search"
             name="q"
             placeholder="Search reg no or name"
-            defaultValue={searchParams?.q ?? ''}
+            defaultValue={searchParams?.q ?? ""}
             className="w-full rounded-md border px-3 py-2 text-sm"
           />
         </div>
@@ -109,7 +109,7 @@ export default async function IntakeStudentsPage({
           <label className="text-sm font-medium">Filter by course</label>
           <select
             name="course"
-            defaultValue={searchParams?.course ?? ''}
+            defaultValue={searchParams?.course ?? ""}
             className="w-full rounded-md border px-3 py-2 text-sm"
           >
             <option value="">All courses</option>
@@ -162,5 +162,5 @@ export default async function IntakeStudentsPage({
         </div>
       )}
     </div>
-  )
+  );
 }

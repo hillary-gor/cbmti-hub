@@ -1,73 +1,79 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import { useActionState } from 'react'
-import { updateStudent } from './actions'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { useActionState } from "react";
+import { updateStudent } from "./actions";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 
 type Student = {
-  id: string
-  full_name: string
-  course_id: string
-  intake_id: string
-  enrollment_year: number
-  status: 'active' | 'graduated' | 'withdrawn' | 'suspended'
-}
+  id: string;
+  full_name: string;
+  course_id: string;
+  intake_id: string;
+  enrollment_year: number;
+  status: "active" | "graduated" | "withdrawn" | "suspended";
+};
 
 type Option = {
-  id: string
-  code?: string
-  label?: string
-}
+  id: string;
+  code?: string;
+  label?: string;
+};
 
 type FormState = {
-  error?: string
-  success?: boolean
-}
+  error?: string;
+  success?: boolean;
+};
 
 export default function EditStudentPage() {
-  const params = useParams()
-  const studentId = typeof params.id === 'string' ? params.id : ''
+  const params = useParams();
+  const studentId = typeof params.id === "string" ? params.id : "";
 
   const [formState, formAction] = useActionState(
     async (_: FormState, formData: FormData): Promise<FormState> => {
-      return await updateStudent(studentId, formData)
+      return await updateStudent(studentId, formData);
     },
-    { error: undefined, success: false }
-  )
+    { error: undefined, success: false },
+  );
 
-  const [student, setStudent] = useState<Student | null>(null)
-  const [courses, setCourses] = useState<Option[]>([])
-  const [intakes, setIntakes] = useState<Option[]>([])
+  const [student, setStudent] = useState<Student | null>(null);
+  const [courses, setCourses] = useState<Option[]>([]);
+  const [intakes, setIntakes] = useState<Option[]>([]);
 
   useEffect(() => {
     async function fetchData() {
       const [studentRes, coursesRes, intakesRes] = await Promise.all([
-        fetch(`/api/supabase-data?type=students&id=${studentId}`, { cache: 'no-store' }),
-        fetch('/api/supabase-data?type=courses', { cache: 'no-store' }),
-        fetch('/api/supabase-data?type=intakes', { cache: 'no-store' }),
-      ])
+        fetch(`/api/supabase-data?type=students&id=${studentId}`, {
+          cache: "no-store",
+        }),
+        fetch("/api/supabase-data?type=courses", { cache: "no-store" }),
+        fetch("/api/supabase-data?type=intakes", { cache: "no-store" }),
+      ]);
 
       const [studentData, courseData, intakeData] = await Promise.all([
         studentRes.json(),
         coursesRes.json(),
         intakesRes.json(),
-      ])
+      ]);
 
-      setStudent(studentData ?? null)
-      setCourses(courseData ?? [])
-      setIntakes(intakeData ?? [])
+      setStudent(studentData ?? null);
+      setCourses(courseData ?? []);
+      setIntakes(intakeData ?? []);
     }
 
-    fetchData()
-  }, [studentId])
+    fetchData();
+  }, [studentId]);
 
   if (!student) {
-    return <p className="text-center py-10 text-gray-500 dark:text-gray-400">Loading student details...</p>
+    return (
+      <p className="text-center py-10 text-gray-500 dark:text-gray-400">
+        Loading student details...
+      </p>
+    );
   }
 
   return (
@@ -79,7 +85,12 @@ export default function EditStudentPage() {
           <form action={formAction} className="space-y-5">
             <div className="space-y-1.5">
               <Label htmlFor="full_name">Full Name</Label>
-              <Input id="full_name" name="full_name" defaultValue={student.full_name} required />
+              <Input
+                id="full_name"
+                name="full_name"
+                defaultValue={student.full_name}
+                required
+              />
             </div>
 
             <div className="space-y-1.5">
@@ -163,5 +174,5 @@ export default function EditStudentPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

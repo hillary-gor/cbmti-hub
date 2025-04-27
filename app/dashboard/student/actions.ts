@@ -1,15 +1,18 @@
-'use server'
+"use server";
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from "@/utils/supabase/server";
 
 export async function getStudentDashboardData() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
 
   const { data, error } = await supabase
-    .from('students')
-    .select(`
+    .from("students")
+    .select(
+      `
       id,
       users(full_name),
       enrollments(courses(name, code, instructor)),
@@ -18,30 +21,32 @@ export async function getStudentDashboardData() {
       certificates(title, file_url),
       v_transcript_data(file_url, gpa),
       attendance(date, status)
-    `)
-    .eq('id', user.id)
-    .single()
+    `,
+    )
+    .eq("id", user.id)
+    .single();
 
-  if (error || !data) return null
+  if (error || !data) return null;
 
   // Runtime-safe: handle array or object
-  let fullName = 'Student'
+  let fullName = "Student";
   if (Array.isArray(data.users)) {
-    fullName = data.users[0]?.full_name ?? 'Student'
-  } else if (data.users && typeof data.users === 'object') {
-    fullName = (data.users as { full_name?: string })?.full_name ?? 'Student'
+    fullName = data.users[0]?.full_name ?? "Student";
+  } else if (data.users && typeof data.users === "object") {
+    fullName = (data.users as { full_name?: string })?.full_name ?? "Student";
   }
 
   // Fix: Flatten nested courses array if needed
-  const courses = data.enrollments?.flatMap(e =>
-    Array.isArray(e.courses) ? e.courses : [e.courses]
-  ) ?? []
+  const courses =
+    data.enrollments?.flatMap((e) =>
+      Array.isArray(e.courses) ? e.courses : [e.courses],
+    ) ?? [];
 
   // Fix: Return first transcript item or null
   const transcript =
     Array.isArray(data.v_transcript_data) && data.v_transcript_data.length > 0
       ? data.v_transcript_data[0]
-      : data.v_transcript_data ?? null
+      : (data.v_transcript_data ?? null);
 
   return {
     full_name: fullName,
@@ -51,5 +56,5 @@ export async function getStudentDashboardData() {
     certificates: data.certificates ?? [],
     transcript,
     attendance: data.attendance ?? [],
-  }
+  };
 }

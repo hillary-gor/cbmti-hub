@@ -3,9 +3,9 @@ export function CourseCard({
   code,
   description,
 }: {
-  title: string
-  code: string
-  description?: string
+  title: string;
+  code: string;
+  description?: string;
 }) {
   return (
     <div className="rounded-lg border p-4 shadow-sm bg-background">
@@ -13,5 +13,5 @@ export function CourseCard({
       <p className="text-sm text-muted-foreground">{code}</p>
       {description && <p className="text-sm mt-2">{description}</p>}
     </div>
-  )
+  );
 }

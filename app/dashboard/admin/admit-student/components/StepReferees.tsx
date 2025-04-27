@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useFormContext, useFieldArray, FieldErrors } from 'react-hook-form';
-import { z } from 'zod';
-import { admitStudentSchema } from '../admit-student-zod-schema';
+import { useFormContext, useFieldArray, FieldErrors } from "react-hook-form";
+import { z } from "zod";
+import { admitStudentSchema } from "../admit-student-zod-schema";
 
 type FormData = z.infer<typeof admitStudentSchema>;
 
@@ -15,19 +15,19 @@ const StepReferees = () => {
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'referees',
+    name: "referees",
   });
 
   const refErrors = errors.referees as
-    | FieldErrors<FormData['referees'][number]>[]
+    | FieldErrors<FormData["referees"][number]>[]
     | undefined;
 
-  const getErrorMessage = <T extends keyof FormData['referees'][number]>(
+  const getErrorMessage = <T extends keyof FormData["referees"][number]>(
     index: number,
-    field: T
+    field: T,
   ) => {
     const error = refErrors?.[index]?.[field];
-    return typeof error?.message === 'string' ? error.message : null;
+    return typeof error?.message === "string" ? error.message : null;
   };
 
   return (
@@ -41,7 +41,7 @@ const StepReferees = () => {
               placeholder="Full Name"
             />
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'full_name')}
+              {getErrorMessage(index, "full_name")}
             </p>
           </div>
           <div>
@@ -51,7 +51,7 @@ const StepReferees = () => {
               placeholder="Email"
             />
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'email')}
+              {getErrorMessage(index, "email")}
             </p>
           </div>
           <div>
@@ -61,7 +61,7 @@ const StepReferees = () => {
               placeholder="Phone Number"
             />
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'phone_number')}
+              {getErrorMessage(index, "phone_number")}
             </p>
           </div>
           <div>
@@ -71,7 +71,7 @@ const StepReferees = () => {
               placeholder="Address"
             />
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'address')}
+              {getErrorMessage(index, "address")}
             </p>
           </div>
           <div>
@@ -81,7 +81,7 @@ const StepReferees = () => {
               placeholder="Town/City"
             />
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'town_city')}
+              {getErrorMessage(index, "town_city")}
             </p>
           </div>
           <div>
@@ -91,7 +91,7 @@ const StepReferees = () => {
               placeholder="Postal Code"
             />
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'postal_code')}
+              {getErrorMessage(index, "postal_code")}
             </p>
           </div>
 
@@ -110,12 +110,12 @@ const StepReferees = () => {
         className="btn"
         onClick={() =>
           append({
-            full_name: '',
-            email: '',
-            phone_number: '',
-            address: '',
-            town_city: '',
-            postal_code: '',
+            full_name: "",
+            email: "",
+            phone_number: "",
+            address: "",
+            town_city: "",
+            postal_code: "",
           })
         }
       >

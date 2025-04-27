@@ -1,46 +1,46 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useActionState } from 'react' // ✅ useActionState from 'react'
-import { createCourse } from './actions'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { useEffect, useState } from "react";
+import { useActionState } from "react"; // ✅ useActionState from 'react'
+import { createCourse } from "./actions";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 type FormState = {
-  error?: string
-  success?: boolean
-}
+  error?: string;
+  success?: boolean;
+};
 
 type Department = {
-  id: string
-  name: string
-}
+  id: string;
+  name: string;
+};
 
 export default function NewCoursePage() {
-  const [departments, setDepartments] = useState<Department[]>([])
+  const [departments, setDepartments] = useState<Department[]>([]);
 
   const [formState, formAction] = useActionState(
     async (_prevState: FormState, formData: FormData): Promise<FormState> => {
-      return await createCourse(formData)
+      return await createCourse(formData);
     },
-    { error: undefined, success: false }
-  )
+    { error: undefined, success: false },
+  );
 
   useEffect(() => {
     async function fetchDepartments() {
       try {
-        const res = await fetch('/api/admin/supabase-departments')
-        if (!res.ok) throw new Error('Failed to fetch departments')
-        const data: Department[] = await res.json()
-        setDepartments(data)
+        const res = await fetch("/api/admin/supabase-departments");
+        if (!res.ok) throw new Error("Failed to fetch departments");
+        const data: Department[] = await res.json();
+        setDepartments(data);
       } catch (err) {
-        console.error('❌ Failed to fetch departments:', err)
-        setDepartments([])
+        console.error("❌ Failed to fetch departments:", err);
+        setDepartments([]);
       }
     }
 
-    fetchDepartments()
-  }, [])
+    fetchDepartments();
+  }, []);
 
   return (
     <div className="max-w-xl mx-auto py-10 px-4 space-y-6">
@@ -48,7 +48,11 @@ export default function NewCoursePage() {
 
       <form action={formAction} className="space-y-4">
         <Input name="code" placeholder="e.g., NUR-101" required />
-        <Input name="name" placeholder="e.g., Introduction to Nursing" required />
+        <Input
+          name="name"
+          placeholder="e.g., Introduction to Nursing"
+          required
+        />
 
         <select
           name="department_id"
@@ -73,5 +77,5 @@ export default function NewCoursePage() {
         )}
       </form>
     </div>
-  )
+  );
 }

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useFormContext, useFieldArray, FieldErrors } from 'react-hook-form';
-import { z } from 'zod';
-import { admitStudentSchema } from '../admit-student-zod-schema';
+import { useFormContext, useFieldArray, FieldErrors } from "react-hook-form";
+import { z } from "zod";
+import { admitStudentSchema } from "../admit-student-zod-schema";
 
 type FormData = z.infer<typeof admitStudentSchema>;
 
@@ -13,28 +13,29 @@ const StepEducationBackground = () => {
     formState: { errors },
   } = useFormContext<FormData>();
 
-  const {
-    fields,
-    append,
-    remove,
-  } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
-    name: 'education_background',
+    name: "education_background",
   });
 
   const eduErrors = errors.education_background as
-    | FieldErrors<FormData['education_background'][number]>[]
+    | FieldErrors<FormData["education_background"][number]>[]
     | undefined;
 
-  const getErrorMessage = <T extends keyof FormData['education_background'][number]>(
+  const getErrorMessage = <
+    T extends keyof FormData["education_background"][number],
+  >(
     index: number,
-    field: T
+    field: T,
   ) => {
     const error = eduErrors?.[index]?.[field];
-    return typeof error?.message === 'string' ? error.message : null;
+    return typeof error?.message === "string" ? error.message : null;
   };
 
-  const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
+  const years = Array.from(
+    { length: 100 },
+    (_, i) => new Date().getFullYear() - i,
+  );
 
   return (
     <div className="space-y-6">
@@ -47,7 +48,7 @@ const StepEducationBackground = () => {
               placeholder="School Name"
             />
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'school_name')}
+              {getErrorMessage(index, "school_name")}
             </p>
           </div>
 
@@ -58,7 +59,7 @@ const StepEducationBackground = () => {
               placeholder="Qualification"
             />
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'qualification')}
+              {getErrorMessage(index, "qualification")}
             </p>
           </div>
 
@@ -69,7 +70,7 @@ const StepEducationBackground = () => {
               placeholder="Examining Body"
             />
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'examining_body')}
+              {getErrorMessage(index, "examining_body")}
             </p>
           </div>
 
@@ -77,7 +78,9 @@ const StepEducationBackground = () => {
           <div>
             <label className="block font-medium">From Year</label>
             <select
-              {...register(`education_background.${index}.from_year`, { valueAsNumber: true })}
+              {...register(`education_background.${index}.from_year`, {
+                valueAsNumber: true,
+              })}
               className="input"
             >
               <option value="">Select Year</option>
@@ -88,7 +91,7 @@ const StepEducationBackground = () => {
               ))}
             </select>
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'from_year')}
+              {getErrorMessage(index, "from_year")}
             </p>
           </div>
 
@@ -96,7 +99,9 @@ const StepEducationBackground = () => {
           <div>
             <label className="block font-medium">To Year</label>
             <select
-              {...register(`education_background.${index}.to_year`, { valueAsNumber: true })}
+              {...register(`education_background.${index}.to_year`, {
+                valueAsNumber: true,
+              })}
               className="input"
             >
               <option value="">Select Year</option>
@@ -107,7 +112,7 @@ const StepEducationBackground = () => {
               ))}
             </select>
             <p className="text-red-500 text-sm">
-              {getErrorMessage(index, 'to_year')}
+              {getErrorMessage(index, "to_year")}
             </p>
           </div>
 
@@ -126,9 +131,9 @@ const StepEducationBackground = () => {
         className="btn"
         onClick={() =>
           append({
-            school_name: '',
-            qualification: '',
-            examining_body: '',
+            school_name: "",
+            qualification: "",
+            examining_body: "",
             from_year: new Date().getFullYear(),
             to_year: new Date().getFullYear(),
           })

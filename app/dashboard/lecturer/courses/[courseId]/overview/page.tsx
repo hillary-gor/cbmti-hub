@@ -1,31 +1,31 @@
-import { createClient } from "@/utils/supabase/server"
-import { notFound } from "next/navigation"
-import { formatDate } from "@/lib/utils"
+import { createClient } from "@/utils/supabase/server";
+import { notFound } from "next/navigation";
+import { formatDate } from "@/lib/utils";
 
 export default async function CourseOverviewPage({
   params,
 }: {
-  params: { courseId: string }
+  params: { courseId: string };
 }) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { data: course } = await supabase
     .from("courses")
     .select("*")
     .eq("id", params.courseId)
-    .single()
+    .single();
 
-  if (!course) notFound()
+  if (!course) notFound();
 
   const { count: studentCount } = await supabase
     .from("course_enrollments")
     .select("id", { count: "exact", head: true })
-    .eq("course_id", course.id)
+    .eq("course_id", course.id);
 
   const { count: assessmentCount } = await supabase
     .from("assessments")
     .select("id", { count: "exact", head: true })
-    .eq("course_id", course.id)
+    .eq("course_id", course.id);
 
   return (
     <div className="space-y-6">
@@ -53,5 +53,5 @@ export default async function CourseOverviewPage({
         </div>
       </div>
     </div>
-  )
+  );
 }

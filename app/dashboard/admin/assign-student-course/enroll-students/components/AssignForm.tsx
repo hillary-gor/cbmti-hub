@@ -1,27 +1,24 @@
-"use client"
+"use client";
 
-import { useActionState } from "react"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import assignStudentToCourse from "../actions"
-import { Dialog } from "@headlessui/react"
-import { CheckCircle } from "lucide-react"
+import { useActionState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import assignStudentToCourse from "../actions";
+import { Dialog } from "@headlessui/react";
+import { CheckCircle } from "lucide-react";
 
 type AssignResult = {
-  success: boolean
-  error?: string
-}
+  success: boolean;
+  error?: string;
+};
 
-const initialState: AssignResult = {
-  success: false,
-}
-
+const initialState: AssignResult = { success: false };
 
 interface AssignFormProps {
-  studentId: string
-  courses: { id: string; title: string }[]
-  intakes: { id: string; label: string }[]
-  generatedRegNumber: string
+  studentId: string;
+  courses: { id: string; title: string }[];
+  intakes: { id: string; label: string }[];
+  generatedRegNumber: string;
 }
 
 export function AssignForm({
@@ -30,7 +27,10 @@ export function AssignForm({
   intakes,
   generatedRegNumber,
 }: AssignFormProps) {
-  const [state, formAction] = useActionState(assignStudentToCourse, initialState);
+  const [state, formAction] = useActionState(
+    assignStudentToCourse,
+    initialState,
+  );
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
@@ -40,7 +40,7 @@ export function AssignForm({
       const timeout = setTimeout(() => {
         setShowModal(false);
         router.push("/dashboard/admin/assign-student-course/unassigned");
-      }, 2500); // 2.5 seconds delay
+      }, 2500);
       return () => clearTimeout(timeout);
     }
   }, [state.success, router]);

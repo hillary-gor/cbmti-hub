@@ -1,15 +1,15 @@
 // app/dashboard/lecturer/overview/components/StatCard.tsx
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { LucideIcon, BookOpen, Users, FileCheck } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { motion } from "framer-motion";
+import { LucideIcon, BookOpen, Users, FileCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const iconMap: Record<string, LucideIcon> = {
   "book-open": BookOpen,
   users: Users,
   "file-check": FileCheck,
-}
+};
 
 export function StatCard({
   title,
@@ -17,12 +17,12 @@ export function StatCard({
   icon,
   color,
 }: {
-  title: string
-  value: number
-  icon: keyof typeof iconMap
-  color: "blue" | "emerald" | "amber"
+  title: string;
+  value: number;
+  icon: keyof typeof iconMap;
+  color: "blue" | "emerald" | "amber";
 }) {
-  const Icon = iconMap[icon]
+  const Icon = iconMap[icon];
 
   return (
     <motion.div
@@ -31,7 +31,7 @@ export function StatCard({
       transition={{ duration: 0.4 }}
       className={cn(
         "rounded-xl border p-6 shadow-sm bg-white dark:bg-muted",
-        "flex items-center gap-4"
+        "flex items-center gap-4",
       )}
     >
       <div
@@ -39,7 +39,7 @@ export function StatCard({
           "p-3 rounded-full text-white",
           color === "blue" && "bg-blue-600",
           color === "emerald" && "bg-emerald-600",
-          color === "amber" && "bg-amber-500"
+          color === "amber" && "bg-amber-500",
         )}
       >
         <Icon className="w-6 h-6" />
@@ -49,5 +49,5 @@ export function StatCard({
         <p className="text-2xl font-semibold">{value}</p>
       </div>
     </motion.div>
-  )
+  );
 }

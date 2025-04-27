@@ -1,9 +1,9 @@
-"use server"
+"use server";
 
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "@/utils/supabase/server";
 
 export async function getCourseEnrollments(courseId: string) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("enrollments")
@@ -17,11 +17,11 @@ export async function getCourseEnrollments(courseId: string) {
           email,
           avatar_url
         )
-      `
+      `,
     )
-    .eq("course_id", courseId)
+    .eq("course_id", courseId);
 
-  if (error) throw new Error(error.message)
+  if (error) throw new Error(error.message);
 
   return (
     data?.map((enrollment) => ({
@@ -30,5 +30,5 @@ export async function getCourseEnrollments(courseId: string) {
         ? enrollment.student[0]
         : enrollment.student,
     })) ?? []
-  )
+  );
 }

@@ -1,25 +1,26 @@
-import { createClient } from "@/utils/supabase/server"
-import { notFound } from "next/navigation"
-import { SubmissionTable } from "./components/SubmissionTable"
+import { createClient } from "@/utils/supabase/server";
+import { notFound } from "next/navigation";
+import { SubmissionTable } from "./components/SubmissionTable";
 
 export default async function SubmissionsPage({
   params,
 }: {
-  params: { assessmentId: string }
+  params: { assessmentId: string };
 }) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { data: assessment } = await supabase
     .from("assessments")
     .select("id, title, course_id")
     .eq("id", params.assessmentId)
-    .single()
+    .single();
 
-  if (!assessment) notFound()
+  if (!assessment) notFound();
 
   const { data: submissions, error } = await supabase
     .from("submissions")
-    .select(`
+    .select(
+      `
       id,
       grade,
       feedback,
@@ -29,13 +30,14 @@ export default async function SubmissionsPage({
         full_name,
         email
       )
-    `)
+    `,
+    )
     .eq("assessment_id", assessment.id)
-    .order("submitted_at", { ascending: false })
+    .order("submitted_at", { ascending: false });
 
   if (error) {
-    console.error("Error loading submissions:", error.message)
-    return notFound()
+    console.error("Error loading submissions:", error.message);
+    return notFound();
   }
 
   return (
@@ -48,5 +50,5 @@ export default async function SubmissionsPage({
         submissions={submissions ?? []}
       />
     </div>
-  )
+  );
 }

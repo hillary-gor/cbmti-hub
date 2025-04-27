@@ -1,35 +1,35 @@
-import { createClient } from '@/utils/supabase/server'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { createClient } from "@/utils/supabase/server";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 type CourseRow = {
-  id: string
-  code: string
-  title: string
+  id: string;
+  code: string;
+  title: string;
   department?: {
-    name: string
-  }[]
-}
+    name: string;
+  }[];
+};
 
 export default async function AdminCoursesPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
-  let courses: CourseRow[] = []
+  let courses: CourseRow[] = [];
 
   try {
     const { data, error } = await supabase
-      .from('courses')
+      .from("courses")
       .select(`id, code, title, department:departments(name)`)
-      .order('created_at', { ascending: false })
+      .order("created_at", { ascending: false });
 
     if (error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     }
 
-    courses = (data ?? []) as CourseRow[]
+    courses = (data ?? []) as CourseRow[];
   } catch (err) {
-    console.error('[ADMIN_COURSES_ERROR]', err)
-    return <div className="text-red-600">⚠️ Failed to load courses</div>
+    console.error("[ADMIN_COURSES_ERROR]", err);
+    return <div className="text-red-600">⚠️ Failed to load courses</div>;
   }
 
   return (
@@ -57,7 +57,7 @@ export default async function AdminCoursesPage() {
                 <tr key={course.id} className="border-t">
                   <td className="p-3">{course.code}</td>
                   <td className="p-3">{course.title}</td>
-                  <td className="p-3">{course.department?.[0]?.name ?? '—'}</td>
+                  <td className="p-3">{course.department?.[0]?.name ?? "—"}</td>
                   <td className="p-3">
                     <Link
                       href={`/dashboard/admin/courses/${course.id}/edit`}
@@ -79,5 +79,5 @@ export default async function AdminCoursesPage() {
         </table>
       </div>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-import { createClient } from '@/utils/supabase/server';
-import { notFound } from 'next/navigation';
-import { format } from 'date-fns';
+import { createClient } from "@/utils/supabase/server";
+import { notFound } from "next/navigation";
+import { format } from "date-fns";
 
 type PageProps = {
   params: { intakeId: string };
@@ -19,9 +19,9 @@ export default async function IntakeEnrollmentsPage({ params }: PageProps) {
 
   // Fetch intake
   const { data: intake, error: intakeError } = await supabase
-    .from('intakes')
-    .select('id, label')
-    .eq('id', params.intakeId)
+    .from("intakes")
+    .select("id, label")
+    .eq("id", params.intakeId)
     .single();
 
   if (!intake || intakeError) {
@@ -30,19 +30,21 @@ export default async function IntakeEnrollmentsPage({ params }: PageProps) {
 
   // Fetch enrollments with joins
   const { data, error } = await supabase
-    .from('enrollments')
-    .select(`
+    .from("enrollments")
+    .select(
+      `
       id,
       status,
       enrolled_at,
       students:students ( reg_number ),
       courses:courses ( title )
-    `)
-    .eq('intake_id', params.intakeId)
-    .order('enrolled_at', { ascending: false });
+    `,
+    )
+    .eq("intake_id", params.intakeId)
+    .order("enrolled_at", { ascending: false });
 
   if (error || !data) {
-    console.error('[ENROLLMENTS_FETCH_ERROR]', error?.message);
+    console.error("[ENROLLMENTS_FETCH_ERROR]", error?.message);
     notFound();
   }
 
@@ -58,9 +60,9 @@ export default async function IntakeEnrollmentsPage({ params }: PageProps) {
       id: e.id,
       status: e.status,
       enrolled_at: e.enrolled_at,
-      students: Array.isArray(e.students) ? e.students[0] ?? null : null,
-      courses: Array.isArray(e.courses) ? e.courses[0] ?? null : null,
-    })
+      students: Array.isArray(e.students) ? (e.students[0] ?? null) : null,
+      courses: Array.isArray(e.courses) ? (e.courses[0] ?? null) : null,
+    }),
   );
 
   return (
@@ -93,13 +95,20 @@ export default async function IntakeEnrollmentsPage({ params }: PageProps) {
                   key={enrollment.id}
                   className="border-t hover:bg-muted/30 transition"
                 >
-                  <td className="px-4 py-2">{enrollment.students?.reg_number ?? '—'}</td>
-                  <td className="px-4 py-2">{enrollment.courses?.title ?? '—'}</td>
+                  <td className="px-4 py-2">
+                    {enrollment.students?.reg_number ?? "—"}
+                  </td>
+                  <td className="px-4 py-2">
+                    {enrollment.courses?.title ?? "—"}
+                  </td>
                   <td className="px-4 py-2 capitalize">{enrollment.status}</td>
                   <td className="px-4 py-2 text-muted-foreground">
                     {enrollment.enrolled_at
-                      ? format(new Date(enrollment.enrolled_at), 'dd MMM yyyy, hh:mm a')
-                      : '—'}
+                      ? format(
+                          new Date(enrollment.enrolled_at),
+                          "dd MMM yyyy, hh:mm a",
+                        )
+                      : "—"}
                   </td>
                 </tr>
               ))}

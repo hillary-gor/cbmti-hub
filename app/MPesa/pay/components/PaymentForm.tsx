@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useFormState } from "react-dom"
-import { initiatePayment } from "../actions"
+import { useFormState } from "react-dom";
+import { initiatePayment } from "../actions";
 
 type FormState = {
-  success?: boolean
-  error?: string
-  errors?: Record<string, string[]>
-}
+  success?: boolean;
+  error?: string;
+  errors?: Record<string, string[]>;
+};
 
-const initialState: FormState = {}
+const initialState: FormState = {};
 
 export function PaymentForm() {
-  const [state, formAction] = useFormState(initiatePayment, initialState)
+  const [state, formAction] = useFormState(initiatePayment, initialState);
 
   return (
     <form action={formAction} className="space-y-4 max-w-md">
@@ -61,5 +61,5 @@ export function PaymentForm() {
         <p className="text-sm text-red-600 mt-2">{state.error}</p>
       )}
     </form>
-  )
+  );
 }

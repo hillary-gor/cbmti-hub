@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { useFormState } from "react-dom"
-import { createAssessment } from "../actions"
+import { useFormState } from "react-dom";
+import { createAssessment } from "../actions";
 
-const initialState = { success: false }
+const initialState = { success: false };
 
 export function AssessmentForm({ courseId }: { courseId?: string }) {
-  const [state, formAction] = useFormState(createAssessment, initialState)
+  const [state, formAction] = useFormState(createAssessment, initialState);
 
   return (
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="course_id" value={courseId} />
-      
+
       <div>
         <label className="block text-sm font-medium mb-1">Title</label>
         <input name="title" className="input" />
@@ -42,10 +42,14 @@ export function AssessmentForm({ courseId }: { courseId?: string }) {
         <textarea name="description" className="input" />
       </div>
 
-      <button type="submit" className="btn btn-primary">Create</button>
+      <button type="submit" className="btn btn-primary">
+        Create
+      </button>
 
       {state?.error && <p className="text-sm text-red-500">{state.error}</p>}
-      {state?.success && <p className="text-sm text-green-600">Assessment created.</p>}
+      {state?.success && (
+        <p className="text-sm text-green-600">Assessment created.</p>
+      )}
     </form>
-  )
+  );
 }

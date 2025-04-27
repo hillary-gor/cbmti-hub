@@ -1,21 +1,20 @@
 // app/dashboard/admin/cohorts/page.tsx
 
-import { createClient } from '@/utils/supabase/server'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-
+import { createClient } from "@/utils/supabase/server";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function AdminCohortsPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from('intakes')
-    .select('id, label, opens_on')
-    .order('opens_on', { ascending: false })
+    .from("intakes")
+    .select("id, label, opens_on")
+    .order("opens_on", { ascending: false });
 
   if (error) {
-    console.error('[ADMIN_COHORTS_ERROR]', error.message)
-    return <div className="text-red-600">⚠️ Failed to load intakes</div>
+    console.error("[ADMIN_COHORTS_ERROR]", error.message);
+    return <div className="text-red-600">⚠️ Failed to load intakes</div>;
   }
 
   return (
@@ -38,11 +37,13 @@ export default async function AdminCohortsPage() {
           {data?.map((intake) => (
             <tr key={intake.id} className="border-t">
               <td className="p-3">{intake.label}</td>
-              <td className="p-3">{new Date(intake.opens_on).toLocaleDateString()}</td>
+              <td className="p-3">
+                {new Date(intake.opens_on).toLocaleDateString()}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-  )
+  );
 }

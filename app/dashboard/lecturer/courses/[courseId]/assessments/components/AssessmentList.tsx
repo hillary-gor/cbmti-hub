@@ -1,12 +1,12 @@
-import { formatDate } from "@/lib/utils"
+import { formatDate } from "@/lib/utils";
 
 type Assessment = {
-  id: string
-  title: string
-  type: "quiz" | "assignment" | "exam"
-  due_date: string
-  description?: string
-}
+  id: string;
+  title: string;
+  type: "quiz" | "assignment" | "exam";
+  due_date: string;
+  description?: string;
+};
 
 export function AssessmentList({ assessments }: { assessments: Assessment[] }) {
   return (
@@ -35,5 +35,5 @@ export function AssessmentList({ assessments }: { assessments: Assessment[] }) {
         </div>
       ))}
     </div>
-  )
+  );
 }

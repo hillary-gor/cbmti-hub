@@ -1,47 +1,57 @@
-'use client'
+"use client";
 
-import { useState, useTransition } from 'react'
-import { signUpWithEmailPassword } from './actions'
-import { LoadingButton } from '@/components/ui/loading-button'
-import Image from 'next/image'
-import { Dialog } from '@headlessui/react'
-import { CheckCircle } from 'lucide-react'
+import { useState, useTransition } from "react";
+import { signUpWithEmailPassword } from "./actions";
+import { LoadingButton } from "@/components/ui/loading-button";
+import Image from "next/image";
+import { Dialog } from "@headlessui/react";
+import { CheckCircle } from "lucide-react";
 
 const logoUrl =
-  'https://gowiaewbjsdsvihqmsyg.supabase.co/storage/v1/object/public/assets/logo.svg'
+  "https://gowiaewbjsdsvihqmsyg.supabase.co/storage/v1/object/public/assets/logo.svg";
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState('')
-  const [error, setError] = useState('')
-  const [showModal, setShowModal] = useState(false)
-  const [isPending, startTransition] = useTransition()
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (formData: FormData) => {
     startTransition(async () => {
-      const result = await signUpWithEmailPassword(formData)
+      const result = await signUpWithEmailPassword(formData);
 
       if (result?.success) {
-        setEmail(result.email)
-        setShowModal(true)
-        setError('')
+        setEmail(result.email);
+        setShowModal(true);
+        setError("");
       } else {
-        setError(result?.error || 'Something went wrong')
+        setError(result?.error || "Something went wrong");
       }
-    })
-  }
+    });
+  };
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-background px-4">
       <div className="w-full max-w-sm space-y-6 bg-white dark:bg-zinc-900 shadow-xl p-6 rounded-2xl border border-gray-200 dark:border-zinc-800">
         {/* Logo */}
         <div className="flex justify-center">
-          <Image src={logoUrl} alt="CBMTI Logo" width={64} height={64} className="object-contain" priority />
+          <Image
+            src={logoUrl}
+            alt="CBMTI Logo"
+            width={64}
+            height={64}
+            className="object-contain"
+            priority
+          />
         </div>
 
         {/* Signup Form */}
         <form className="space-y-4" action={handleSubmit}>
           <div className="space-y-2">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Email
             </label>
             <input
@@ -55,7 +65,10 @@ export default function SignUpPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Password
             </label>
             <input
@@ -68,7 +81,12 @@ export default function SignUpPage() {
             />
           </div>
 
-          <LoadingButton logoUrl={logoUrl} type="submit" disabled={isPending} className="w-full bg-[#329EE8] hover:bg-[#258ed2] text-white">
+          <LoadingButton
+            logoUrl={logoUrl}
+            type="submit"
+            disabled={isPending}
+            className="w-full bg-[#329EE8] hover:bg-[#258ed2] text-white"
+          >
             Sign Up
           </LoadingButton>
 
@@ -76,7 +94,7 @@ export default function SignUpPage() {
         </form>
 
         <div className="pt-4 text-center text-sm text-gray-600 dark:text-zinc-400">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <a href="/login" className="text-[#329EE8] hover:underline">
             Log In
           </a>
@@ -84,7 +102,11 @@ export default function SignUpPage() {
       </div>
 
       {/* Confirmation Modal */}
-      <Dialog open={showModal} onClose={() => setShowModal(false)} className="relative z-50">
+      <Dialog
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        className="relative z-50"
+      >
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center px-4">
           <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 w-full max-w-sm text-center border border-gray-200 dark:border-zinc-700 shadow-lg">
             <CheckCircle className="mx-auto text-green-500 h-10 w-10 mb-2" />
@@ -104,5 +126,5 @@ export default function SignUpPage() {
         </div>
       </Dialog>
     </main>
-  )
+  );
 }

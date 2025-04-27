@@ -1,6 +1,10 @@
-'use client'
+"use client";
 
-export function FeeBalanceSummary({ fees }: { fees: { amount_due: number; due_date: string }[] }) {
+export function FeeBalanceSummary({
+  fees,
+}: {
+  fees: { amount_due: number; due_date: string }[];
+}) {
   return (
     <div className="p-6 bg-white dark:bg-zinc-900 rounded-2xl shadow">
       <h2 className="text-lg font-semibold mb-4">💵 My Fee Balances</h2>
@@ -13,5 +17,5 @@ export function FeeBalanceSummary({ fees }: { fees: { amount_due: number; due_da
         ))}
       </ul>
     </div>
-  )
+  );
 }

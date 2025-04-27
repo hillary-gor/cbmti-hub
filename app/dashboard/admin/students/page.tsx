@@ -1,66 +1,66 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { fetchStudents } from './actions'
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { fetchStudents } from "./actions";
 
 type StudentRow = {
-  id: string
-  full_name: string | null
-  reg_number: string | null
-  status: string
-  enrollment_year: number
-  serial_no: number | null
-  created_at: string
-  courses?: { code: string | null }[]
-  intakes?: { label: string | null }[]
-}
+  id: string;
+  full_name: string | null;
+  reg_number: string | null;
+  status: string;
+  enrollment_year: number;
+  serial_no: number | null;
+  created_at: string;
+  courses?: { code: string | null }[];
+  intakes?: { label: string | null }[];
+};
 
 export default function AdminStudentsPage() {
-  const [students, setStudents] = useState<StudentRow[]>([])
-  const [loading, setLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
+  const [students, setStudents] = useState<StudentRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
-  const [search, setSearch] = useState('')
-  const [courseId, setCourseId] = useState('')
-  const [intakeId, setIntakeId] = useState('')
+  const [search, setSearch] = useState("");
+  const [courseId, setCourseId] = useState("");
+  const [intakeId, setIntakeId] = useState("");
 
-  const limit = 20
+  const limit = 20;
 
   async function loadStudents({ append = false } = {}) {
-    setLoading(true)
+    setLoading(true);
 
     try {
-      const last = append ? students[students.length - 1] : undefined
+      const last = append ? students[students.length - 1] : undefined;
       const data = await fetchStudents({
         search,
         courseId,
         intakeId,
         limit,
         cursor: last?.created_at,
-      })
+      });
 
       if (append) {
-        setStudents((prev) => [...prev, ...data])
+        setStudents((prev) => [...prev, ...data]);
       } else {
-        setStudents(data)
+        setStudents(data);
       }
 
-      setHasMore(data.length === limit)
+      setHasMore(data.length === limit);
     } catch (err) {
-      console.error('[LOAD_STUDENTS_ERROR]', err)
+      console.error("[LOAD_STUDENTS_ERROR]", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   useEffect(() => {
-    loadStudents()
+    loadStudents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, courseId, intakeId])
+  }, [search, courseId, intakeId]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 space-y-6">
@@ -113,11 +113,18 @@ export default function AdminStudentsPage() {
             <tbody>
               {students.length > 0 ? (
                 students.map((s) => (
-                  <tr key={s.id} className="border-t hover:bg-muted/50 transition">
-                    <td className="px-4 py-3">{s.full_name ?? '—'}</td>
-                    <td className="px-4 py-3">{s.reg_number ?? `CBMTI-${s.serial_no}`}</td>
-                    <td className="px-4 py-3">{s.courses?.[0]?.code ?? '—'}</td>
-                    <td className="px-4 py-3">{s.intakes?.[0]?.label ?? '—'}</td>
+                  <tr
+                    key={s.id}
+                    className="border-t hover:bg-muted/50 transition"
+                  >
+                    <td className="px-4 py-3">{s.full_name ?? "—"}</td>
+                    <td className="px-4 py-3">
+                      {s.reg_number ?? `CBMTI-${s.serial_no}`}
+                    </td>
+                    <td className="px-4 py-3">{s.courses?.[0]?.code ?? "—"}</td>
+                    <td className="px-4 py-3">
+                      {s.intakes?.[0]?.label ?? "—"}
+                    </td>
                     <td className="px-4 py-3 capitalize">{s.status}</td>
                     <td className="px-4 py-3">
                       <Link
@@ -131,7 +138,10 @@ export default function AdminStudentsPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-muted-foreground">
+                  <td
+                    colSpan={6}
+                    className="px-4 py-6 text-center text-muted-foreground"
+                  >
                     No students found.
                   </td>
                 </tr>
@@ -143,11 +153,14 @@ export default function AdminStudentsPage() {
 
       {hasMore && (
         <div className="text-center pt-4">
-          <Button onClick={() => loadStudents({ append: true })} disabled={loading}>
-            {loading ? 'Loading...' : 'Load More'}
+          <Button
+            onClick={() => loadStudents({ append: true })}
+            disabled={loading}
+          >
+            {loading ? "Loading..." : "Load More"}
           </Button>
         </div>
       )}
     </div>
-  )
+  );
 }

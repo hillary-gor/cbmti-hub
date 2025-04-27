@@ -1,6 +1,10 @@
-'use client'
+"use client";
 
-export function AttendanceTable({ attendance }: { attendance: { date: string, status: string }[] }) {
+export function AttendanceTable({
+  attendance,
+}: {
+  attendance: { date: string; status: string }[];
+}) {
   return (
     <div className="p-6 bg-white dark:bg-zinc-900 rounded-2xl shadow overflow-x-auto">
       <h2 className="text-lg font-semibold mb-4">📅 Attendance</h2>
@@ -15,7 +19,9 @@ export function AttendanceTable({ attendance }: { attendance: { date: string, st
           {attendance.map((record, i) => (
             <tr key={i} className="border-t">
               <td className="py-2">{record.date}</td>
-              <td className={`py-2 font-medium ${record.status === 'Present' ? 'text-green-600' : 'text-red-500'}`}>
+              <td
+                className={`py-2 font-medium ${record.status === "Present" ? "text-green-600" : "text-red-500"}`}
+              >
                 {record.status}
               </td>
             </tr>
@@ -23,5 +29,5 @@ export function AttendanceTable({ attendance }: { attendance: { date: string, st
         </tbody>
       </table>
     </div>
-  )
+  );
 }

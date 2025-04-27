@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useActionState } from "react" 
-import { createCourse } from "../actions"
+import { useActionState } from "react";
+import { createCourse } from "../actions";
 
-const initialState = { success: false, errors: {} }
+const initialState = { success: false, errors: {} };
 
 function CourseForm() {
-  const [state, formAction] = useActionState(createCourse, initialState)
+  const [state, formAction] = useActionState(createCourse, initialState);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -22,14 +22,18 @@ function CourseForm() {
           <p className="text-sm text-red-500">{state.errors.code}</p>
         )}
       </div>
-      <textarea name="description" placeholder="Course Description" className="input" />
+      <textarea
+        name="description"
+        placeholder="Course Description"
+        className="input"
+      />
       <input name="semester" placeholder="Semester" className="input" />
       <button type="submit" className="btn btn-primary">
         Create Course
       </button>
       {state?.error && <p className="text-sm text-red-500">{state.error}</p>}
     </form>
-  )
+  );
 }
 
-export default CourseForm
+export default CourseForm;

@@ -1,4 +1,4 @@
-import { PaymentForm } from "./components/PaymentForm"
+import { PaymentForm } from "./components/PaymentForm";
 
 export default function MPesaPayPage() {
   return (
@@ -6,8 +6,8 @@ export default function MPesaPayPage() {
       <div>
         <h1 className="text-2xl font-semibold">Pay School Fees</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Enter your phone number and amount below. You will receive an STK
-          Push to complete your payment via M-Pesa.
+          Enter your phone number and amount below. You will receive an STK Push
+          to complete your payment via M-Pesa.
         </p>
       </div>
 
@@ -20,5 +20,5 @@ export default function MPesaPayPage() {
         </p>
       </div>
     </div>
-  )
+  );
 }

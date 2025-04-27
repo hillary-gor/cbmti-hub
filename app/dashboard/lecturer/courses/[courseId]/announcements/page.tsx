@@ -1,33 +1,35 @@
 // app/dashboard/lecturer/courses/[courseId]/announcements/page.tsx
-import { createClient } from "@/utils/supabase/server"
-import { notFound } from "next/navigation"
-import { AnnouncementForm } from "./components/AnnouncementForm"
+import { createClient } from "@/utils/supabase/server";
+import { notFound } from "next/navigation";
+import { AnnouncementForm } from "./components/AnnouncementForm";
 
 export default async function AnnouncementsPage({
   params,
 }: {
-  params: { courseId: string }
+  params: { courseId: string };
 }) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { data: course } = await supabase
     .from("courses")
     .select("id, title")
     .eq("id", params.courseId)
-    .single()
+    .single();
 
-  if (!course) notFound()
+  if (!course) notFound();
 
   const { data: announcements } = await supabase
     .from("announcements")
     .select("id, title, message, created_at")
     .eq("course_id", course.id)
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending: false });
 
   return (
     <div className="space-y-8 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-semibold">Announcements for {course.title}</h1>
+        <h1 className="text-2xl font-semibold">
+          Announcements for {course.title}
+        </h1>
       </div>
 
       <AnnouncementForm courseId={course.id} />
@@ -51,5 +53,5 @@ export default async function AnnouncementsPage({
         ))}
       </div>
     </div>
-  )
+  );
 }

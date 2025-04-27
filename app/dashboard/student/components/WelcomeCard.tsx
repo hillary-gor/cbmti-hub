@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
 
 export function WelcomeCard({ name }: { name: string }) {
   return (
@@ -10,7 +10,9 @@ export function WelcomeCard({ name }: { name: string }) {
       animate={{ opacity: 1, y: 0 }}
     >
       <h1 className="text-2xl font-bold">Welcome, {name}</h1>
-      <p className="text-muted-foreground">This is your personalized dashboard</p>
+      <p className="text-muted-foreground">
+        This is your personalized dashboard
+      </p>
     </motion.div>
-  )
+  );
 }

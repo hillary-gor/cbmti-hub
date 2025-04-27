@@ -1,7 +1,7 @@
-import { EnrollmentForm } from './form';
-import { getRegisterPageData } from '../../data';
-import { notFound } from 'next/navigation';
-import { format } from 'date-fns';
+import { EnrollmentForm } from "./form";
+import { getRegisterPageData } from "../../data";
+import { notFound } from "next/navigation";
+import { format } from "date-fns";
 
 type PageProps = {
   params: { intakeId: string };
@@ -19,9 +19,8 @@ export default async function RegisterPage({ params }: PageProps) {
           Register Student – {data.intake.label}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Intake window:{' '}
-          {format(new Date(data.intake.opens_on), 'dd MMM yyyy')} →{' '}
-          {format(new Date(data.intake.closes_on), 'dd MMM yyyy')}
+          Intake window: {format(new Date(data.intake.opens_on), "dd MMM yyyy")}{" "}
+          → {format(new Date(data.intake.closes_on), "dd MMM yyyy")}
         </p>
       </div>
 

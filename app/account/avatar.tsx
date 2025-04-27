@@ -1,16 +1,16 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
-import { Loader2 } from 'lucide-react'
-import { createClient } from '@/utils/supabase/client'
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Loader2 } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
 type Props = {
-  uid: string
-  url: string | null
-  size?: number
-  avatarChangedCallback?: (publicUrl: string) => void
-}
+  uid: string;
+  url: string | null;
+  size?: number;
+  avatarChangedCallback?: (publicUrl: string) => void;
+};
 
 export default function Avatar({
   uid,
@@ -18,66 +18,66 @@ export default function Avatar({
   size = 100,
   avatarChangedCallback,
 }: Props) {
-  const supabase = createClient()
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(url)
-  const [uploading, setUploading] = useState(false)
+  const supabase = createClient();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(url);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (url) {
-      setAvatarUrl(url)
+      setAvatarUrl(url);
     }
-  }, [url])
+  }, [url]);
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      setUploading(true)
+      setUploading(true);
 
-      const file = event.target.files?.[0]
+      const file = event.target.files?.[0];
       if (!file) {
-        alert('Please select a file to upload.')
-        return
+        alert("Please select a file to upload.");
+        return;
       }
 
-      const allowedTypes = ['image/jpeg', 'image/png']
+      const allowedTypes = ["image/jpeg", "image/png"];
       if (!allowedTypes.includes(file.type)) {
-        alert('Only JPG and PNG formats are allowed.')
-        return
+        alert("Only JPG and PNG formats are allowed.");
+        return;
       }
 
-      const fileExt = file.name.split('.').pop()
-      const filePath = `${uid}/${Date.now()}.${fileExt}`
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${uid}/${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('avatars')
+        .from("avatars")
         .upload(filePath, file, {
           upsert: true,
-        })
+        });
 
       if (uploadError) {
-        console.error('❌ Upload error:', uploadError)
-        alert('Failed to upload. Check bucket access.')
-        return
+        console.error("❌ Upload error:", uploadError);
+        alert("Failed to upload. Check bucket access.");
+        return;
       }
 
       const { data: publicUrlData } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath)
+        .from("avatars")
+        .getPublicUrl(filePath);
 
-      const publicUrl = publicUrlData?.publicUrl
+      const publicUrl = publicUrlData?.publicUrl;
 
       if (publicUrl) {
-        setAvatarUrl(publicUrl)
-        avatarChangedCallback?.(publicUrl)
+        setAvatarUrl(publicUrl);
+        avatarChangedCallback?.(publicUrl);
       } else {
-        console.error('⚠️ No public URL returned')
+        console.error("⚠️ No public URL returned");
       }
     } catch (err) {
-      console.error('Unexpected upload error:', err)
-      alert('Something went wrong while uploading.')
+      console.error("Unexpected upload error:", err);
+      alert("Something went wrong while uploading.");
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -108,7 +108,7 @@ export default function Avatar({
         htmlFor="avatar-upload"
         className="cursor-pointer bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700 transition"
       >
-        {uploading ? 'Uploading...' : 'Upload'}
+        {uploading ? "Uploading..." : "Upload"}
         <input
           id="avatar-upload"
           type="file"
@@ -119,5 +119,5 @@ export default function Avatar({
         />
       </label>
     </div>
-  )
+  );
 }

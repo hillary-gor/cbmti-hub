@@ -1,28 +1,28 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useActionState } from 'react'
-import { createIntake } from './actions'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { useState } from "react";
+import { useActionState } from "react";
+import { createIntake } from "./actions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type FormState = {
-  error?: string
-  success?: boolean
-}
+  error?: string;
+  success?: boolean;
+};
 
 export default function NewIntakePage() {
-  const [selectedDate, setSelectedDate] = useState<string>('')
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
   const [formState, formAction] = useActionState(
     async (_state: FormState, formData: FormData): Promise<FormState> => {
       if (selectedDate) {
-        formData.set('opens_on', selectedDate)
+        formData.set("opens_on", selectedDate);
       }
-      return await createIntake(formData)
+      return await createIntake(formData);
     },
-    { error: '', success: false }
-  )
+    { error: "", success: false },
+  );
 
   return (
     <div className="max-w-xl mx-auto py-10 px-4 space-y-6">
@@ -30,9 +30,7 @@ export default function NewIntakePage() {
 
       <form action={formAction} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Opening Date
-          </label>
+          <label className="block text-sm font-medium mb-1">Opening Date</label>
           <Input
             type="date"
             name="opens_on"
@@ -52,5 +50,5 @@ export default function NewIntakePage() {
         )}
       </form>
     </div>
-  )
+  );
 }

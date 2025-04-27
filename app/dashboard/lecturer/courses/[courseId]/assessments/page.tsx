@@ -1,28 +1,28 @@
-import Link from "next/link"
-import { createClient } from "@/utils/supabase/server"
-import { notFound } from "next/navigation"
-import { AssessmentList } from "./components/AssessmentList"
+import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
+import { notFound } from "next/navigation";
+import { AssessmentList } from "./components/AssessmentList";
 
 export default async function CourseAssessmentsPage({
   params,
 }: {
-  params: { courseId: string }
+  params: { courseId: string };
 }) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { data: course } = await supabase
     .from("courses")
     .select("id, title")
     .eq("id", params.courseId)
-    .single()
+    .single();
 
-  if (!course) notFound()
+  if (!course) notFound();
 
   const { data: assessments } = await supabase
     .from("assessments")
     .select("*")
     .eq("course_id", course.id)
-    .order("due_date", { ascending: true })
+    .order("due_date", { ascending: true });
 
   return (
     <div className="space-y-6">
@@ -38,5 +38,5 @@ export default async function CourseAssessmentsPage({
 
       <AssessmentList assessments={assessments ?? []} />
     </div>
-  )
+  );
 }

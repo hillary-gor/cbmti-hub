@@ -1,42 +1,41 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/utils/supabase/server"
+import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
 
 type CallbackItem = {
-  Name: string
-  Value?: string | number
-}
+  Name: string;
+  Value?: string | number;
+};
 
 type MpesaCallbackPayload = {
   Body: {
     stkCallback: {
-      MerchantRequestID: string
-      CheckoutRequestID: string
-      ResultCode: number
+      MerchantRequestID: string;
+      CheckoutRequestID: string;
+      ResultCode: number;
       CallbackMetadata?: {
-        Item: CallbackItem[]
-      }
-    }
-  }
-}
+        Item: CallbackItem[];
+      };
+    };
+  };
+};
 
 export async function POST(req: Request) {
-  const payload = (await req.json()) as MpesaCallbackPayload
+  const payload = (await req.json()) as MpesaCallbackPayload;
 
   const {
     Body: {
-      stkCallback: {
-        ResultCode,
-        CheckoutRequestID,
-        CallbackMetadata,
-      },
+      stkCallback: { ResultCode, CheckoutRequestID, CallbackMetadata },
     },
-  } = payload
+  } = payload;
 
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   if (ResultCode === 0 && CallbackMetadata) {
-    const receipt = CallbackMetadata.Item.find((item) => item.Name === "MpesaReceiptNumber")?.Value as string
-    const amount = CallbackMetadata.Item.find((item) => item.Name === "Amount")?.Value as number
+    const receipt = CallbackMetadata.Item.find(
+      (item) => item.Name === "MpesaReceiptNumber",
+    )?.Value as string;
+    const amount = CallbackMetadata.Item.find((item) => item.Name === "Amount")
+      ?.Value as number;
 
     // Update the payment record
     const { data: payment } = await supabase
@@ -49,14 +48,14 @@ export async function POST(req: Request) {
       })
       .eq("checkout_request_id", CheckoutRequestID)
       .select("student_id")
-      .single()
+      .single();
 
     // Update the student's balance
     if (payment?.student_id && amount) {
       await supabase.rpc("add_to_balance", {
         sid: payment.student_id,
         amt: amount,
-      })
+      });
     }
   } else {
     // Update failed payment
@@ -67,8 +66,8 @@ export async function POST(req: Request) {
         mpesa_data: payload,
         updated_at: new Date().toISOString(),
       })
-      .eq("checkout_request_id", CheckoutRequestID)
+      .eq("checkout_request_id", CheckoutRequestID);
   }
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({ success: true });
 }

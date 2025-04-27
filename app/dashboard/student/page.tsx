@@ -1,24 +1,24 @@
-import { getStudentDashboardData } from './actions'
-import { redirect } from 'next/navigation'
+import { getStudentDashboardData } from "./actions";
+import { redirect } from "next/navigation";
 
-import { WelcomeCard } from './components/WelcomeCard'
-import { MyCourses } from './components/MyCourses'
-import { GradesChart } from './components/GradesChart'
-import { FeeBalanceSummary } from './components/FeeBalanceSummary'
-import { CertificatesList } from './components/CertificatesList'
-import { TranscriptSection } from './components/TranscriptSection'
-import { AttendanceTable } from './components/AttendanceTable'
+import { WelcomeCard } from "./components/WelcomeCard";
+import { MyCourses } from "./components/MyCourses";
+import { GradesChart } from "./components/GradesChart";
+import { FeeBalanceSummary } from "./components/FeeBalanceSummary";
+import { CertificatesList } from "./components/CertificatesList";
+import { TranscriptSection } from "./components/TranscriptSection";
+import { AttendanceTable } from "./components/AttendanceTable";
 
 export const metadata = {
-  title: 'Student Dashboard | CBMTI',
-  description: 'Access your academic information, grades, fees, and more.',
-}
+  title: "Student Dashboard | CBMTI",
+  description: "Access your academic information, grades, fees, and more.",
+};
 
 export default async function StudentDashboardPage() {
-  const data = await getStudentDashboardData()
+  const data = await getStudentDashboardData();
 
   if (!data) {
-    redirect('/unauthorized')
+    redirect("/unauthorized");
   }
 
   return (
@@ -28,7 +28,11 @@ export default async function StudentDashboardPage() {
       </section>
 
       <section aria-label="Courses">
-        <MyCourses courses={Array.isArray(data.courses[0]) ? data.courses.flat() : data.courses} />
+        <MyCourses
+          courses={
+            Array.isArray(data.courses[0]) ? data.courses.flat() : data.courses
+          }
+        />
       </section>
 
       <section aria-label="Grades">
@@ -44,14 +48,18 @@ export default async function StudentDashboardPage() {
       </section>
 
       <section aria-label="Transcript">
-        <TranscriptSection transcript={
-          Array.isArray(data.transcript) ? data.transcript[0] : data.transcript
-        } />
+        <TranscriptSection
+          transcript={
+            Array.isArray(data.transcript)
+              ? data.transcript[0]
+              : data.transcript
+          }
+        />
       </section>
 
       <section aria-label="Attendance">
         <AttendanceTable attendance={data.attendance} />
       </section>
     </main>
-  )
+  );
 }

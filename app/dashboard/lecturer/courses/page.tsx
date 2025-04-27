@@ -1,17 +1,17 @@
-import CourseForm from "./components/CourseForm"
-import { CourseCard } from "./components/CourseCard"
-import { getLecturer } from "@/lib/auth"
-import { createClient } from "@/utils/supabase/server"
+import CourseForm from "./components/CourseForm";
+import { CourseCard } from "./components/CourseCard";
+import { getLecturer } from "@/lib/auth";
+import { createClient } from "@/utils/supabase/server";
 
 export default async function CoursesPage() {
-  const lecturer = await getLecturer()
-  const supabase = await createClient()
+  const lecturer = await getLecturer();
+  const supabase = await createClient();
 
   const { data: courses } = await supabase
     .from("courses")
     .select("*")
     .eq("lecturer_id", lecturer?.id)
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending: false });
 
   return (
     <div className="space-y-8">
@@ -34,5 +34,5 @@ export default async function CoursesPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

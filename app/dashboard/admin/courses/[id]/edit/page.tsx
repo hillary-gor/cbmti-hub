@@ -1,58 +1,58 @@
-'use client'
+"use client";
 
-import { useFormState } from 'react-dom'
-import { updateCourse } from './actions'
-import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { useFormState } from "react-dom";
+import { updateCourse } from "./actions";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 type Department = {
-  id: string
-  name: string
-}
+  id: string;
+  name: string;
+};
 
 type Course = {
-  id: string
-  code: string
-  name: string
-  department_id: string
-  departments: Department
-}
+  id: string;
+  code: string;
+  name: string;
+  department_id: string;
+  departments: Department;
+};
 
 type FormState = {
-  error?: string
-}
+  error?: string;
+};
 
 export default function EditCoursePage() {
-  const { id } = useParams()
+  const { id } = useParams();
 
   const [formState, formAction] = useFormState(
     (_prev: FormState, formData: FormData) =>
       updateCourse(id as string, formData),
-    { error: '' }
-  )
+    { error: "" },
+  );
 
-  const [course, setCourse] = useState<Course | null>(null)
-  const [departments, setDepartments] = useState<Department[]>([])
+  const [course, setCourse] = useState<Course | null>(null);
+  const [departments, setDepartments] = useState<Department[]>([]);
 
   useEffect(() => {
     async function fetchCourse() {
       try {
-        const res = await fetch(`/api/admin/supabase-courses/${id}`)
-        if (!res.ok) throw new Error('Failed to fetch course')
-        const data = await res.json()
-        setCourse(data)
-        setDepartments([data.departments])
+        const res = await fetch(`/api/admin/supabase-courses/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch course");
+        const data = await res.json();
+        setCourse(data);
+        setDepartments([data.departments]);
       } catch (err) {
-        console.error('❌ Failed to load course:', err)
+        console.error("❌ Failed to load course:", err);
       }
     }
 
-    fetchCourse()
-  }, [id])
+    fetchCourse();
+  }, [id]);
 
-  if (!course) return <p className="text-center py-6">Loading course...</p>
+  if (!course) return <p className="text-center py-6">Loading course...</p>;
 
   return (
     <div className="max-w-xl mx-auto py-10 px-4 space-y-6">
@@ -81,5 +81,5 @@ export default function EditCoursePage() {
         )}
       </form>
     </div>
-  )
+  );
 }

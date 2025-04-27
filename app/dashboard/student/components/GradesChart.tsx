@@ -1,8 +1,20 @@
-'use client'
+"use client";
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-export function GradesChart({ grades }: { grades: { subject: string; score: number }[] }) {
+export function GradesChart({
+  grades,
+}: {
+  grades: { subject: string; score: number }[];
+}) {
   return (
     <div className="p-6 bg-white dark:bg-zinc-900 rounded-2xl shadow">
       <h2 className="text-lg font-semibold mb-4">🎓 My Grades</h2>
@@ -16,5 +28,5 @@ export function GradesChart({ grades }: { grades: { subject: string; score: numb
         </LineChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

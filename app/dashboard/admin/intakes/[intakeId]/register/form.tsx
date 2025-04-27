@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useFormState } from 'react-dom';
-import { handleRegister, type RegisterState } from './actions';
+import { useFormState } from "react-dom";
+import { handleRegister, type RegisterState } from "./actions";
 
 type Props = {
   intakeId: string;
@@ -17,7 +17,7 @@ const initialState: RegisterState = {
 export function EnrollmentForm({ intakeId, students, courses }: Props) {
   const [state, formAction] = useFormState<RegisterState, FormData>(
     handleRegister,
-    initialState
+    initialState,
   );
 
   return (
@@ -40,9 +40,13 @@ export function EnrollmentForm({ intakeId, students, courses }: Props) {
           defaultValue=""
           required
         >
-          <option disabled value="">Select a student</option>
+          <option disabled value="">
+            Select a student
+          </option>
           {students.map((s) => (
-            <option key={s.id} value={s.id}>{s.reg_number}</option>
+            <option key={s.id} value={s.id}>
+              {s.reg_number}
+            </option>
           ))}
         </select>
       </div>
@@ -59,16 +63,22 @@ export function EnrollmentForm({ intakeId, students, courses }: Props) {
           defaultValue=""
           required
         >
-          <option disabled value="">Select a course</option>
+          <option disabled value="">
+            Select a course
+          </option>
           {courses.map((c) => (
-            <option key={c.id} value={c.id}>{c.title}</option>
+            <option key={c.id} value={c.id}>
+              {c.title}
+            </option>
           ))}
         </select>
       </div>
 
       {/* Upload admission docs */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium">Admission Documents (PDF or ZIP)</label>
+        <label className="block text-sm font-medium">
+          Admission Documents (PDF or ZIP)
+        </label>
         <input
           type="file"
           name="admission_docs"
@@ -83,7 +93,9 @@ export function EnrollmentForm({ intakeId, students, courses }: Props) {
         <p className="text-sm text-red-600">{state.error.general}</p>
       )}
       {state?.success && (
-        <p className="text-sm text-green-600">✅ Student successfully enrolled and documents uploaded!</p>
+        <p className="text-sm text-green-600">
+          ✅ Student successfully enrolled and documents uploaded!
+        </p>
       )}
 
       <button

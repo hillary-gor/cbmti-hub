@@ -1,8 +1,8 @@
-'use server';
+"use server";
 
-import { z } from 'zod';
-import { createClient } from '@/utils/supabase/server';
-import { randomUUID } from 'crypto';
+import { z } from "zod";
+import { createClient } from "@/utils/supabase/server";
+import { randomUUID } from "crypto";
 
 export type RegisterState = {
   success: boolean;
@@ -22,12 +22,12 @@ const schema = z.object({
 
 export async function handleRegister(
   _prev: RegisterState,
-  formData: FormData
+  formData: FormData,
 ): Promise<RegisterState> {
   const parsed = schema.safeParse({
-    studentId: formData.get('studentId'),
-    courseId: formData.get('courseId'),
-    intakeId: formData.get('intakeId'),
+    studentId: formData.get("studentId"),
+    courseId: formData.get("courseId"),
+    intakeId: formData.get("intakeId"),
   });
 
   if (!parsed.success) {
@@ -36,25 +36,25 @@ export async function handleRegister(
 
   const { studentId, courseId, intakeId } = parsed.data;
 
-  const file = formData.get('admission_docs') as File | null;
+  const file = formData.get("admission_docs") as File | null;
 
   if (!file || file.size === 0) {
     return {
       success: false,
-      error: { general: 'Please upload admission documents.' },
+      error: { general: "Please upload admission documents." },
     };
   }
 
   const supabase = await createClient();
 
-  const fileExt = file.name.split('.').pop();
+  const fileExt = file.name.split(".").pop();
   const uniqueName = `admission-${Date.now()}-${randomUUID()}.${fileExt}`;
   const filePath = `${studentId}/${uniqueName}`;
 
   const { error: uploadError } = await supabase.storage
-    .from('student-documents')
+    .from("student-documents")
     .upload(filePath, file, {
-      cacheControl: '3600',
+      cacheControl: "3600",
       upsert: true,
     });
 
@@ -63,23 +63,23 @@ export async function handleRegister(
   }
 
   const { error: metaError } = await supabase
-    .from('student_attachments')
+    .from("student_attachments")
     .insert({
       student_id: studentId,
       file_name: file.name,
       file_path: filePath,
-      category: 'admission_documents',
+      category: "admission_documents",
     });
 
   if (metaError) {
     return { success: false, error: { general: metaError.message } };
   }
 
-  const { error: enrollError } = await supabase.from('enrollments').insert({
+  const { error: enrollError } = await supabase.from("enrollments").insert({
     student_id: studentId,
     course_id: courseId,
     intake_id: intakeId,
-    status: 'active',
+    status: "active",
   });
 
   if (enrollError) {

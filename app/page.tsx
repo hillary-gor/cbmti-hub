@@ -11,7 +11,7 @@ export default function LandingPageContainer() {
     <main className="flex flex-col">
       <Navbar />
       <LandingPageHero />
-      
+
       {/* Future sections */}
       {/* <Features /> */}
       {/* <Testimonials /> */}

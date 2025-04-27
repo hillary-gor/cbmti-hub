@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import { useFormState } from "react-dom"
-import { gradeSubmission } from "../actions"
+import { useFormState } from "react-dom";
+import { gradeSubmission } from "../actions";
 
 type Submission = {
-  id: string
-  submitted_at: string
-  file_url?: string
-  grade?: number
-  feedback?: string
+  id: string;
+  submitted_at: string;
+  file_url?: string;
+  grade?: number;
+  feedback?: string;
   students: {
-    full_name: string
-    email: string
-  }[] // ✅ FIXED: Supabase returns students as an array
-}
+    full_name: string;
+    email: string;
+  }[]; // ✅ FIXED: Supabase returns students as an array
+};
 
-const initialState = { success: false, error: "" }
+const initialState = { success: false, error: "" };
 
 export function SubmissionTable({
   assessmentId,
   submissions,
 }: {
-  assessmentId: string
-  submissions: Submission[]
+  assessmentId: string;
+  submissions: Submission[];
 }) {
   return (
     <div className="rounded-lg border overflow-x-auto">
@@ -47,26 +47,24 @@ export function SubmissionTable({
         </tbody>
       </table>
     </div>
-  )
+  );
 }
 
 function SubmissionRow({
   submission,
   assessmentId,
 }: {
-  submission: Submission
-  assessmentId: string
+  submission: Submission;
+  assessmentId: string;
 }) {
-  const [state, formAction] = useFormState(gradeSubmission, initialState)
-  const student = submission.students[0] // ✅ safe array access
+  const [state, formAction] = useFormState(gradeSubmission, initialState);
+  const student = submission.students[0]; // ✅ safe array access
 
   return (
     <tr className="border-t align-top">
       <td className="p-3">
         <p>{student?.full_name ?? "Unknown"}</p>
-        <p className="text-xs text-muted-foreground">
-          {student?.email ?? "—"}
-        </p>
+        <p className="text-xs text-muted-foreground">{student?.email ?? "—"}</p>
       </td>
       <td className="p-3">
         {submission.file_url ? (
@@ -124,5 +122,5 @@ function SubmissionRow({
         </form>
       </td>
     </tr>
-  )
+  );
 }
