@@ -1,4 +1,3 @@
-// app/dashboard/admin/legacy-students/_components/AddLegacyStudentForm.tsx
 "use client";
 
 import { useActionState } from "react";
@@ -20,24 +19,18 @@ export function AddLegacyStudentForm() {
   return (
     <form action={formAction} className="space-y-4">
       <div>
-        <label className="block text-sm mb-1">Full Name</label>
-        <input name="full_name" type="text" className="input w-full" required />
+        <label htmlFor="full_name" className="block text-sm mb-1">Full Name</label>
+        <input id="full_name" name="full_name" type="text" className="input w-full" required />
       </div>
+
       <div>
-        <label className="block text-sm mb-1">Email</label>
-        <input name="email" type="email" className="input w-full" required />
+        <label htmlFor="email" className="block text-sm mb-1">Email</label>
+        <input id="email" name="email" type="email" className="input w-full" required />
       </div>
+
       <div>
-        <label className="block text-sm mb-1">Registration Number</label>
-        <input name="reg_number" type="text" className="input w-full" required />
-      </div>
-      <div>
-        <label className="block text-sm mb-1">Course ID</label>
-        <input name="course_id" type="text" className="input w-full" required />
-      </div>
-      <div>
-        <label className="block text-sm mb-1">Intake ID</label>
-        <input name="intake_id" type="text" className="input w-full" required />
+        <label htmlFor="reg_number" className="block text-sm mb-1">Registration Number</label>
+        <input id="reg_number" name="reg_number" type="text" className="input w-full" required />
       </div>
 
       <button type="submit" className="btn btn-primary">
