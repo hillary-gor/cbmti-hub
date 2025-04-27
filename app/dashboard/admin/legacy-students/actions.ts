@@ -16,14 +16,35 @@ export async function addLegacyStudent(_prevState: unknown, formData: FormData) 
     return { success: false, error: "Missing required fields." };
   }
 
+  // check if user already exists
+  const { data: existingUser, error: existingUserError } = await supabase
+    .from("users") // or "auth.users"
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (existingUser) {
+    return { success: false, error: "User with this email already exists." };
+  }
+
+  // Check for database errors
+if (existingUserError) {
+  console.error("Failed to check existing user:", existingUserError);
+  return { success: false, error: "An error occurred while checking the user. Please try again." };
+}
+
+  // Create user
   const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
     email,
     email_confirm: true,
     password: UNIVERSAL_PASSWORD,
   });
 
-  if (authError || !authUser.user) {
-    console.error(authError);
+  if (authError) {
+    if (authError.status === 422 && authError.code === "email_exists") {
+      return { success: false, error: "Email already registered. Please use another email." };
+    }
+    console.error("Auth Error:", authError);
     return { success: false, error: "Failed to create authentication user." };
   }
 
