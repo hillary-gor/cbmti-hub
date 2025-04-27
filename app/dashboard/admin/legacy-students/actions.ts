@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/admin-server";
 import { sendLegacyStudentEmail } from "@/lib/emails/sendLegacyStudentEmail";
 
 const UNIVERSAL_PASSWORD = process.env.UNIVERSAL_PASSWORD!;
