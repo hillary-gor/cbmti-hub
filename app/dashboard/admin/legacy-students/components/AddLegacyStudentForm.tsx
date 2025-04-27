@@ -6,11 +6,12 @@ import { useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { CheckCircle } from "lucide-react";
 
-const initialState = { success: false, error: "" };
+const initialState = { success: false, error: "", userId: undefined };
 
 export function AddLegacyStudentForm() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<{ [key: string]: FormDataEntryValue }>({});
+  const [userId, setUserId] = useState<string | null>(null);
   const [state, formAction, pending] = useActionState(addLegacyStudent, initialState);
   const [showModal, setShowModal] = useState(false);
 
@@ -19,14 +20,17 @@ export function AddLegacyStudentForm() {
       setShowModal(true);
       const timer = setTimeout(() => {
         setShowModal(false);
-        window.location.href = "/dashboard/admin/legacy-students"; // Redirect after 2.5s
+        window.location.href = "/dashboard/admin/legacy-students";
       }, 2500);
       return () => clearTimeout(timer);
     }
     if (state.partial) {
+      if ("userId" in state && state.userId) {
+        setUserId(state.userId);
+      }
       setStep((prev) => prev + 1);
     }
-  }, [state.success, state.partial]);
+  }, [state.success, state.partial, state.userId, state]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,6 +75,10 @@ export function AddLegacyStudentForm() {
         {step === 2 && (
           <>
             <h2 className="text-xl font-semibold mb-4">Step 2: Personal Details</h2>
+
+            {/* Pass user_id hidden */}
+            {userId && <input type="hidden" name="user_id" value={userId} />}
+
             <div>
               <label className="block text-sm mb-1">Phone</label>
               <input name="phone" type="text" className="input w-full" required />
@@ -101,10 +109,6 @@ export function AddLegacyStudentForm() {
               </select>
             </div>
             <div>
-              <label className="block text-sm mb-1">User ID (Optional)</label>
-              <input name="user_id" type="text" className="input w-full" />
-            </div>
-            <div>
               <label className="block text-sm mb-1">Avatar URL (Optional)</label>
               <input name="avatar_url" type="text" className="input w-full" />
             </div>
@@ -117,6 +121,10 @@ export function AddLegacyStudentForm() {
         {step === 3 && (
           <>
             <h2 className="text-xl font-semibold mb-4">Step 3: Registration Number</h2>
+
+            {/* Pass user_id hidden */}
+            {userId && <input type="hidden" name="user_id" value={userId} />}
+
             <div>
               <label className="block text-sm mb-1">Registration Number</label>
               <input name="reg_number" type="text" className="input w-full" required />
