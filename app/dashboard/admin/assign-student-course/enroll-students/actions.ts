@@ -28,7 +28,7 @@ export default async function assignStudentToCourse(
 
   const parse = assignSchema.safeParse(raw);
   if (!parse.success) {
-    return { success: false, error: "Invalid input." };
+    return { success: false, error: "Invalid input data." };
   }
 
   const { studentId, courseId, intakeId, reg_number } = parse.data;
@@ -41,12 +41,11 @@ export default async function assignStudentToCourse(
       course_id: courseId,
       intake_id: intakeId,
       reg_number: reg_number,
-      status: "admitted",
     })
     .eq("id", studentId);
 
   if (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: "Failed to assign student. Please try again." };
   }
 
   return { success: true };

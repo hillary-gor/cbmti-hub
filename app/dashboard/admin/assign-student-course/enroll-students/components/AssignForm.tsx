@@ -27,10 +27,7 @@ export function AssignForm({
   intakes,
   generatedRegNumber,
 }: AssignFormProps) {
-  const [state, formAction] = useActionState(
-    assignStudentToCourse,
-    initialState,
-  );
+  const [state, formAction] = useActionState(assignStudentToCourse, initialState);
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
@@ -52,8 +49,11 @@ export function AssignForm({
         <input type="hidden" name="reg_number" value={generatedRegNumber} />
 
         <div>
-          <label className="block text-sm mb-1">Registration Number</label>
+          <label htmlFor="reg_number_display" className="block text-sm mb-1">
+            Registration Number
+          </label>
           <input
+            id="reg_number_display"
             type="text"
             value={generatedRegNumber}
             disabled
@@ -62,8 +62,10 @@ export function AssignForm({
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Select Course</label>
-          <select name="courseId" className="input w-full" required>
+          <label htmlFor="courseId" className="block text-sm mb-1">
+            Select Course
+          </label>
+          <select id="courseId" name="courseId" className="input w-full" required>
             <option value="">Select...</option>
             {courses.map((course) => (
               <option key={course.id} value={course.id}>
@@ -74,8 +76,10 @@ export function AssignForm({
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Select Intake</label>
-          <select name="intakeId" className="input w-full" required>
+          <label htmlFor="intakeId" className="block text-sm mb-1">
+            Select Intake
+          </label>
+          <select id="intakeId" name="intakeId" className="input w-full" required>
             <option value="">Select...</option>
             {intakes.map((intake) => (
               <option key={intake.id} value={intake.id}>
