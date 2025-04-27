@@ -19,8 +19,9 @@ export async function addLegacyStudent(_prevState: unknown, formData: FormData) 
   const avatar_url = formData.get("avatar_url") as string | null;
   const reg_number = formData.get("reg_number") as string | null;
 
-  // Step 1: Create auth user immediately
+  // Step 1: Create auth user + users table entry
   if (email && full_name && !phone && !reg_number) {
+    // Check if user already exists
     const { data: existingUser, error: existingUserError } = await supabase
       .from("users")
       .select("id")
@@ -36,23 +37,24 @@ export async function addLegacyStudent(_prevState: unknown, formData: FormData) 
       return { success: false, error: "Email already exists." };
     }
 
+    // Create in Auth
     const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
       email,
       email_confirm: true,
       password: UNIVERSAL_PASSWORD,
     });
 
-    if (authError) {
+    if (authError || !authUser?.user?.id) {
       console.error("[Auth Creation Error]:", authError);
       return { success: false, error: "Failed creating authentication user." };
     }
 
-    // Insert into 'users' table immediately after auth user creation
+    // Insert into users table
     const { error: userInsertError } = await supabase.from("users").insert({
       id: authUser.user.id,
       email,
       full_name,
-      role: "student", // Default initially
+      role: "student",
     });
 
     if (userInsertError) {
@@ -63,16 +65,19 @@ export async function addLegacyStudent(_prevState: unknown, formData: FormData) 
     return { success: true, partial: true, userId: authUser.user.id };
   }
 
-  // Step 2: Update users table with profile details
+  // Step 2: Update users table profile details
   if (user_id && phone && gender && dob && location && role && !reg_number) {
-    const { error: updateError } = await supabase.from("users").update({
-      phone,
-      gender,
-      date_of_birth: dob,
-      location,
-      role,
-      avatar_url: avatar_url || null,
-    }).eq("id", user_id);
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({
+        phone,
+        gender,
+        date_of_birth: dob,
+        location,
+        role,
+        avatar_url: avatar_url || null,
+      })
+      .eq("id", user_id);
 
     if (updateError) {
       console.error("[Update Users Table Error]:", updateError);
@@ -82,10 +87,10 @@ export async function addLegacyStudent(_prevState: unknown, formData: FormData) 
     return { success: true, partial: true, userId: user_id };
   }
 
-  // Step 3: Insert into students table
+  // Step 3: Insert into students table and send email
   if (user_id && reg_number) {
     const { error: studentInsertError } = await supabase.from("students").insert({
-      user_id: user_id,
+      user_id,
       full_name,
       reg_number,
       phone,
@@ -102,7 +107,6 @@ export async function addLegacyStudent(_prevState: unknown, formData: FormData) 
       return { success: false, error: "Failed inserting student record." };
     }
 
-    // Send Welcome Email after final step
     await sendLegacyStudentEmail({
       email: email!,
       password: UNIVERSAL_PASSWORD,
