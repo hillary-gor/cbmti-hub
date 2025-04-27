@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { addLegacyStudent } from "../actions";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Dialog } from "@headlessui/react";
 import { CheckCircle } from "lucide-react";
 
@@ -12,7 +12,8 @@ export function AddLegacyStudentForm() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<{ [key: string]: FormDataEntryValue }>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [state, formAction, pending] = useActionState(addLegacyStudent, initialState);
+  const [state, formAction] = useActionState(addLegacyStudent, initialState);
+  const [isPending, startTransition] = useTransition();
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -25,31 +26,31 @@ export function AddLegacyStudentForm() {
       return () => clearTimeout(timer);
     }
     if (state.partial) {
-      if ("userId" in state && state.userId) {
+      if (state.userId) {
         setUserId(state.userId);
       }
       setStep((prev) => prev + 1);
     }
-  }, [state.success, state.partial, state.userId, state]);
+  }, [state]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
 
-    // Merge new form data into old
     const newFormData: { [key: string]: FormDataEntryValue } = {};
     form.forEach((value, key) => {
       newFormData[key] = value;
     });
     setFormData((prev) => ({ ...prev, ...newFormData }));
 
-    // Submit all data collected so far
     const fullForm = new FormData();
     Object.entries({ ...formData, ...newFormData }).forEach(([key, value]) => {
       fullForm.append(key, value);
     });
 
-    formAction(fullForm);
+    startTransition(() => {
+      formAction(fullForm);
+    });
   };
 
   return (
@@ -66,8 +67,8 @@ export function AddLegacyStudentForm() {
               <label className="block text-sm mb-1">Email</label>
               <input name="email" type="email" className="input w-full" required />
             </div>
-            <button type="submit" disabled={pending} className="btn btn-primary w-full">
-              Next
+            <button type="submit" disabled={isPending} className="btn btn-primary w-full">
+              {isPending ? "Saving..." : "Next"}
             </button>
           </>
         )}
@@ -76,7 +77,6 @@ export function AddLegacyStudentForm() {
           <>
             <h2 className="text-xl font-semibold mb-4">Step 2: Personal Details</h2>
 
-            {/* Pass user_id hidden */}
             {userId && <input type="hidden" name="user_id" value={userId} />}
 
             <div>
@@ -112,8 +112,8 @@ export function AddLegacyStudentForm() {
               <label className="block text-sm mb-1">Avatar URL (Optional)</label>
               <input name="avatar_url" type="text" className="input w-full" />
             </div>
-            <button type="submit" disabled={pending} className="btn btn-primary w-full">
-              Next
+            <button type="submit" disabled={isPending} className="btn btn-primary w-full">
+              {isPending ? "Saving..." : "Next"}
             </button>
           </>
         )}
@@ -122,15 +122,14 @@ export function AddLegacyStudentForm() {
           <>
             <h2 className="text-xl font-semibold mb-4">Step 3: Registration Number</h2>
 
-            {/* Pass user_id hidden */}
             {userId && <input type="hidden" name="user_id" value={userId} />}
 
             <div>
               <label className="block text-sm mb-1">Registration Number</label>
               <input name="reg_number" type="text" className="input w-full" required />
             </div>
-            <button type="submit" disabled={pending} className="btn btn-primary w-full">
-              {pending ? "Submitting..." : "Submit"}
+            <button type="submit" disabled={isPending} className="btn btn-primary w-full">
+              {isPending ? "Submitting..." : "Submit"}
             </button>
           </>
         )}
