@@ -11,13 +11,15 @@ const tabs = [
   { slug: "announcements", label: "Announcements" },
 ];
 
-interface LayoutProps {
+export default async function CourseDetailLayout({
+  children,
+  params,
+}: {
   children: ReactNode;
-  params: { courseId: string }; // ✅ Direct object — no Promise!
-}
-
-export default async function CourseDetailLayout({ children, params }: LayoutProps) {
-  const { courseId } = params; // ✅ no await!
+  params: Promise<{ courseId: string }>;
+}) {
+  const awaitedParams = await params;
+  const { courseId } = awaitedParams;
 
   const supabase = await createClient();
   const { data: course } = await supabase
