@@ -2,17 +2,21 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 
-export default async function CourseOverviewPage({
-  params,
-}: {
-  params: { courseId: string };
-}) {
+type PageProps = {
+  params: Promise<{ courseId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function CourseOverviewPage({ params }: PageProps) {
+  const awaitedParams = await params;
+  const { courseId } = awaitedParams;
+
   const supabase = await createClient();
 
   const { data: course } = await supabase
     .from("courses")
     .select("*")
-    .eq("id", params.courseId)
+    .eq("id", courseId)
     .single();
 
   if (!course) notFound();
