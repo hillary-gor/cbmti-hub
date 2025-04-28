@@ -3,17 +3,21 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import { AssessmentList } from "./components/AssessmentList";
 
-export default async function CourseAssessmentsPage({
-  params,
-}: {
-  params: { courseId: string };
-}) {
+type PageProps = {
+  params: Promise<{ courseId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function CourseAssessmentsPage({ params }: PageProps) {
+  const awaitedParams = await params;
+  const { courseId } = awaitedParams;
+
   const supabase = await createClient();
 
   const { data: course } = await supabase
     .from("courses")
     .select("id, title")
-    .eq("id", params.courseId)
+    .eq("id", courseId)
     .single();
 
   if (!course) notFound();
