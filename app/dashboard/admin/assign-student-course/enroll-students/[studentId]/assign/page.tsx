@@ -2,26 +2,22 @@ import { createClient } from "@/utils/supabase/server";
 import { AssignForm } from "../../components/AssignForm";
 
 interface AssignStudentPageProps {
-  params: Promise<{ studentId: string }>;
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: { studentId: string };
 }
 
 export default async function AssignStudentPage({ params }: AssignStudentPageProps) {
-  const awaitedParams = await params;
-  const { studentId } = awaitedParams;
+  const { studentId } = params;
 
   const supabase = await createClient();
 
   const [coursesRes, intakesRes, studentRes] = await Promise.all([
     supabase.from("courses").select("id, title"),
     supabase.from("intakes").select("id, label"),
-    supabase
-      .from("students")
-      .select("id, full_name")
-      .eq("id", studentId)
-      .single(),
+    supabase.from("students").select("id, full_name").eq("id", studentId).single(),
   ]);
 
+  if (coursesRes.error) throw new Error(coursesRes.error.message);
+  if (intakesRes.error) throw new Error(intakesRes.error.message);
   if (studentRes.error) throw new Error(studentRes.error.message);
   if (!studentRes.data) throw new Error("Student not found.");
 
