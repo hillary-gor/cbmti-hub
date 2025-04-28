@@ -1,8 +1,8 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
+import { ReactNode } from "react";
 
 const tabs = [
   { slug: "overview", label: "Overview" },
@@ -11,15 +11,13 @@ const tabs = [
   { slug: "announcements", label: "Announcements" },
 ];
 
-type LayoutProps = {
+interface LayoutProps {
   children: ReactNode;
-  params: Promise<{ courseId: string }>;
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-};
+  params: { courseId: string }; // ✅ Direct object — no Promise!
+}
 
 export default async function CourseDetailLayout({ children, params }: LayoutProps) {
-  const awaitedParams = await params;
-  const { courseId } = awaitedParams;
+  const { courseId } = params; // ✅ no await!
 
   const supabase = await createClient();
   const { data: course } = await supabase
