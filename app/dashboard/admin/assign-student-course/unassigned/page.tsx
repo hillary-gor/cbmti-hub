@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
+import { AssignLink } from "./AssignLink";
 
 interface Student {
   id: string;
@@ -14,7 +14,8 @@ export default async function UnassignedStudentsPage() {
   const { data: students, error } = await supabase
     .from("students")
     .select("id, full_name, email, created_at")
-    .or("course_id.is.null,intake_id.is.null");
+    .or("course_id.is.null,intake_id.is.null")
+    .returns<Student[]>(); // <<< tells typescript to expect Student[]
 
   if (error) throw new Error(error.message);
 
@@ -32,23 +33,15 @@ export default async function UnassignedStudentsPage() {
           </tr>
         </thead>
         <tbody>
-          {students?.map((student: Student) => (
-            <tr
-              key={student.id}
-              className="border-t hover:bg-accent transition"
-            >
+          {students?.map((student) => (
+            <tr key={student.id} className="border-t hover:bg-accent transition">
               <td className="px-4 py-2">{student.full_name}</td>
               <td className="px-4 py-2">{student.email}</td>
               <td className="px-4 py-2 text-muted-foreground">
                 {new Date(student.created_at).toLocaleDateString()}
               </td>
               <td className="px-4 py-2">
-                <Link
-                  href={`/dashboard/admin/assign-student-course/enroll-students/${student.id}/assign`}
-                  className="text-blue-600 hover:underline"
-                >
-                  Assign Course & Intake
-                </Link>
+                <AssignLink studentId={student.id} />
               </td>
             </tr>
           ))}

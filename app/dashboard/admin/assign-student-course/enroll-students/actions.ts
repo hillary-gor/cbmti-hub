@@ -12,7 +12,7 @@ const assignSchema = z.object({
   studentId: z.string().uuid(),
   courseId: z.string().uuid(),
   intakeId: z.string().uuid(),
-  // ⛔ removed reg_number from the schema
+
 });
 
 export default async function assignStudentToCourse(
@@ -23,7 +23,7 @@ export default async function assignStudentToCourse(
     studentId: formData.get("studentId"),
     courseId: formData.get("courseId"),
     intakeId: formData.get("intakeId"),
-    // ⛔ removed reg_number from raw form parsing
+   
   };
 
   const parse = assignSchema.safeParse(raw);
@@ -40,7 +40,7 @@ export default async function assignStudentToCourse(
     .update({
       course_id: courseId,
       intake_id: intakeId,
-      // ⛔ no reg_number update anymore
+     
     })
     .eq("id", studentId);
 

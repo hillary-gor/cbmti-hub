@@ -18,7 +18,6 @@ interface AssignFormProps {
   studentId: string;
   courses: { id: string; title: string }[];
   intakes: { id: string; label: string }[];
-  // ⛔ removed generatedRegNumber from props
 }
 
 export function AssignForm({
@@ -45,7 +44,7 @@ export function AssignForm({
     <>
       <form action={formAction} className="space-y-4">
         <input type="hidden" name="studentId" value={studentId} />
-        {/* ⛔ removed hidden reg_number */}
+        {/* removed hidden reg_number */}
 
         <div>
           <label htmlFor="courseId" className="block text-sm mb-1">

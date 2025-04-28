@@ -2,13 +2,13 @@ import { createClient } from "@/utils/supabase/server";
 import { AssignForm } from "../../components/AssignForm";
 
 interface AssignStudentPageProps {
-  params: { studentId: string };
+  params: Promise<{ studentId: string }>;
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default async function AssignStudentPage({
-  params,
-}: AssignStudentPageProps) {
-  const { studentId } = params;
+export default async function AssignStudentPage({ params }: AssignStudentPageProps) {
+  const awaitedParams = await params;
+  const { studentId } = awaitedParams;
 
   const supabase = await createClient();
 
