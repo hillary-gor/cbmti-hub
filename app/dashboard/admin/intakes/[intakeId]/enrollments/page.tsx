@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { format } from "date-fns";
 
 type PageProps = {
-  params: { intakeId: string };
+  params: Promise<{ intakeId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 type EnrollmentRow = {
@@ -15,13 +16,16 @@ type EnrollmentRow = {
 };
 
 export default async function IntakeEnrollmentsPage({ params }: PageProps) {
+  const awaitedParams = await params;
+  const { intakeId } = awaitedParams;
+
   const supabase = await createClient();
 
   // Fetch intake
   const { data: intake, error: intakeError } = await supabase
     .from("intakes")
     .select("id, label")
-    .eq("id", params.intakeId)
+    .eq("id", intakeId)
     .single();
 
   if (!intake || intakeError) {
@@ -31,16 +35,14 @@ export default async function IntakeEnrollmentsPage({ params }: PageProps) {
   // Fetch enrollments with joins
   const { data, error } = await supabase
     .from("enrollments")
-    .select(
-      `
+    .select(`
       id,
       status,
       enrolled_at,
       students:students ( reg_number ),
       courses:courses ( title )
-    `,
-    )
-    .eq("intake_id", params.intakeId)
+    `)
+    .eq("intake_id", intakeId)
     .order("enrolled_at", { ascending: false });
 
   if (error || !data) {
@@ -62,7 +64,7 @@ export default async function IntakeEnrollmentsPage({ params }: PageProps) {
       enrolled_at: e.enrolled_at,
       students: Array.isArray(e.students) ? (e.students[0] ?? null) : null,
       courses: Array.isArray(e.courses) ? (e.courses[0] ?? null) : null,
-    }),
+    })
   );
 
   return (
@@ -106,7 +108,7 @@ export default async function IntakeEnrollmentsPage({ params }: PageProps) {
                     {enrollment.enrolled_at
                       ? format(
                           new Date(enrollment.enrolled_at),
-                          "dd MMM yyyy, hh:mm a",
+                          "dd MMM yyyy, hh:mm a"
                         )
                       : "—"}
                   </td>
