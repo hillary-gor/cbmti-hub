@@ -1,4 +1,4 @@
-import { CreateAuthUserForm } from "../components/CreateAuthUserForm";
+import { CreateAuthUserForm } from "./components/CreateAuthUserForm";
 
 export default function Page() {
   return (
