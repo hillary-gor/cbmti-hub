@@ -4,11 +4,15 @@ import { notFound } from "next/navigation";
 import { format } from "date-fns";
 
 type PageProps = {
-  params: { intakeId: string };
+  params: Promise<{ intakeId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function RegisterPage({ params }: PageProps) {
-  const data = await getRegisterPageData(params.intakeId);
+  const awaitedParams = await params;
+  const { intakeId } = awaitedParams;
+
+  const data = await getRegisterPageData(intakeId);
 
   if (!data?.intake) notFound();
 
