@@ -1,4 +1,3 @@
-// app/dashboard/lecturer/courses/[courseId]/layout.tsx
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReactNode } from "react";
 import { notFound } from "next/navigation";
@@ -12,18 +11,21 @@ const tabs = [
   { slug: "announcements", label: "Announcements" },
 ];
 
-export default async function CourseDetailLayout({
-  children,
-  params,
-}: {
+type LayoutProps = {
   children: ReactNode;
-  params: { courseId: string };
-}) {
+  params: Promise<{ courseId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function CourseDetailLayout({ children, params }: LayoutProps) {
+  const awaitedParams = await params;
+  const { courseId } = awaitedParams;
+
   const supabase = await createClient();
   const { data: course } = await supabase
     .from("courses")
     .select("id, title")
-    .eq("id", params.courseId)
+    .eq("id", courseId)
     .single();
 
   if (!course) notFound();
