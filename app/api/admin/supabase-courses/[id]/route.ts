@@ -1,16 +1,20 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } },
-) {
+export async function GET(req: Request) {
   const supabase = await createClient();
+
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
+
+  if (!id) {
+    return NextResponse.json({ error: "Missing course ID" }, { status: 400 });
+  }
 
   const { data, error } = await supabase
     .from("courses")
     .select("id, code, name, department_id, departments(id, name)")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (error) {
