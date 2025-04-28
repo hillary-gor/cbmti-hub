@@ -1,10 +1,12 @@
-// app/dashboard/lecturer/courses/[courseId]/page.tsx
 import { redirect } from "next/navigation";
 
-export default function CourseIndexRedirect({
+export default async function CourseIndexRedirect({
   params,
 }: {
-  params: { courseId: string };
+  params: Promise<{ courseId: string }>;
 }) {
-  redirect(`/dashboard/lecturer/courses/${params.courseId}/overview`);
+  const awaitedParams = await params;
+  const { courseId } = awaitedParams;
+
+  redirect(`/dashboard/lecturer/courses/${courseId}/overview`);
 }
