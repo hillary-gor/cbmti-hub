@@ -3,7 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 import { generateSignedUrl, deleteFileDirect } from "./actions";
 
 type PageProps = {
-  params: { intakeId: string };
+  params: Promise<{ intakeId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 type SupabaseFileRecord = {
@@ -21,6 +22,9 @@ type SupabaseFileRecord = {
 };
 
 export default async function DocumentsPage({ params }: PageProps) {
+  const awaitedParams = await params;
+  const { intakeId } = awaitedParams;
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -38,7 +42,7 @@ export default async function DocumentsPage({ params }: PageProps) {
         reg_number,
         intake_id
       )
-    `,
+    `
     )
     .order("uploaded_at", { ascending: false });
 
@@ -49,7 +53,7 @@ export default async function DocumentsPage({ params }: PageProps) {
   const typed = data as unknown as SupabaseFileRecord[];
 
   const filesForIntake = typed.filter(
-    (f) => f.student?.intake_id === params.intakeId,
+    (f) => f.student?.intake_id === intakeId
   );
 
   return (
@@ -119,7 +123,7 @@ export default async function DocumentsPage({ params }: PageProps) {
                             onClick={(e) => {
                               if (
                                 !confirm(
-                                  "Are you sure you want to delete this file?",
+                                  "Are you sure you want to delete this file?"
                                 )
                               ) {
                                 e.preventDefault();
@@ -132,7 +136,7 @@ export default async function DocumentsPage({ params }: PageProps) {
                       </td>
                     </tr>
                   );
-                }),
+                })
               )}
             </tbody>
           </table>
