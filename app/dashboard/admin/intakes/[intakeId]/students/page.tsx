@@ -2,11 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 
 type PageProps = {
-  params: { intakeId: string };
-  searchParams?: {
-    q?: string;
-    course?: string;
-  };
+  params: Promise<{ intakeId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 type SupabaseEnrollment = {
@@ -33,12 +30,16 @@ export default async function IntakeStudentsPage({
   params,
   searchParams,
 }: PageProps) {
+  const awaitedParams = await params;
+  const awaitedSearchParams = searchParams ? await searchParams : {};
+
+  const { intakeId } = awaitedParams;
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("enrollments")
-    .select(
-      `
+    .select(`
       id,
       students (
         reg_number,
@@ -48,9 +49,8 @@ export default async function IntakeStudentsPage({
       courses (
         title
       )
-    `,
-    )
-    .eq("intake_id", params.intakeId)
+    `)
+    .eq("intake_id", intakeId)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -68,8 +68,8 @@ export default async function IntakeStudentsPage({
     course_title: record.courses?.title ?? "—",
   }));
 
-  const query = searchParams?.q?.toLowerCase() ?? "";
-  const courseFilter = searchParams?.course?.toLowerCase() ?? "";
+  const query = (awaitedSearchParams.q as string | undefined)?.toLowerCase() ?? "";
+  const courseFilter = (awaitedSearchParams.course as string | undefined)?.toLowerCase() ?? "";
 
   const filtered = students.filter((s) => {
     const matchesQuery =
@@ -100,7 +100,7 @@ export default async function IntakeStudentsPage({
             type="search"
             name="q"
             placeholder="Search reg no or name"
-            defaultValue={searchParams?.q ?? ""}
+            defaultValue={awaitedSearchParams.q ?? ""}
             className="w-full rounded-md border px-3 py-2 text-sm"
           />
         </div>
@@ -109,7 +109,7 @@ export default async function IntakeStudentsPage({
           <label className="text-sm font-medium">Filter by course</label>
           <select
             name="course"
-            defaultValue={searchParams?.course ?? ""}
+            defaultValue={awaitedSearchParams.course ?? ""}
             className="w-full rounded-md border px-3 py-2 text-sm"
           >
             <option value="">All courses</option>
