@@ -34,7 +34,10 @@ export default async function UnassignedStudentsPage() {
         </thead>
         <tbody>
           {students?.map((student) => (
-            <tr key={student.id} className="border-t hover:bg-accent transition">
+            <tr
+              key={student.id}
+              className="border-t hover:bg-accent transition"
+            >
               <td className="px-4 py-2">{student.full_name}</td>
               <td className="px-4 py-2">{student.email}</td>
               <td className="px-4 py-2 text-muted-foreground">

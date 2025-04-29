@@ -6,7 +6,9 @@ interface AssignStudentPageProps {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function AssignStudentPage({ params }: AssignStudentPageProps) {
+export default async function AssignStudentPage({
+  params,
+}: AssignStudentPageProps) {
   const awaitedParams = await params;
   const { studentId } = awaitedParams;
 
@@ -15,7 +17,11 @@ export default async function AssignStudentPage({ params }: AssignStudentPagePro
   const [coursesRes, intakesRes, studentRes] = await Promise.all([
     supabase.from("courses").select("id, title"),
     supabase.from("intakes").select("id, label"),
-    supabase.from("students").select("id, full_name").eq("id", studentId).single(),
+    supabase
+      .from("students")
+      .select("id, full_name")
+      .eq("id", studentId)
+      .single(),
   ]);
 
   if (coursesRes.error) throw new Error(coursesRes.error.message);

@@ -12,7 +12,6 @@ const assignSchema = z.object({
   studentId: z.string().uuid(),
   courseId: z.string().uuid(),
   intakeId: z.string().uuid(),
-
 });
 
 export default async function assignStudentToCourse(
@@ -23,7 +22,6 @@ export default async function assignStudentToCourse(
     studentId: formData.get("studentId"),
     courseId: formData.get("courseId"),
     intakeId: formData.get("intakeId"),
-   
   };
 
   const parse = assignSchema.safeParse(raw);
@@ -40,13 +38,15 @@ export default async function assignStudentToCourse(
     .update({
       course_id: courseId,
       intake_id: intakeId,
-     
     })
     .eq("id", studentId);
 
   if (error) {
     console.error("Supabase Update Error:", error);
-    return { success: false, error: "Failed to assign student. Please try again." };
+    return {
+      success: false,
+      error: "Failed to assign student. Please try again.",
+    };
   }
 
   return { success: true };

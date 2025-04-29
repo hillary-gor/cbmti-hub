@@ -16,7 +16,9 @@ export function CreateAuthUserForm() {
     startTransition(async () => {
       const result = await createAuthUser(formData);
       if (result.success && result.userId) {
-        router.push(`/dashboard/admin/legacy-students/update-profile/${result.userId}`);
+        router.push(
+          `/dashboard/admin/legacy-students/update-profile/${result.userId}`,
+        );
       } else {
         setError(result.error || "Something went wrong.");
       }
@@ -25,7 +27,9 @@ export function CreateAuthUserForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <h1 className="text-2xl font-bold mb-4 text-center">Step 1: Create Student</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">
+        Step 1: Create Student
+      </h1>
 
       <div>
         <label className="block mb-1">Full Name</label>
@@ -37,7 +41,11 @@ export function CreateAuthUserForm() {
         <input name="email" type="email" required className="input w-full" />
       </div>
 
-      <button type="submit" disabled={isPending} className="btn btn-primary w-full">
+      <button
+        type="submit"
+        disabled={isPending}
+        className="btn btn-primary w-full"
+      >
         {isPending ? "Creating..." : "Next"}
       </button>
 

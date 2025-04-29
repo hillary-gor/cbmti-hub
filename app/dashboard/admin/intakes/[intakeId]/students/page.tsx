@@ -39,7 +39,8 @@ export default async function IntakeStudentsPage({
 
   const { data, error } = await supabase
     .from("enrollments")
-    .select(`
+    .select(
+      `
       id,
       students (
         reg_number,
@@ -49,7 +50,8 @@ export default async function IntakeStudentsPage({
       courses (
         title
       )
-    `)
+    `,
+    )
     .eq("intake_id", intakeId)
     .order("created_at", { ascending: false });
 
@@ -68,8 +70,10 @@ export default async function IntakeStudentsPage({
     course_title: record.courses?.title ?? "—",
   }));
 
-  const query = (awaitedSearchParams.q as string | undefined)?.toLowerCase() ?? "";
-  const courseFilter = (awaitedSearchParams.course as string | undefined)?.toLowerCase() ?? "";
+  const query =
+    (awaitedSearchParams.q as string | undefined)?.toLowerCase() ?? "";
+  const courseFilter =
+    (awaitedSearchParams.course as string | undefined)?.toLowerCase() ?? "";
 
   const filtered = students.filter((s) => {
     const matchesQuery =

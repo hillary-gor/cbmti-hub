@@ -35,13 +35,15 @@ export default async function IntakeEnrollmentsPage({ params }: PageProps) {
   // Fetch enrollments with joins
   const { data, error } = await supabase
     .from("enrollments")
-    .select(`
+    .select(
+      `
       id,
       status,
       enrolled_at,
       students:students ( reg_number ),
       courses:courses ( title )
-    `)
+    `,
+    )
     .eq("intake_id", intakeId)
     .order("enrolled_at", { ascending: false });
 
@@ -64,7 +66,7 @@ export default async function IntakeEnrollmentsPage({ params }: PageProps) {
       enrolled_at: e.enrolled_at,
       students: Array.isArray(e.students) ? (e.students[0] ?? null) : null,
       courses: Array.isArray(e.courses) ? (e.courses[0] ?? null) : null,
-    })
+    }),
   );
 
   return (
@@ -108,7 +110,7 @@ export default async function IntakeEnrollmentsPage({ params }: PageProps) {
                     {enrollment.enrolled_at
                       ? format(
                           new Date(enrollment.enrolled_at),
-                          "dd MMM yyyy, hh:mm a"
+                          "dd MMM yyyy, hh:mm a",
                         )
                       : "—"}
                   </td>

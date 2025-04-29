@@ -18,7 +18,7 @@ interface SendEmailProps {
 
 export async function sendEmail({ to, subject, html }: SendEmailProps) {
   await transporter.sendMail({
-    from: `"CBMTI Admin" <${process.env.EMAIL_FROM}>`, 
+    from: `"CBMTI Admin" <${process.env.EMAIL_FROM}>`,
     to,
     subject,
     html,

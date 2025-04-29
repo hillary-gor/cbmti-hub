@@ -17,7 +17,7 @@ export function UpdateStudentRegNumberForm({ userId }: { userId: string }) {
       const result = await updateStudentRegNumber(userId, regNumber);
       if (result.success) {
         // ✅ No more onSuccess prop — handle routing here directly
-        router.push("/dashboard/admin/legacy-students"); 
+        router.push("/dashboard/admin/legacy-students");
       } else {
         setError(result.error || "Something went wrong.");
       }
@@ -26,7 +26,9 @@ export function UpdateStudentRegNumberForm({ userId }: { userId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <h1 className="text-2xl font-bold mb-4 text-center">Step 3: Assign Registration Number</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">
+        Step 3: Assign Registration Number
+      </h1>
 
       <div>
         <label className="block mb-1">Registration Number</label>
@@ -39,7 +41,11 @@ export function UpdateStudentRegNumberForm({ userId }: { userId: string }) {
         />
       </div>
 
-      <button type="submit" disabled={isPending} className="btn btn-primary w-full">
+      <button
+        type="submit"
+        disabled={isPending}
+        className="btn btn-primary w-full"
+      >
         {isPending ? "Assigning..." : "Finish"}
       </button>
 

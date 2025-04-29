@@ -87,7 +87,7 @@ export default function SignUpPage() {
             disabled={isPending}
             className="w-full bg-[#329EE8] hover:bg-[#258ed2] text-white"
           >
-            Sign Up
+            {isPending ? "Signing Up..." : "Sign Up"}
           </LoadingButton>
 
           {error && <p className="text-sm text-red-500 mt-2">{error}</p>}

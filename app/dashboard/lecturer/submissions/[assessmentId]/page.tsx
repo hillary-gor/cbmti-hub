@@ -7,7 +7,9 @@ type SubmissionsPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function SubmissionsPage({ params }: SubmissionsPageProps) {
+export default async function SubmissionsPage({
+  params,
+}: SubmissionsPageProps) {
   const awaitedParams = await params;
   const { assessmentId } = awaitedParams;
 

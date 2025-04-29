@@ -21,7 +21,10 @@ interface AssignFormProps {
 }
 
 export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
-  const [state, formAction] = useActionState(assignStudentToCourse, initialState);
+  const [state, formAction] = useActionState(
+    assignStudentToCourse,
+    initialState,
+  );
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
@@ -44,7 +47,10 @@ export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
 
         {/* Course Selection */}
         <div className="space-y-2">
-          <label htmlFor="courseId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="courseId"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Select Course
           </label>
           <select
@@ -64,7 +70,10 @@ export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
 
         {/* Intake Selection */}
         <div className="space-y-2">
-          <label htmlFor="intakeId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="intakeId"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Select Intake
           </label>
           <select
@@ -92,13 +101,15 @@ export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
         </button>
 
         {/* Error */}
-        {state?.error && (
-          <p className="text-red-500 text-sm">{state.error}</p>
-        )}
+        {state?.error && <p className="text-red-500 text-sm">{state.error}</p>}
       </form>
 
       {/* Success Modal */}
-      <Dialog open={showModal} onClose={() => setShowModal(false)} className="relative z-50">
+      <Dialog
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        className="relative z-50"
+      >
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 w-full max-w-sm text-center border dark:border-zinc-700 shadow-lg">
             <CheckCircle className="mx-auto text-green-500 h-10 w-10 mb-2" />

@@ -7,7 +7,9 @@ type CourseStudentsPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function CourseStudentsPage({ params }: CourseStudentsPageProps) {
+export default async function CourseStudentsPage({
+  params,
+}: CourseStudentsPageProps) {
   const awaitedParams = await params;
   const { courseId } = awaitedParams;
 

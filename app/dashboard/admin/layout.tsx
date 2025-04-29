@@ -10,7 +10,10 @@ const navItems = [
   { label: "🏠 Dashboard", href: "/dashboard/admin" },
   { label: "📚 Intakes", href: "/dashboard/admin/intakes" },
   { label: "👨‍🎓 Students", href: "/dashboard/admin/students" },
-  { label: "📝 Unassigned Students", href: "/dashboard/admin/assign-student-course/unassigned" },
+  {
+    label: "📝 Unassigned Students",
+    href: "/dashboard/admin/assign-student-course/unassigned",
+  },
   { label: "📜 Old Students", href: "/dashboard/admin/legacy-students" }, // ➡️ NEW for Admin to add Old Students
   { label: "👥 Staff Accounts", href: "/dashboard/admin/staff" },
   { label: "⚙️ Settings", href: "/dashboard/settings" },

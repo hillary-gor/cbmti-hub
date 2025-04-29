@@ -42,7 +42,7 @@ export default async function DocumentsPage({ params }: PageProps) {
         reg_number,
         intake_id
       )
-    `
+    `,
     )
     .order("uploaded_at", { ascending: false });
 
@@ -52,9 +52,7 @@ export default async function DocumentsPage({ params }: PageProps) {
 
   const typed = data as unknown as SupabaseFileRecord[];
 
-  const filesForIntake = typed.filter(
-    (f) => f.student?.intake_id === intakeId
-  );
+  const filesForIntake = typed.filter((f) => f.student?.intake_id === intakeId);
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4 space-y-6">
@@ -123,7 +121,7 @@ export default async function DocumentsPage({ params }: PageProps) {
                             onClick={(e) => {
                               if (
                                 !confirm(
-                                  "Are you sure you want to delete this file?"
+                                  "Are you sure you want to delete this file?",
                                 )
                               ) {
                                 e.preventDefault();
@@ -136,7 +134,7 @@ export default async function DocumentsPage({ params }: PageProps) {
                       </td>
                     </tr>
                   );
-                })
+                }),
               )}
             </tbody>
           </table>

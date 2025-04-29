@@ -28,16 +28,19 @@ export async function createAuthUser(formData: FormData) {
     return { success: false, error: "Full Name and Email are required." };
   }
 
-  const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
-    email,
-    email_confirm: true,
-    password: UNIVERSAL_PASSWORD,
-    user_metadata: { full_name },
-  });
+  const { data: authUser, error: authError } =
+    await supabase.auth.admin.createUser({
+      email,
+      email_confirm: true,
+      password: UNIVERSAL_PASSWORD,
+      user_metadata: { full_name },
+    });
 
   if (authError) {
     if (authError.status === 422 && authError.code === "email_exists") {
-      console.warn("[createAuthUser] Email already exists. Fetching from users table...");
+      console.warn(
+        "[createAuthUser] Email already exists. Fetching from users table...",
+      );
 
       for (let attempt = 1; attempt <= 3; attempt++) {
         const { data: existingUser } = await supabase
@@ -47,18 +50,27 @@ export async function createAuthUser(formData: FormData) {
           .maybeSingle();
 
         if (existingUser?.id) {
-          console.log(`[createAuthUser] Found existing user after ${attempt} attempt(s).`);
+          console.log(
+            `[createAuthUser] Found existing user after ${attempt} attempt(s).`,
+          );
           return { success: true, userId: existingUser.id };
         }
 
         if (attempt < 3) {
-          console.warn(`[createAuthUser] User not found. Retrying attempt ${attempt}...`);
+          console.warn(
+            `[createAuthUser] User not found. Retrying attempt ${attempt}...`,
+          );
           await wait(1000); // wait 1 second before next try
         }
       }
 
-      console.error("[createAuthUser] Failed fetching existing user after retries.");
-      return { success: false, error: "User exists but could not fetch user record." };
+      console.error(
+        "[createAuthUser] Failed fetching existing user after retries.",
+      );
+      return {
+        success: false,
+        error: "User exists but could not fetch user record.",
+      };
     }
 
     console.error("[createAuthUser] Unexpected error:", authError);
@@ -108,7 +120,10 @@ export async function updateUserProfile(userId: string, data: ProfileData) {
  * - Updates students.reg_number
  * - Sends welcome email after success
  */
-export async function updateStudentRegNumber(userId: string, reg_number: string) {
+export async function updateStudentRegNumber(
+  userId: string,
+  reg_number: string,
+) {
   const supabase = await createClient();
 
   const { error: updateError } = await supabase
@@ -117,7 +132,10 @@ export async function updateStudentRegNumber(userId: string, reg_number: string)
     .eq("user_id", userId);
 
   if (updateError) {
-    console.error("[updateStudentRegNumber] Error updating reg number:", updateError);
+    console.error(
+      "[updateStudentRegNumber] Error updating reg number:",
+      updateError,
+    );
     return { success: false, error: "Failed updating registration number." };
   }
 
@@ -128,7 +146,10 @@ export async function updateStudentRegNumber(userId: string, reg_number: string)
     .maybeSingle();
 
   if (fetchError || !userData) {
-    console.error("[updateStudentRegNumber] Failed fetching user for email:", fetchError);
+    console.error(
+      "[updateStudentRegNumber] Failed fetching user for email:",
+      fetchError,
+    );
     return { success: true }; // Still mark success even if email fails
   }
 
@@ -140,7 +161,10 @@ export async function updateStudentRegNumber(userId: string, reg_number: string)
       full_name: userData.full_name,
     });
   } catch (emailError) {
-    console.error("[updateStudentRegNumber] Failed sending welcome email:", emailError);
+    console.error(
+      "[updateStudentRegNumber] Failed sending welcome email:",
+      emailError,
+    );
     // Continue, since reg_number is updated
   }
 
