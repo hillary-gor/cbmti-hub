@@ -3,15 +3,15 @@ import { getCourseEnrollments } from "./actions";
 import { StudentTable } from "./components/StudentTable";
 
 type CourseStudentsPageProps = {
-  params: {
-    courseId: string;
-  };
+  params: Promise<{ courseId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function CourseStudentsPage({
-  params,
-}: CourseStudentsPageProps) {
-  const enrollments = await getCourseEnrollments(params.courseId);
+export default async function CourseStudentsPage({ params }: CourseStudentsPageProps) {
+  const awaitedParams = await params;
+  const { courseId } = awaitedParams;
+
+  const enrollments = await getCourseEnrollments(courseId);
 
   if (!enrollments || enrollments.length === 0) {
     return notFound();
