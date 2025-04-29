@@ -28,7 +28,6 @@ export async function getStudentDashboardData() {
 
   if (error || !data) return null;
 
-  // Runtime-safe: handle array or object
   let fullName = "Student";
   if (Array.isArray(data.users)) {
     fullName = data.users[0]?.full_name ?? "Student";
@@ -36,17 +35,14 @@ export async function getStudentDashboardData() {
     fullName = (data.users as { full_name?: string })?.full_name ?? "Student";
   }
 
-  // Fix: Flatten nested courses array if needed
   const courses =
     data.enrollments?.flatMap((e) =>
-      Array.isArray(e.courses) ? e.courses : [e.courses],
+      Array.isArray(e.courses) ? e.courses : [e.courses]
     ) ?? [];
 
-  // Fix: Return first transcript item or null
-  const transcript =
-    Array.isArray(data.v_transcript_data) && data.v_transcript_data.length > 0
-      ? data.v_transcript_data[0]
-      : (data.v_transcript_data ?? null);
+  const transcript = Array.isArray(data.v_transcript_data)
+    ? data.v_transcript_data[0] ?? null
+    : data.v_transcript_data ?? null;
 
   return {
     full_name: fullName,

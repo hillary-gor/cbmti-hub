@@ -28,11 +28,7 @@ export default async function StudentDashboardPage() {
       </section>
 
       <section aria-label="Courses">
-        <MyCourses
-          courses={
-            Array.isArray(data.courses[0]) ? data.courses.flat() : data.courses
-          }
-        />
+        <MyCourses courses={data.courses} />
       </section>
 
       <section aria-label="Grades">
@@ -48,13 +44,7 @@ export default async function StudentDashboardPage() {
       </section>
 
       <section aria-label="Transcript">
-        <TranscriptSection
-          transcript={
-            Array.isArray(data.transcript)
-              ? data.transcript[0]
-              : data.transcript
-          }
-        />
+        <TranscriptSection transcript={data.transcript} />
       </section>
 
       <section aria-label="Attendance">
