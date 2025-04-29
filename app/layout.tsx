@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CBMTI Hub",
+  title: "CBMTI eHub",
   description: "Empowering Healthcare Students Across Kenya",
 };
 
