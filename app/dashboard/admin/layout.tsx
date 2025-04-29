@@ -14,7 +14,7 @@ const navItems = [
     label: "📝 Unassigned Students",
     href: "/dashboard/admin/assign-student-course/unassigned",
   },
-  { label: "📜 Old Students", href: "/dashboard/admin/legacy-students" }, // ➡️ NEW for Admin to add Old Students
+  { label: "📜 Old Students", href: "/dashboard/admin/legacy-students" },
   { label: "👥 Staff Accounts", href: "/dashboard/admin/staff" },
   { label: "⚙️ Settings", href: "/dashboard/settings" },
 ];
