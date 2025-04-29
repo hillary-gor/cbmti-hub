@@ -2,17 +2,21 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import { SubmissionTable } from "./components/SubmissionTable";
 
-export default async function SubmissionsPage({
-  params,
-}: {
-  params: { assessmentId: string };
-}) {
+type SubmissionsPageProps = {
+  params: Promise<{ assessmentId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function SubmissionsPage({ params }: SubmissionsPageProps) {
+  const awaitedParams = await params;
+  const { assessmentId } = awaitedParams;
+
   const supabase = await createClient();
 
   const { data: assessment } = await supabase
     .from("assessments")
     .select("id, title, course_id")
-    .eq("id", params.assessmentId)
+    .eq("id", assessmentId)
     .single();
 
   if (!assessment) notFound();
