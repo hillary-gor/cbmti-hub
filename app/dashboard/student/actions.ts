@@ -4,53 +4,51 @@ import { createClient } from "@/utils/supabase/server";
 
 export async function getStudentDashboardData() {
   const supabase = await createClient();
+  
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data, error } = await supabase
+  const { data: userData, error: userError } = await supabase
+    .from("users")
+    .select("role, full_name")
+    .eq("id", user.id)
+    .single();
+
+  if (userError || !userData || userData.role !== "student") return null;
+
+  const { data: studentData, error: studentError } = await supabase
     .from("students")
-    .select(
-      `
-      id,
-      users(full_name),
+    .select(`
       enrollments(courses(name, code, instructor)),
       grades(subject, score),
       student_fees(amount_due, due_date),
       certificates(title, file_url),
       v_transcript_data(file_url, gpa),
       attendance(date, status)
-    `,
-    )
+    `)
     .eq("id", user.id)
     .single();
 
-  if (error || !data) return null;
-
-  let fullName = "Student";
-  if (Array.isArray(data.users)) {
-    fullName = data.users[0]?.full_name ?? "Student";
-  } else if (data.users && typeof data.users === "object") {
-    fullName = (data.users as { full_name?: string })?.full_name ?? "Student";
-  }
+  if (studentError || !studentData) return null;
 
   const courses =
-    data.enrollments?.flatMap((e) =>
+    studentData.enrollments?.flatMap((e) =>
       Array.isArray(e.courses) ? e.courses : [e.courses]
     ) ?? [];
 
-  const transcript = Array.isArray(data.v_transcript_data)
-    ? data.v_transcript_data[0] ?? null
-    : data.v_transcript_data ?? null;
+  const transcript = Array.isArray(studentData.v_transcript_data)
+    ? studentData.v_transcript_data[0] ?? null
+    : studentData.v_transcript_data ?? null;
 
   return {
-    full_name: fullName,
+    full_name: userData.full_name, // from users table
     courses,
-    grades: data.grades ?? [],
-    fees: data.student_fees ?? [],
-    certificates: data.certificates ?? [],
+    grades: studentData.grades ?? [],
+    fees: studentData.student_fees ?? [],
+    certificates: studentData.certificates ?? [],
     transcript,
-    attendance: data.attendance ?? [],
+    attendance: studentData.attendance ?? [],
   };
 }
