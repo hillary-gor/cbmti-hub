@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { getUserAndRole } from "@/lib/auth";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
-import clsx from "clsx"; // Or replace with your own `cn()`
+import clsx from "clsx";
 
 const navSections = [
   {
@@ -18,13 +18,14 @@ const navSections = [
   {
     label: "🎓 Academic",
     items: [
+      { label: "Transcript", href: "/dashboard/student/transcript" },
       { label: "Overview", href: "/dashboard/student/overview" },
     ],
   },
   {
     label: "💵 Finance",
     items: [
-      { label: "Fee Balance", href: "/dashboard/student/fees" }, // placeholder
+      { label: "Fee Balance", href: "/dashboard/student/fees" },
     ],
   },
   {
