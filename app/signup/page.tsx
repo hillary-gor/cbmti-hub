@@ -10,6 +10,9 @@ import { CheckCircle } from "lucide-react";
 const logoUrl =
   "https://gowiaewbjsdsvihqmsyg.supabase.co/storage/v1/object/public/assets/logo.svg";
 
+const illustrationUrl =
+  "https://gowiaewbjsdsvihqmsyg.supabase.co/storage/v1/object/public/assets//Sandra-signup-illustration.JPG";
+
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -32,77 +35,96 @@ export default function SignUpPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-background px-4">
-      <div className="w-full max-w-sm space-y-6 bg-white dark:bg-zinc-900 shadow-xl p-6 rounded-2xl border border-gray-200 dark:border-zinc-800">
-        {/* Logo */}
-        <div className="flex justify-center">
+      <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white dark:bg-zinc-900 shadow-xl rounded-2xl overflow-hidden border border-gray-200 dark:border-zinc-800">
+        {/* Left Image Section */}
+        <div className="hidden md:block md:w-1/2 relative">
           <Image
-            src={logoUrl}
-            alt="CBMTI Logo"
-            width={64}
-            height={64}
-            className="object-contain"
+            src={illustrationUrl}
+            alt="Signup Illustration"
+            fill
+            className="object-cover"
             priority
           />
         </div>
 
-        {/* Heading */}
-        <div className="text-center text-lg font-bold text-gray-800 dark:text-white">
-          Join CBMTI eHub
-        </div>
-
-        {/* Signup Form */}
-        <form className="space-y-4" action={handleSubmit}>
-          <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              autoComplete="email"
-              className="w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#329EE8] focus:border-[#329EE8] transition"
+        {/* Right Form Section */}
+        <div className="w-full md:w-1/2 p-8 space-y-6">
+          {/* Logo */}
+          <div className="flex justify-center">
+            <Image
+              src={logoUrl}
+              alt="CBMTI Logo"
+              width={64}
+              height={64}
+              className="object-contain"
+              priority
             />
           </div>
 
-          <div className="space-y-2">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              autoComplete="new-password"
-              className="w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#329EE8] focus:border-[#329EE8] transition"
-            />
+          {/* Heading */}
+          <div className="text-center text-lg font-bold text-gray-800 dark:text-white">
+            Join CBMTI eHub
           </div>
 
-          <LoadingButton
-            logoUrl={logoUrl}
-            type="submit"
-            disabled={isPending}
-            className="w-full bg-[#329EE8] hover:bg-[#258ed2] text-white"
-          >
-            {isPending ? "Signing Up..." : "Sign Up"}
-          </LoadingButton>
+          {/* Signup Form */}
+          <form className="space-y-4" action={handleSubmit}>
+            {/* Email */}
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                className="w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#329EE8] focus:border-[#329EE8] transition"
+              />
+            </div>
 
-          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
-        </form>
+            {/* Password */}
+            <div className="space-y-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                autoComplete="new-password"
+                className="w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#329EE8] focus:border-[#329EE8] transition"
+              />
+            </div>
 
-        <div className="pt-4 text-center text-sm text-gray-600 dark:text-zinc-400">
-          Already have an account?{" "}
-          <a href="/login" className="text-[#329EE8] hover:underline">
-            Log In
-          </a>
+            {/* Submit Button */}
+            <LoadingButton
+              logoUrl={logoUrl}
+              type="submit"
+              disabled={isPending}
+              className="w-full bg-[#329EE8] hover:bg-[#258ed2] text-white"
+            >
+              {isPending ? "Signing Up..." : "Sign Up"}
+            </LoadingButton>
+
+            {/* Error */}
+            {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+          </form>
+
+          {/* Footer */}
+          <div className="pt-4 text-center text-sm text-gray-600 dark:text-zinc-400">
+            Already have an account?{" "}
+            <a href="/login" className="text-[#329EE8] hover:underline">
+              Log In
+            </a>
+          </div>
         </div>
       </div>
 
