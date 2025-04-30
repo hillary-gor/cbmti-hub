@@ -29,7 +29,7 @@ export default function LoginPage() {
 
         {/* Heading */}
         <div className="text-center text-lg font-bold text-gray-800 dark:text-white">
-          CBMTI Hub
+          CBMTI eHub
         </div>
 
         {/* Email + Password Login */}

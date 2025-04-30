@@ -45,6 +45,11 @@ export default function SignUpPage() {
           />
         </div>
 
+        {/* Heading */}
+        <div className="text-center text-lg font-bold text-gray-800 dark:text-white">
+          Join CBMTI eHub
+        </div>
+
         {/* Signup Form */}
         <form className="space-y-4" action={handleSubmit}>
           <div className="space-y-2">
