@@ -10,6 +10,8 @@ export default async function StudentOverviewPage() {
       <div className="p-6 space-y-4">
         <h1 className="text-2xl font-bold">Student Overview</h1>
         <p className="text-gray-500">Unable to load student data. Please try again later.</p>
+        <p className="text-gray-500">This system is still under rigorous maintenance to make sure you are able to access every informations regarding your program at code blue medica,</p>
+        <p  className="text-2xl font-bold">Stay tuned check regularly for updates</p>
       </div>
     );
   }
