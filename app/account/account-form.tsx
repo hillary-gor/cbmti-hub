@@ -188,7 +188,7 @@ export function AccountForm({ userId }: { userId: string }) {
 
         {/* Avatar Upload */}
         <div>
-          <label className="font-semibold">Avatar</label>
+          <label className="font-semibold">Picture</label>
           <input
             type="file"
             accept="image/*"

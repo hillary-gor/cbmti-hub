@@ -13,6 +13,7 @@ const navSections = [
     items: [
       { label: "View Profile", href: "/dashboard/student/my-profile" },
       { label: "Edit Profile", href: "/dashboard/student/my-profile/edit" },
+      { label: "My Tag", href: "/dashboard/student/tag" },
     ],
   },
   {
