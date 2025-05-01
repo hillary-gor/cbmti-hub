@@ -20,26 +20,32 @@ export async function upsertStudentGrade(formData: FormData) {
   const course_id = formData.get("course_id")?.toString().trim();
 
   if (!student_id || !course_id) {
-    console.error("Missing student_id or course_id:", { student_id, course_id });
+    console.error("Missing student_id or course_id:", {
+      student_id,
+      course_id,
+    });
     throw new Error("Missing required fields.");
   }
 
-  const cat1 = Number(formData.get("cat1")) || 0;
-  const cat2 = Number(formData.get("cat2")) || 0;
-  const cat3 = Number(formData.get("cat3")) || 0;
-  const cat4 = Number(formData.get("cat4")) || 0;
-  const fqe = Number(formData.get("fqe")) || 0;
-  const sup_fqe = Number(formData.get("sup_fqe")) || 0;
+  // Extract all grade fields as numbers, defaulting to 0
+  const gradeFields = [
+    "cat1",
+    "cat2",
+    "cat3",
+    "cat4",
+    "sup_cat",
+    "fqe",
+    "sup_fqe",
+  ] as const;
+  const grades: Record<(typeof gradeFields)[number], number> =
+    Object.fromEntries(
+      gradeFields.map((field) => [field, Number(formData.get(field)) || 0])
+    ) as Record<(typeof gradeFields)[number], number>;
 
   const payload = {
     student_id,
     course_id,
-    cat1,
-    cat2,
-    cat3,
-    cat4,
-    fqe,
-    sup_fqe,
+    ...grades,
     recorded_by: user.id,
   };
 

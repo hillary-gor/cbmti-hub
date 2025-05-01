@@ -1,7 +1,14 @@
 import { createClient } from "@/utils/supabase/server";
 import { upsertStudentGrade } from "./actions";
 
-type GradeField = "cat1" | "cat2" | "cat3" | "cat4" | "fqe" | "sup_fqe";
+type GradeField =
+  | "cat1"
+  | "cat2"
+  | "cat3"
+  | "cat4"
+  | "sup_cat"
+  | "fqe"
+  | "sup_fqe";
 
 export default async function GradeManagePage({
   searchParams,
@@ -11,8 +18,10 @@ export default async function GradeManagePage({
   const supabase = await createClient();
   const params = await searchParams;
 
-  const course_id = typeof params.course_id === "string" ? params.course_id : "";
-  const intake_id = typeof params.intake_id === "string" ? params.intake_id : "";
+  const course_id =
+    typeof params.course_id === "string" ? params.course_id : "";
+  const intake_id =
+    typeof params.intake_id === "string" ? params.intake_id : "";
 
   if (!course_id || !intake_id) {
     return <p className="p-6 text-red-600">Missing course or intake.</p>;
@@ -29,10 +38,12 @@ export default async function GradeManagePage({
   // Fetch existing grades
   const { data: grades } = await supabase
     .from("grades")
-    .select("student_id, cat1, cat2, cat3, cat4, fqe, sup_fqe")
+    .select("student_id, cat1, cat2, cat3, cat4, sup_cat, fqe, sup_fqe")
     .eq("course_id", course_id);
 
-  const gradesMap = new Map<string, Record<GradeField, number>>(grades?.map((g) => [g.student_id, g]) ?? []);
+  const gradesMap = new Map<string, Record<GradeField, number>>(
+    grades?.map((g) => [g.student_id, g]) ?? []
+  );
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
@@ -42,7 +53,9 @@ export default async function GradeManagePage({
         <thead>
           <tr className="border-b bg-gray-100 dark:bg-zinc-800 text-left">
             <th className="py-2 px-3">Student</th>
-            <th className="py-2 px-3" colSpan={7}>Grades</th>
+            <th className="py-2 px-3" colSpan={8}>
+              Grades
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -52,13 +65,23 @@ export default async function GradeManagePage({
             return (
               <tr key={student.id} className="border-t">
                 <td className="py-2 px-3">{student.full_name}</td>
-                <td className="py-2 px-3" colSpan={7}>
+                <td className="py-2 px-3" colSpan={8}>
                   <form action={upsertStudentGrade}>
                     <input type="hidden" name="student_id" value={student.id} />
                     <input type="hidden" name="course_id" value={course_id} />
 
-                    <div className="grid grid-cols-7 gap-2">
-                      {(["cat1", "cat2", "cat3", "cat4", "fqe", "sup_fqe"] as GradeField[]).map((field) => (
+                    <div className="grid grid-cols-8 gap-2">
+                      {(
+                        [
+                          "cat1",
+                          "cat2",
+                          "cat3",
+                          "cat4",
+                          "sup_cat",
+                          "fqe",
+                          "sup_fqe",
+                        ] as GradeField[]
+                      ).map((field) => (
                         <input
                           key={field}
                           type="number"
