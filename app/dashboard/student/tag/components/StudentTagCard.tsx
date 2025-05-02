@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import ImageCropperModal from './ImageCropperModal'; // Ensure this path is correct
 
 type Props = {
   name: string;
@@ -23,6 +24,9 @@ const StudentTagCard = ({
   photoUrl,
 }: Props) => {
   const tagRef = useRef<HTMLDivElement>(null);
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(photoUrl);
+  const [showCropper, setShowCropper] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const downloadAsImage = async () => {
     if (!tagRef.current) return;
@@ -47,8 +51,36 @@ const StudentTagCard = ({
     pdf.save(`${name.replaceAll(' ', '_')}_tag.pdf`);
   };
 
+  const handleImageClick = () => {
+    document.getElementById('photo-upload')?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setShowCropper(true);
+    }
+  };
+
+  const handleCropComplete = (croppedBlob: Blob) => {
+    const newPhotoUrl = URL.createObjectURL(croppedBlob);
+    setCurrentPhotoUrl(newPhotoUrl);
+    // Optionally, revoke the old object URL to free memory
+    // URL.revokeObjectURL(currentPhotoUrl);
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-100 py-10 px-4 flex flex-col items-center justify-center overflow-hidden">
+      {/* Hidden File Input */}
+      <input
+        type="file"
+        id="photo-upload"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       {/* Tag Card */}
       <div className="w-full flex justify-center overflow-hidden">
         <div
@@ -81,13 +113,21 @@ const StudentTagCard = ({
 
           {/* Body */}
           <div className="flex flex-1 p-8 gap-10 items-start">
-            <div className="relative w-[350px] h-[350px] rounded-full overflow-hidden shadow-md border-4 border-white">
+            <div
+              className="relative w-[350px] h-[350px] rounded-full overflow-hidden shadow-md border-4 border-white cursor-pointer"
+              onClick={handleImageClick}
+            >
               <Image
-                src={photoUrl || '/fallback-avatar.png'}
+                src={currentPhotoUrl || '/fallback-avatar.png'}
                 alt={`${name}'s photo`}
                 fill
                 className="object-cover"
               />
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                <span className="text-white text-xl font-semibold">
+                  Update Photo
+                </span>
+              </div>
             </div>
 
             <div className="flex flex-col justify-center text-lg gap-4">
@@ -150,6 +190,15 @@ const StudentTagCard = ({
           Download as PNG
         </button>
       </div>
+
+      {/* Image Cropper Modal */}
+      {showCropper && selectedFile && (
+        <ImageCropperModal
+          file={selectedFile}
+          onClose={() => setShowCropper(false)}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 };
