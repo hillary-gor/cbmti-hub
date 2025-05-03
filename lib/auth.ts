@@ -1,9 +1,23 @@
-// user + role fetcher
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
 
-export async function getUserAndRole() {
+// Types for user and lecturer
+type UserWithRole = {
+  id: string;
+  full_name: string;
+  role: "student" | "admin" | "lecturer";
+  avatar_url?: string | null;
+};
+
+type Lecturer = {
+  id: string;
+  department: string;
+  user_id: string;
+};
+
+// Authenticated user + role + avatar_url
+export async function getUserAndRole(): Promise<UserWithRole | null> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -13,16 +27,17 @@ export async function getUserAndRole() {
 
   const { data, error } = await supabase
     .from("users")
-    .select("id, full_name, role")
+    .select("id, full_name, role, avatar_url")
     .eq("id", user.id)
     .single();
 
   if (error || !data) return null;
 
-  return data;
+  return data as UserWithRole;
 }
 
-export async function getLecturer() {
+// Fetch lecturer data by user_id
+export async function getLecturer(): Promise<Lecturer | null> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -30,13 +45,13 @@ export async function getLecturer() {
 
   if (!user) return null;
 
-  const { data: lecturer, error } = await supabase
+  const { data, error } = await supabase
     .from("lecturers")
     .select("id, department, user_id")
     .eq("user_id", user.id)
     .single();
 
-  if (error || !lecturer) return null;
+  if (error || !data) return null;
 
-  return lecturer;
+  return data as Lecturer;
 }
