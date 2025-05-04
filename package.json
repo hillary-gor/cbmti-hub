@@ -27,6 +27,7 @@
     "framer-motion": "^12.6.3",
     "html2canvas-pro": "^1.5.10",
     "jspdf": "^3.0.1",
+    "keen-slider": "^6.8.6",
     "lucide-react": "^0.487.0",
     "next": "^15.2.5",
     "nodemailer": "^6.10.1",
