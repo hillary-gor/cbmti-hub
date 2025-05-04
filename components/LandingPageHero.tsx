@@ -37,8 +37,8 @@ export default function Hero() {
   }, [slider])
 
   return (
-    <section className="w-full bg-gradient-to-br from-white via-blue-50 to-white dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 py-16 px-6 md:px-12 lg:px-20">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 items-center gap-10 lg:gap-20">
+    <section className="w-full min-h-screen bg-gradient-to-br from-white via-blue-50 to-white dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 py-16 px-6 md:px-12 lg:px-20">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 items-center gap-10 lg:gap-20 h-full">
         {/* === Left: Text Content === */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
