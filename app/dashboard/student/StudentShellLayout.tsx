@@ -77,7 +77,7 @@ export default function StudentShellLayout({ children }: { children: React.React
         <button onClick={() => setIsOpen(true)}>
           <Menu className="w-6 h-6 text-gray-800 dark:text-white" />
         </button>
-        <span className="font-semibold text-lg text-gray-800 dark:text-white">CBMTI Hub</span>
+        <span className="font-semibold text-lg text-gray-800 dark:text-white">CBMTI eHub</span>
         <div className="flex items-center gap-3">
           <SignOutButton />
           {avatarUrl ? (
