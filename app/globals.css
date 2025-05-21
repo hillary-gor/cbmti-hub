@@ -1,11 +1,4 @@
 @import "tailwindcss";
-@import 'keen-slider/keen-slider.min.css';
-
-
-/* Removed: @import "tw-animate-css" — not needed */
-
-/* Dark mode variant if you're using tailwind-variants or PostCSS */
-@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);

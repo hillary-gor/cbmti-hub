@@ -4,7 +4,7 @@ import Image from 'next/image';
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
 import { useRef, useState } from 'react';
-import ImageCropperModal from './ImageCropperModal'; // Ensure this path is correct
+import ImageCropperModal from './ImageCropperModal';
 
 type Props = {
   name: string;
@@ -66,8 +66,6 @@ const StudentTagCard = ({
   const handleCropComplete = (croppedBlob: Blob) => {
     const newPhotoUrl = URL.createObjectURL(croppedBlob);
     setCurrentPhotoUrl(newPhotoUrl);
-    // Optionally, revoke the old object URL to free memory
-    // URL.revokeObjectURL(currentPhotoUrl);
   };
 
   return (
@@ -81,12 +79,12 @@ const StudentTagCard = ({
         onChange={handleFileChange}
       />
 
-      {/* Tag Card */}
-      <div className="w-full flex justify-center overflow-hidden">
+      {/* Tag Card Wrapper - horizontally scrollable on small devices */}
+      <div className="w-full overflow-auto">
         <div
           id="student-tag"
           ref={tagRef}
-          className="w-[1050px] h-[600px] rounded-xl shadow-lg border overflow-hidden flex flex-col scale-[0.35] origin-top sm:scale-100 sm:origin-center"
+          className="w-[1050px] h-[600px] rounded-xl shadow-lg border overflow-hidden flex flex-col mx-auto"
           style={{ backgroundColor: '#ffffff', color: '#111827' }}
         >
           {/* Header */}
