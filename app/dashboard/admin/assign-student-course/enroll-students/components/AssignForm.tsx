@@ -49,7 +49,7 @@ export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
         <div className="space-y-2">
           <label
             htmlFor="courseId"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="block text-sm font-medium text-gray-700 dark:text-blue-800"
           >
             Select Course
           </label>
@@ -72,7 +72,7 @@ export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
         <div className="space-y-2">
           <label
             htmlFor="intakeId"
-            className="block text-sm font-medium text-gray-200 dark:text-gray-300"
+            className="block text-sm font-medium text-gray-200 dark:text-blue-800"
           >
             Select Intake
           </label>
