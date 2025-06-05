@@ -57,7 +57,7 @@ export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
             id="courseId"
             name="courseId"
             required
-            className="w-full rounded-md border border-gray-300 dark:border-gray-700 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-zinc-900"
+            className="w-full rounded-md border border-gray-300 dark:border-gray-700 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-white"
           >
             <option value="">Select...</option>
             {courses.map((course) => (
@@ -72,7 +72,7 @@ export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
         <div className="space-y-2">
           <label
             htmlFor="intakeId"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="block text-sm font-medium text-gray-200 dark:text-gray-300"
           >
             Select Intake
           </label>
@@ -80,7 +80,7 @@ export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
             id="intakeId"
             name="intakeId"
             required
-            className="w-full rounded-md border border-gray-300 dark:border-gray-700 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-zinc-900"
+            className="w-full rounded-md border border-gray-300 dark:border-gray-700 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-white"
           >
             <option value="">Select...</option>
             {intakes.map((intake) => (
@@ -94,7 +94,7 @@ export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded-md transition disabled:bg-gray-400"
+          className="w-full bg-blue-400 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded-md transition disabled:bg-gray-400"
           disabled={state.success}
         >
           {state.success ? "Assigned ✔" : "Assign"}
