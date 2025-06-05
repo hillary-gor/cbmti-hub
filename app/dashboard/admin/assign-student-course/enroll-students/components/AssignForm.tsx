@@ -113,8 +113,8 @@ export function AssignForm({ studentId, courses, intakes }: AssignFormProps) {
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 w-full max-w-sm text-center border dark:border-zinc-700 shadow-lg">
             <CheckCircle className="mx-auto text-green-500 h-10 w-10 mb-2" />
-            <h2 className="text-lg font-semibold mb-2">Student Assigned</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-lg font-semibold mb-2 text-white">Student Assigned</h2>
+            <p className="text-sm text-green-500">
               Student has been successfully assigned to course and intake.
             </p>
           </div>
