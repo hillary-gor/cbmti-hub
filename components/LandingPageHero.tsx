@@ -46,11 +46,11 @@ export default function Hero() {
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="space-y-6 text-center lg:text-left"
         >
-          <h1 className="text-4xl sm:text-5xl font-bold leading-tight text-foreground text-balance">
+          <h1 className="text-4xl sm:text-5xl font-bold leading-tight text-foreground text-balance dark:text-white">
             Empowering Healthcare Students Across Kenya
           </h1>
 
-          <p className="text-muted-foreground text-lg max-w-prose mx-auto lg:mx-0">
+          <p className="text-muted-foreground text-lg max-w-prose mx-auto lg:mx-0 dark:text-white">
             Register, learn, and thrive through our seamless digital student portal — your gateway to success in the healthcare field.
           </p>
 
@@ -71,7 +71,7 @@ export default function Hero() {
             <h2 id="features-heading" className="sr-only">Platform Features</h2>
             <ul
               role="list"
-              className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 pt-6 text-sm text-foreground font-medium"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 pt-6 text-sm text-foreground font-medium dark:text-white"
             >
               <li>📅 Digital Timetables</li>
               <li>📘 E-learning Modules</li>
