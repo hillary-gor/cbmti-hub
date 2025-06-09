@@ -42,11 +42,11 @@ export default async function TranscriptPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-[#8bb8f3]">
+      <h1 className="text-2xl font-bold text-[#acd0ff] dark:text-white">
         Detailed Academic Transcript
       </h1>
       <div className="overflow-x-auto bg-white dark:bg-zinc-900 rounded-lg shadow">
-        <h2 className="text-xl font-semibold p-4 text-[#0049AB]">
+        <h2 className="text-xl font-semibold p-4 text-[#0049AB] dark:text-white">
           CAT Performance
         </h2>
         <table className="min-w-full text-sm">
@@ -84,7 +84,7 @@ export default async function TranscriptPage() {
             {!grades?.length && (
               <tr>
                 <td colSpan={7} className="text-center py-4 text-gray-500">
-                  No CAT results available.
+                  Your cat results are not yet updated, please check back later.
                 </td>
               </tr>
             )}
@@ -93,7 +93,7 @@ export default async function TranscriptPage() {
       </div>
 
 
-      <h2 className="text-xl font-semibold p-4 text-[#0049AB]">
+      <h2 className="text-xl font-semibold p-4 text-[#0049AB] dark:text-white">
           Overal Academic Performance
       </h2>
       <div className="overflow-x-auto bg-white dark:bg-zinc-900 rounded-lg shadow">
@@ -134,7 +134,7 @@ export default async function TranscriptPage() {
             {!grades?.length && (
               <tr>
                 <td colSpan={8} className="text-center py-4 text-gray-500">
-                  No transcript data available.
+                  No transcript data available. Consider communicating with your academic department.
                 </td>
               </tr>
             )}
