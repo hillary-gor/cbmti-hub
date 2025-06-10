@@ -1,11 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  loginWithEmailPassword,
-  loginWithMagicLink,
-  loginWithGoogle,
-} from "./actions";
+import { loginWithEmailPassword, loginWithGoogle } from "./actions";
 import { LoadingButton } from "@/components/ui/loading-button";
 import Image from "next/image";
 
@@ -58,10 +54,10 @@ export default function LoginPage() {
 
           {/* Heading */}
           <div className="text-center text-lg font-bold text-gray-800 dark:text-white">
-            CBMTI eHub
+            Access your eHub account
           </div>
 
-          {/* Email + Password Login */}
+          {/* Email + Password Login + Forgot Password */}
           <form className="space-y-4" action={loginWithEmailPassword}>
             <div className="space-y-2">
               <label
@@ -97,6 +93,15 @@ export default function LoginPage() {
               />
             </div>
 
+            <div className="text-right">
+              <a
+                href="/reset-password"
+                className="text-sm text-[#329EE8] hover:underline"
+              >
+                Forgot Password?
+              </a>
+            </div>
+
             <LoadingButton
               logoUrl={logoUrl}
               type="submit"
@@ -106,7 +111,7 @@ export default function LoginPage() {
             </LoadingButton>
           </form>
 
-          {/* Magic Link */}
+          {/* Magic Link 
           <form
             className="space-y-4 pt-6 border-t border-gray-200 dark:border-zinc-800"
             action={loginWithMagicLink}
@@ -136,7 +141,7 @@ export default function LoginPage() {
             >
               Send Magic Link
             </LoadingButton>
-          </form>
+          </form> */}
 
           {/* Google OAuth */}
           <form action={loginWithGoogle}>
