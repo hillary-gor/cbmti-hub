@@ -1,21 +1,20 @@
-// app/auth/confirm/route.ts (or wherever your route handler is)
-import { type EmailOtpType } from '@supabase/supabase-js';
-import { type NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr'; // Import from @supabase/ssr
-import { cookies } from 'next/headers'; // Still needed for cookie access
+import { type EmailOtpType } from "@supabase/supabase-js";
+import { type NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const token_hash = searchParams.get('token_hash');
-  const type = searchParams.get('type') as EmailOtpType | null; // Keep type as EmailOtpType
-  const next = searchParams.get('next') ?? '/'; // Dynamic redirect path
+  const token_hash = searchParams.get("token_hash");
+  const type = searchParams.get("type") as EmailOtpType | null;
+  const next = searchParams.get("next") ?? "/";
 
   const redirectTo = request.nextUrl.clone();
   redirectTo.pathname = next;
 
   if (token_hash && type) {
-    const cookieStore = await cookies(); // Access cookie store
-    const supabase = createServerClient( // Use createServerClient from @supabase/ssr
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -34,7 +33,7 @@ export async function GET(request: NextRequest) {
               // where the `cookies()` function from `next/headers` is not available.
               // This is generally safe to ignore if you're only setting cookies
               // in a Route Handler or Middleware.
-              console.warn('Could not set cookies from Server Component:', e);
+              console.warn("Could not set cookies from Server Component:", e);
             }
           },
         },
@@ -51,14 +50,14 @@ export async function GET(request: NextRequest) {
 
     if (!error) {
       // Clean up the URL parameters before redirecting, if desired
-      redirectTo.searchParams.delete('token_hash');
-      redirectTo.searchParams.delete('type');
-      redirectTo.searchParams.delete('next'); // Remove 'next' from final URL
+      redirectTo.searchParams.delete("token_hash");
+      redirectTo.searchParams.delete("type");
+      redirectTo.searchParams.delete("next");
       return NextResponse.redirect(redirectTo);
     }
   }
 
-  // Return the user to an error page with some instructions
-  redirectTo.pathname = '/auth/auth-code-error'; // Specific error page
+  // Return user to error page with instructions
+  redirectTo.pathname = "/error";
   return NextResponse.redirect(redirectTo);
 }
