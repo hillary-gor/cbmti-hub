@@ -1,12 +1,33 @@
 'use server';
 
 import { createClient } from '@/utils/supabase/server';
+import { z } from 'zod';
 
-export async function sendResetPasswordEmail(formData: FormData) {
+// Zod schema for email validation
+const emailSchema = z.string().email('Please enter a valid email address.');
+
+// Return type
+type SendResetPasswordEmailResult = {
+  success: boolean;
+  message: string;
+};
+
+export async function sendResetPasswordEmail(
+  formData: FormData
+): Promise<SendResetPasswordEmailResult> {
   const email = formData.get('email') as string;
+
+  // Input Validation
+  const parsedEmail = emailSchema.safeParse(email);
+
+  if (!parsedEmail.success) {
+    return { success: false, message: parsedEmail.error.errors[0].message };
+  }
+
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  // Supabase Call with Rate Limiting Consideration (Supabase handles much of this)
+  const { error } = await supabase.auth.resetPasswordForEmail(parsedEmail.data, {
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/account/update-password`,
   });
 
@@ -21,7 +42,6 @@ export async function sendResetPasswordEmail(formData: FormData) {
       };
     }
 
-    // Log errors and return
     console.error('Password reset error:', error);
     return { success: false, message: 'Something went wrong. Please try again later.' };
   }
