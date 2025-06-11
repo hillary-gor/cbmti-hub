@@ -4,21 +4,33 @@
   ],
   "deno.lint": true,
   "deno.unstable": [
-    "bare-node-builtins",
     "byonm",
-    "sloppy-imports",
-    "unsafe-proto",
-    "webgpu",
-    "broadcast-channel",
-    "worker-options",
-    "cron",
-    "kv",
-    "ffi",
-    "fs",
-    "http",
-    "net"
+    "bare-node-builtins",
+    "net",
+    "http"
   ],
+
+  
+  "deno.importMap": "./supabase/functions/deno.json",
+
   "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+
+  "typescript.suggest.autoImports": true,
+  "javascript.suggest.autoImports": true,
+  "typescript.format.semicolons": "insert",
+  "javascript.format.semicolons": "insert",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.options": {
+    "overrideConfigFile": "./.eslintrc.json" 
   }
 }

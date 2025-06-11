@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.unstable"],
+    "strict": true
+  },
+  "imports": {
+    "https://deno.land/std@": "https://deno.land/std@0.177.0/",
+    "https://esm.sh/@supabase/supabase-js@": "https://esm.sh/@supabase/supabase-js@2.43.4/",
+    "https://esm.sh/uuid@": "https://esm.sh/uuid@9.0.0/"
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "exclude": ["./"]
+  }
+}
