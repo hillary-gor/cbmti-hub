@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import React from 'react';
-import { Check, AlertTriangle, Info } from 'lucide-react';
+import { Check, AlertTriangle, Info, Clock } from 'lucide-react';
 
 export default async function TranscriptPage() {
   const supabase = await createClient();
@@ -59,7 +59,6 @@ export default async function TranscriptPage() {
         Detailed Academic Transcript
       </h1>
 
-      {/* CAT Performance Section */}
       <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-800 overflow-hidden">
         <h2 className="text-2xl font-bold p-5 bg-gradient-to-r from-[#0049AB] to-blue-700 text-white dark:from-zinc-800 dark:to-zinc-950 dark:text-[#acd0ff] rounded-t-xl">
           CAT Performance
@@ -81,7 +80,7 @@ export default async function TranscriptPage() {
               {deduplicatedGrades.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-6 text-gray-500 dark:text-gray-400">
-                    Your CAT results are not yet updated, please check back later.
+                    Your CAT results are not yet updated, please check back later. 🕰️
                   </td>
                 </tr>
               ) : (
@@ -120,13 +119,32 @@ export default async function TranscriptPage() {
               const catAverage = row.average_cat;
 
               let remarkContent = null;
-              if (catAverage !== null && catAverage !== undefined) {
+              let pendingCatsCount = 0;
+
+              if (row.cat1 === null || row.cat1 === undefined || row.cat1 === 0) pendingCatsCount++;
+              if (row.cat2 === null || row.cat2 === undefined || row.cat2 === 0) pendingCatsCount++;
+              if (row.cat3 === null || row.cat3 === undefined || row.cat3 === 0) pendingCatsCount++;
+              if (row.cat4 === null || row.cat4 === undefined || row.cat4 === 0) pendingCatsCount++;
+
+              if (pendingCatsCount > 0) {
+                const messageText = pendingCatsCount === 1
+                  ? `You still have 1 more CAT pending for ${courseCode}. Keep an eye out for updates! 🧐`
+                  : `You still have ${pendingCatsCount} more CATs pending for ${courseCode}. Updates are coming soon! 🤞`;
+                remarkContent = (
+                  <div key={`cat-remark-${row.id || row.course_id}`} className="flex items-start bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 p-3 rounded-md mb-2 last:mb-0 shadow-sm">
+                    <Clock className="w-5 h-5 mr-2 flex-shrink-0" />
+                    <p className="text-sm">
+                      {messageText}
+                    </p>
+                  </div>
+                );
+              } else if (catAverage !== null && catAverage !== undefined) {
                 if (catAverage < 80) {
                   remarkContent = (
                     <div key={`cat-remark-${row.id || row.course_id}`} className="flex items-start bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 p-3 rounded-md mb-2 last:mb-0 shadow-sm">
                       <AlertTriangle className="w-5 h-5 mr-2 flex-shrink-0" />
                       <p className="text-sm">
-                        <span className="font-bold">{courseCode}:</span> You did not meet the 80% required CATs average. You will have to pay for supplementary before sitting for your FQE.
+                        <span className="font-bold">{courseCode}:</span> Oh no! You didn't quite meet the 80% required CATs average. You'll need to sort out a supplementary payment before your FQE. 😟
                       </p>
                     </div>
                   );
@@ -135,7 +153,7 @@ export default async function TranscriptPage() {
                     <div key={`cat-remark-${row.id || row.course_id}`} className="flex items-start bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 p-3 rounded-md mb-2 last:mb-0 shadow-sm">
                       <Check className="w-5 h-5 mr-2 flex-shrink-0" />
                       <p className="text-sm">
-                        <span className="font-bold">{courseCode}:</span> You have passed so far, smile! The only exam left is FQE.
+                        <span className="font-bold">{courseCode}:</span> Awesome job! You've passed your CATs so far! 🎉 The only exam left is your FQE. You got this! 💪
                       </p>
                     </div>
                   );
@@ -144,11 +162,14 @@ export default async function TranscriptPage() {
               return remarkContent;
             })}
             {deduplicatedGrades.every(
-              (row) => row.average_cat === null || row.average_cat === undefined
+              (row) => (row.cat1 === null || row.cat1 === undefined || row.cat1 === 0) &&
+                       (row.cat2 === null || row.cat2 === undefined || row.cat2 === 0) &&
+                       (row.cat3 === null || row.cat3 === undefined || row.cat3 === 0) &&
+                       (row.cat4 === null || row.cat4 === undefined || row.cat4 === 0)
             ) && (
               <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 p-3 rounded-md shadow-sm">
                 <Info className="w-5 h-5 mr-2 flex-shrink-0" />
-                <p className="text-sm">No CAT average data available for specific remarks.</p>
+                <p className="text-sm">No CAT average data available for specific remarks. Still waiting for those results to roll in! 📚</p>
               </div>
             )}
           </div>
@@ -180,7 +201,7 @@ export default async function TranscriptPage() {
                 <tr>
                   <td colSpan={8} className="text-center py-6 text-gray-500 dark:text-gray-400">
                     No transcript data available. Consider communicating with your
-                    academic department.
+                    academic department. ℹ️
                   </td>
                 </tr>
               ) : (
@@ -234,13 +255,13 @@ export default async function TranscriptPage() {
                 row.grade === "Fail" &&
                 (fqeScore === null || fqeScore === undefined || fqeScore === 0)
               ) {
-                message = `For ${courseTitle}: Your FQE is not yet updated.`;
+                message = `For ${courseTitle}: Your FQE is not yet updated. ⏳ Don't worry, good things take time!`;
                 messageType = "info";
               } else if (fqeScore !== null && fqeScore !== undefined && fqeScore > 0 && fqeScore >= 60) {
-                message = `For ${courseTitle}: You are all set for graduation!`;
+                message = `For ${courseTitle}: You are all set for graduation! 🎓🥳 Time to celebrate your hard work!`;
                 messageType = "success";
               } else if (fqeScore !== null && fqeScore !== undefined && fqeScore > 0 && fqeScore < 60) {
-                message = `For ${courseTitle}: You did your best but you have not qualified for graduation. You will have to do your FQE supplementary to qualify.`;
+                message = `For ${courseTitle}: You did your best but you have not qualified for graduation. You will have to do your FQE supplementary to qualify. 💪 Keep pushing – success is just around the corner!`;
                 messageType = "warning";
               }
 
@@ -271,7 +292,6 @@ export default async function TranscriptPage() {
                 </div>
               );
             })}
-            {/* Fallback message if no specific FQE-related remarks are generated for any course */}
             {deduplicatedGrades.length > 0 && deduplicatedGrades.every(row => {
                 const fqeScore = row.sup_fqe !== null ? row.sup_fqe : row.fqe;
                 const hasSpecificMessage =
@@ -282,13 +302,13 @@ export default async function TranscriptPage() {
             }) && (
                 <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 p-3 rounded-md shadow-sm">
                   <Info className="w-5 h-5 mr-2 flex-shrink-0" />
-                  <p className="text-sm">Overall academic remarks will appear here once your final results are processed.</p>
+                  <p className="text-sm">Overall academic remarks will appear here once your final results are processed. ✨ The finish line is in sight!</p>
                 </div>
             )}
             {!deduplicatedGrades.length && (
               <div className="bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 p-3 rounded-md shadow-sm">
                 <Info className="w-5 h-5 mr-2 flex-shrink-0" />
-                <p className="text-sm">No overall academic data available for remarks.</p>
+                <p className="text-sm">No overall academic data available for remarks. Please contact your academic department for more information. 💡 We're here to help!</p>
               </div>
             )}
           </div>
