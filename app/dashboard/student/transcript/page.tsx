@@ -144,7 +144,7 @@ export default async function TranscriptPage() {
                     <div key={`cat-remark-${row.id || row.course_id}`} className="flex items-start bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 p-3 rounded-md mb-2 last:mb-0 shadow-sm">
                       <AlertTriangle className="w-5 h-5 mr-2 flex-shrink-0" />
                       <p className="text-sm">
-                        <span className="font-bold">{courseCode}:</span> Oh no! You didn't quite meet the 80% required CATs average. You'll need to sort out a supplementary payment before your FQE. 😟
+                        <span className="font-bold">{courseCode}:</span> Oh no! You didn&apos;t quite meet the 80% required CATs average. You&apos;ll need to sort out a supplementary payment before your FQE. 😟
                       </p>
                     </div>
                   );
@@ -153,7 +153,7 @@ export default async function TranscriptPage() {
                     <div key={`cat-remark-${row.id || row.course_id}`} className="flex items-start bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 p-3 rounded-md mb-2 last:mb-0 shadow-sm">
                       <Check className="w-5 h-5 mr-2 flex-shrink-0" />
                       <p className="text-sm">
-                        <span className="font-bold">{courseCode}:</span> Awesome job! You've passed your CATs so far! 🎉 The only exam left is your FQE. You got this! 💪
+                        <span className="font-bold">{courseCode}:</span> Awesome job! You&apos;ve passed your CATs so far! 🎉 The only exam left is your FQE. You got this! 💪
                       </p>
                     </div>
                   );
@@ -308,7 +308,7 @@ export default async function TranscriptPage() {
             {!deduplicatedGrades.length && (
               <div className="bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 p-3 rounded-md shadow-sm">
                 <Info className="w-5 h-5 mr-2 flex-shrink-0" />
-                <p className="text-sm">No overall academic data available for remarks. Please contact your academic department for more information. 💡 We're here to help!</p>
+                <p className="text-sm">No overall academic data available for remarks. Please contact your academic department for more information. 💡 We&apos;re here to help!</p>
               </div>
             )}
           </div>
