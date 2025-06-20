@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import React from 'react';
+import { Check, AlertTriangle, Info } from 'lucide-react';
 
 export default async function TranscriptPage() {
   const supabase = await createClient();
@@ -65,7 +66,7 @@ export default async function TranscriptPage() {
         </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-zinc-800">
+            <thead>
               <tr>
                 <th className="py-3 px-4 text-left text-gray-700 dark:text-gray-300 font-semibold uppercase tracking-wider">Course Code</th>
                 <th className="py-3 px-4 text-left text-gray-700 dark:text-gray-300 font-semibold uppercase tracking-wider">Course Title</th>
@@ -123,7 +124,7 @@ export default async function TranscriptPage() {
                 if (catAverage < 80) {
                   remarkContent = (
                     <div key={`cat-remark-${row.id || row.course_id}`} className="flex items-start bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 p-3 rounded-md mb-2 last:mb-0 shadow-sm">
-                      <span className="mr-2 text-lg">⚠️</span>
+                      <AlertTriangle className="w-5 h-5 mr-2 flex-shrink-0" />
                       <p className="text-sm">
                         <span className="font-bold">{courseCode}:</span> You did not meet the 80% required CATs average. You will have to pay for supplementary before sitting for your FQE.
                       </p>
@@ -132,7 +133,7 @@ export default async function TranscriptPage() {
                 } else {
                   remarkContent = (
                     <div key={`cat-remark-${row.id || row.course_id}`} className="flex items-start bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 p-3 rounded-md mb-2 last:mb-0 shadow-sm">
-                      <span className="mr-2 text-lg">✅</span>
+                      <Check className="w-5 h-5 mr-2 flex-shrink-0" />
                       <p className="text-sm">
                         <span className="font-bold">{courseCode}:</span> You have passed so far, smile! The only exam left is FQE.
                       </p>
@@ -146,12 +147,14 @@ export default async function TranscriptPage() {
               (row) => row.average_cat === null || row.average_cat === undefined
             ) && (
               <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 p-3 rounded-md shadow-sm">
+                <Info className="w-5 h-5 mr-2 flex-shrink-0" />
                 <p className="text-sm">No CAT average data available for specific remarks.</p>
               </div>
             )}
           </div>
         )}
       </div>
+
 
       {/* Overall Academic Performance Section */}
       <h2 className="text-2xl font-bold p-5 bg-gradient-to-r from-[#0049AB] to-blue-700 text-white dark:from-zinc-800 dark:to-zinc-950 dark:text-[#acd0ff] rounded-xl">
@@ -160,7 +163,7 @@ export default async function TranscriptPage() {
       <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-zinc-800">
+            <thead>
               <tr>
                 <th className="py-3 px-4 text-left text-gray-700 dark:text-gray-300 font-semibold uppercase tracking-wider">Course Code</th>
                 <th className="py-3 px-4 text-left text-gray-700 dark:text-gray-300 font-semibold uppercase tracking-wider">Course Title</th>
@@ -244,30 +247,31 @@ export default async function TranscriptPage() {
               if (!message) return null;
 
               let messageClasses = "";
-              let icon = "";
+              let IconComponent = Info;
               switch (messageType) {
                 case "success":
                   messageClasses = "bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200";
-                  icon = "✅";
+                  IconComponent = Check;
                   break;
                 case "warning":
                   messageClasses = "bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200";
-                  icon = "⚠️";
+                  IconComponent = AlertTriangle;
                   break;
                 case "info":
                 default:
                   messageClasses = "bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200";
-                  icon = "ℹ️";
+                  IconComponent = Info;
                   break;
               }
 
               return (
                 <div key={`overall-remark-${row.id || row.course_id}`} className={`flex items-start p-3 rounded-md mb-2 last:mb-0 shadow-sm ${messageClasses}`}>
-                  <span className="mr-2 text-lg">{icon}</span>
+                  <IconComponent className="w-5 h-5 mr-2 flex-shrink-0" />
                   <p className="text-sm">{message}</p>
                 </div>
               );
             })}
+            {/* Fallback message if no specific FQE-related remarks are generated for any course */}
             {deduplicatedGrades.length > 0 && deduplicatedGrades.every(row => {
                 const fqeScore = row.sup_fqe !== null ? row.sup_fqe : row.fqe;
                 const hasSpecificMessage =
@@ -277,11 +281,13 @@ export default async function TranscriptPage() {
                 return !hasSpecificMessage;
             }) && (
                 <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 p-3 rounded-md shadow-sm">
+                  <Info className="w-5 h-5 mr-2 flex-shrink-0" />
                   <p className="text-sm">Overall academic remarks will appear here once your final results are processed.</p>
                 </div>
             )}
             {!deduplicatedGrades.length && (
               <div className="bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 p-3 rounded-md shadow-sm">
+                <Info className="w-5 h-5 mr-2 flex-shrink-0" />
                 <p className="text-sm">No overall academic data available for remarks.</p>
               </div>
             )}
