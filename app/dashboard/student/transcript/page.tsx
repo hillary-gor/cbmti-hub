@@ -8,7 +8,6 @@ export default async function TranscriptPage() {
 
   if (!user) return <p className="p-6 text-red-600">Not logged in.</p>;
 
-  // Fetch detailed grades
   const { data: grades, error } = await supabase
     .from("grades")
     .select(
@@ -84,17 +83,50 @@ export default async function TranscriptPage() {
             {!grades?.length && (
               <tr>
                 <td colSpan={7} className="text-center py-4 text-gray-500">
-                  Your cat results are not yet updated, please check back later.
+                  Your CAT results are not yet updated, please check back later.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        {grades?.length > 0 && (
+          <div className="p-4 text-sm text-gray-700 dark:text-gray-300">
+            {grades.map((row, idx) => {
+              const course = Array.isArray(row.courses)
+                ? row.courses[0]
+                : row.courses;
+              const courseCode = course?.code ?? "N/A";
+              const catAverage = row.average_cat;
+
+              if (catAverage !== null && catAverage !== undefined) {
+                if (catAverage < 80) {
+                  return (
+                    <p key={`cat-remark-${idx}`} className="mb-1 last:mb-0">
+                      <span className="font-semibold">{courseCode}:</span> You
+                      did not meet the 80% required CATs average. You will have
+                      to pay for supplementary before sitting for your FQE.
+                    </p>
+                  );
+                } else {
+                  return (
+                    <p key={`cat-remark-${idx}`} className="mb-1 last:mb-0">
+                      <span className="font-semibold">{courseCode}:</span> You
+                      have passed so far, smile! The only exam left is FQE.
+                    </p>
+                  );
+                }
+              }
+              return null;
+            })}
+            {grades.every(
+              (row) => row.average_cat === null || row.average_cat === undefined
+            ) && <p>No CAT average data available for specific remarks.</p>}
+          </div>
+        )}
       </div>
 
-
       <h2 className="text-xl font-semibold p-4 text-[#0049AB] dark:text-white">
-          Overal Academic Performance
+        Overal Academic Performance
       </h2>
       <div className="overflow-x-auto bg-white dark:bg-zinc-900 rounded-lg shadow">
         <table className="min-w-full text-sm">
@@ -117,7 +149,7 @@ export default async function TranscriptPage() {
                 : row.courses;
               return (
                 <tr
-                  key={idx}
+                  key={`overall-row-${idx}`}
                   className="border-t dark:border-zinc-700 text-gray-800 dark:text-white"
                 >
                   <td className="py-2 px-4">{course?.code ?? "N/A"}</td>
@@ -134,12 +166,53 @@ export default async function TranscriptPage() {
             {!grades?.length && (
               <tr>
                 <td colSpan={8} className="text-center py-4 text-gray-500">
-                  No transcript data available. Consider communicating with your academic department.
+                  No transcript data available. Consider communicating with your
+                  academic department.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+
+        {grades?.length > 0 && (
+          <div className="p-4 text-sm text-gray-700 dark:text-gray-300">
+            {grades.map((row, idx) => {
+              const course = Array.isArray(row.courses)
+                ? row.courses[0]
+                : row.courses;
+              const courseTitle = course?.title ?? "Unknown Course";
+              const fqeScore = row.sup_fqe !== null ? row.sup_fqe : row.fqe;
+
+              let message = "";
+
+              if (
+                row.grade === "Fail" &&
+                (fqeScore === null || fqeScore === undefined || fqeScore === 0)
+              ) {
+                message = `For ${courseTitle}: Your FQE is not yet updated.`;
+              } else if (fqeScore !== null && fqeScore !== undefined && fqeScore > 0 && fqeScore >= 60) {
+                message = `For ${courseTitle}: You are all set for graduation!`;
+              } else if (fqeScore !== null && fqeScore !== undefined && fqeScore > 0 && fqeScore < 60) {
+                message = `For ${courseTitle}: You did your best but you have not qualified for graduation. You will have to do your FQE supplementary to qualify.`;
+              }
+
+              return message ? <p key={`overall-remark-${idx}`} className="mb-1 last:mb-0">{message}</p> : null;
+            })}
+            {grades?.length > 0 && grades.every(row => {
+                const fqeScore = row.sup_fqe !== null ? row.sup_fqe : row.fqe;
+                const hasSpecificMessage =
+                    (row.grade === "Fail" && (fqeScore === null || fqeScore === undefined || fqeScore === 0)) ||
+                    (fqeScore !== null && fqeScore !== undefined && fqeScore > 0 && fqeScore >= 60) ||
+                    (fqeScore !== null && fqeScore !== undefined && fqeScore > 0 && fqeScore < 60);
+                return !hasSpecificMessage;
+            }) && (
+                <p>Overall academic remarks will appear here once your final results are processed.</p>
+            )}
+            {!grades?.length && (
+              <p>No overall academic data available for remarks.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

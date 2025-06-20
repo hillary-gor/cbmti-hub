@@ -24,6 +24,7 @@ const navSections = [
     label: '🎓 Academic',
     icon: Book,
     items: [
+      { label: 'Attendance', href: '/dashboard/student/attendance' },
       { label: 'Transcript', href: '/dashboard/student/transcript' },
       { label: 'Overview', href: '/dashboard/student/overview' },
     ],

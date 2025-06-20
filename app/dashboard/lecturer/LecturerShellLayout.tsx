@@ -24,6 +24,7 @@ const navItems = [
   { label: 'Courses', href: '/dashboard/lecturer/courses', icon: BookOpen },
   { label: 'Assessments', href: '/dashboard/lecturer/assessments', icon: FileCheck },
   { label: 'Grades', href: '/dashboard/lecturer/grades', icon: ClipboardList },
+  { label: 'Attendance', href: `/dashboard/lecturer/attendance`, icon: ClipboardList },
   { label: 'Announcements', href: '/dashboard/lecturer/announcements', icon: Megaphone },
   { label: 'Settings', href: '/dashboard/lecturer/settings', icon: Settings },
 ]
