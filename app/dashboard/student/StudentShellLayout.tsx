@@ -32,7 +32,10 @@ const navSections = [
   {
     label: '💵 Finance',
     icon: DollarSign,
-    items: [{ label: 'Fee Balance', href: '/dashboard/student/fees' }],
+    items: [
+      { label: 'Record Fees', href: '/dashboard/student/record-fee-payment'},
+      { label: 'Fee Balance', href: '/dashboard/student/fees' },
+    ],
   },
   {
     label: '⚙️ Settings',
