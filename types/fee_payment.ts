@@ -1,3 +1,11 @@
+// lib/types/supabase.ts
+
+import { Database, Tables } from '@/types/supabase';
+
+export type Course = Tables<'courses'>;
+export type Intake = Tables<'intakes'>;
+export type StudentRow = Tables<'students'>;
+
 export type PaymentStatus = 'pending' | 'approved' | 'declined';
 export type PaymentSource = 'mpesa' | 'ncba';
 
@@ -28,9 +36,15 @@ export interface ParsedPaymentData {
   errors: string[];
 }
 
-// New interface for the state managed by useActionState in PaymentForm
 export interface PaymentFormState {
-  status: 'success' | 'error' | ''; // Allow empty string for initial/unset state
+  status: 'success' | 'error' | '';
   message: string;
   parsedData?: ParsedPaymentData | null;
 }
+
+export interface StudentWithRelations extends StudentRow {
+  intake?: Tables<'intakes'> | null;
+  course?: Tables<'courses'> | null;
+}
+
+export type DB = Database;

@@ -1,3 +1,4 @@
+// utils/supabase/server.ts
 "use server";
 
 import { createServerClient } from "@supabase/ssr";
@@ -19,9 +20,28 @@ export async function createClient() {
             cookiesToSet.forEach(({ name, value, options }) => {
               cookieStore.set(name, value, options);
             });
-          } catch {
-            // Safe to ignore in server components without writable headers
+          } catch (e) {
+            console.warn('Error setting cookie in server component:', e);
           }
+        },
+      },
+    },
+  );
+}
+
+export async function createAdminClient() {
+  const cookieStore = await cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll() {
+          // No-op for admin client as it typically doesn't interact with user session cookies
         },
       },
     },
