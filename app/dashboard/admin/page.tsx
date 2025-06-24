@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 const tiles = [
+  { title: "📝 Approve/Decline Payments", href: "/dashboard/admin/payments" },
   { title: "📚 Manage Intakes", href: "/dashboard/admin/intakes" },
   { title: "👨‍🎓 View Students", href: "/dashboard/admin/students" },
   { title: "📝 Unassigned Students", href: "/dashboard/admin/assign-student-course/unassigned" },

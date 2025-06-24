@@ -12,8 +12,9 @@ import { SignOutButton } from '@/components/auth/SignOutButton'
 
 const navItems = [
   { label: '🏠 Dashboard', href: '/dashboard/admin' },
-  { label: '📚 Intakes', href: '/dashboard/admin/intakes' },
-  { label: '👨‍🎓 Students', href: '/dashboard/admin/students' },
+  { label: '👨‍🎓 Student Fees', href: '/dashboard/admin/payments' },
+  // { label: '📚 Intakes', href: '/dashboard/admin/intakes' },
+  // { label: '👨‍🎓 Students', href: '/dashboard/admin/students' },
   { label: '📝 Unassigned Students', href: '/dashboard/admin/assign-student-course/unassigned' },
   { label: '📜 Old Students', href: '/dashboard/admin/legacy-students' },
   { label: '👥 Staff Accounts', href: '/dashboard/admin/staff' },
