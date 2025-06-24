@@ -11,6 +11,32 @@ import {
   PaymentStatus,
 } from "@/types/fee_payment";
 
+async function getAuthenticatedUserId(): Promise<string | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user?.id || null;
+}
+
+async function getStudentIdFromUserId(userId: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data: studentData, error: studentError } = await supabase
+    .from("students")
+    .select("id")
+    .eq("user_id", userId)
+    .single();
+
+  if (studentError) {
+    console.error(
+      "[Action] Error fetching student ID for user:",
+      studentError.message
+    );
+    return null;
+  }
+  return studentData?.id || null;
+}
+
 function parsePaymentMessage(message: string): ParsedPaymentData {
   const data: ParsedPaymentData = {
     amount: null,
@@ -118,23 +144,25 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
   return data;
 }
 
-async function getUserId(): Promise<string | null> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user?.id || null;
-}
-
 export async function recordFeePayment(
   prevState: PaymentFormState,
   formData: FormData
 ): Promise<PaymentFormState> {
   const messageText = formData.get("messageText") as string;
-  const studentId = await getUserId();
+  const userId = await getAuthenticatedUserId();
 
-  if (!studentId) {
+  if (!userId) {
     redirect("/login");
+  }
+
+  const studentId = await getStudentIdFromUserId(userId);
+  if (!studentId) {
+    console.error(`No student profile found for user ID: ${userId}`);
+    return {
+      status: "error",
+      message: "Student profile not found. Please contact support.",
+      parsedData: null,
+    };
   }
 
   if (!messageText) {
@@ -228,17 +256,25 @@ export async function getFeePayments(
   filterStatus?: PaymentStatus
 ): Promise<FeePayment[]> {
   const supabase = await createClient();
-  const userId = await getUserId();
+  const userId = await getAuthenticatedUserId();
 
   if (!userId) {
     console.warn("Attempted to fetch payments without an authenticated user.");
     redirect("/login");
   }
 
+  const studentId = await getStudentIdFromUserId(userId);
+  if (!studentId) {
+    console.error(
+      `No student profile found for user ID: ${userId} when fetching payments.`
+    );
+    return [];
+  }
+
   let query = supabase
     .from("fee_payments")
     .select("*")
-    .eq("student_id", userId)
+    .eq("student_id", studentId)
     .order("recorded_at", { ascending: false });
 
   if (
@@ -263,17 +299,25 @@ export async function updatePaymentStatus(
   newStatus: PaymentStatus
 ) {
   const supabase = await createClient();
-  const userId = await getUserId();
+  const userId = await getAuthenticatedUserId();
 
   if (!userId) {
     return { status: "error", message: "Authentication required." };
+  }
+
+  const studentId = await getStudentIdFromUserId(userId);
+  if (!studentId) {
+    console.error(
+      `No student profile found for user ID: ${userId} when updating payment status.`
+    );
+    return { status: "error", message: "Student profile not found." };
   }
 
   const { error } = await supabase
     .from("fee_payments")
     .update({ status: newStatus })
     .eq("id", paymentId)
-    .eq("student_id", userId);
+    .eq("student_id", studentId);
 
   if (error) {
     console.error("Error updating payment status:", error);
@@ -285,4 +329,45 @@ export async function updatePaymentStatus(
 
   revalidatePath("/dashboard/students/record-fee-payment");
   return { status: "success", message: "Payment status updated." };
+}
+
+/**
+ * Fetch the sum of approved payments for the currently authenticated student.
+ */
+export async function getApprovedPaymentsSumForStudent(): Promise<number> {
+  const supabase = await createClient();
+  const userId = await getAuthenticatedUserId();
+
+  if (!userId) {
+    console.warn(
+      "[Server Action] Attempted to get approved payments sum without an authenticated user."
+    );
+    return 0;
+  }
+
+  const studentId = await getStudentIdFromUserId(userId);
+
+  if (!studentId) {
+    console.warn(
+      `[Server Action] No student profile found for user ID: ${userId} when calculating approved sum.`
+    );
+    return 0;
+  }
+
+  const { data, error } = await supabase
+    .from("fee_payments")
+    .select("amount")
+    .eq("student_id", studentId)
+    .eq("status", "approved");
+
+  if (error) {
+    console.error(
+      `[Server Action] Error fetching approved payments sum for student ${studentId}:`,
+      error
+    );
+    return 0;
+  }
+
+  const sum = (data ?? []).reduce((acc, payment) => acc + payment.amount, 0);
+  return sum;
 }

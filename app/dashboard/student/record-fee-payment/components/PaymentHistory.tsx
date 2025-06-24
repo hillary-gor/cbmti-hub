@@ -1,4 +1,3 @@
-// app/dashboard/student/record-fee-payment/components/PaymentHistory.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -8,10 +7,6 @@ import { format } from "date-fns";
 interface PaymentHistoryProps {
   payments: FeePayment[];
   totalApprovedPayments: number;
-  /**
-   * Optional prop to indicate if the sum of approved payments is currently loading.
-   * This can be used to show a loading state while fetching the sum.
-   */
   isLoadingApprovedSum?: boolean;
 }
 
