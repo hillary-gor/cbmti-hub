@@ -7,6 +7,7 @@ import { useActionState } from "react";
 import {
   getStudentsByIntakeAndCourse,
   updatePaymentStatusByAdmin,
+  getApprovedPaymentsSumByStudent, // Import the new action
 } from "../actions";
 import {
   FeePayment,
@@ -126,6 +127,8 @@ export default function AdminPaymentDashboard({
   const [studentPayments, setStudentPayments] = useState<FeePayment[]>([]);
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [isLoadingAllPayments, setIsLoadingAllPayments] = useState(false);
+  const [approvedPaymentsSum, setApprovedPaymentsSum] = useState<number>(0); // New state for approved sum
+  const [isLoadingApprovedSum, setIsLoadingApprovedSum] = useState(false); // New loading state for sum
 
   useEffect(() => {
     async function fetchStudents() {
@@ -138,6 +141,7 @@ export default function AdminPaymentDashboard({
       setIsLoadingStudents(false);
       setSelectedStudent(null);
       setStudentPayments([]);
+      setApprovedPaymentsSum(0); // Reset sum when filters change
     }
     fetchStudents();
   }, [selectedIntake, selectedCourse]);
@@ -145,15 +149,21 @@ export default function AdminPaymentDashboard({
   const handleStudentSelect = async (student: StudentWithRelations) => {
     setSelectedStudent(student);
     setIsLoadingAllPayments(true);
+    setIsLoadingApprovedSum(true); // Start loading sum
     try {
       const fetchedPayments = await getPaymentsByStudent(student.id);
       setStudentPayments(fetchedPayments);
+
+      const sum = await getApprovedPaymentsSumByStudent(student.id); // Fetch sum
+      setApprovedPaymentsSum(sum);
     } catch (error) {
-      console.error("Error fetching all payments via API:", error);
-      alert("Failed to load payments. Please try again.");
+      console.error("Error fetching student data:", error);
+      alert("Failed to load student payments. Please try again.");
       setStudentPayments([]);
+      setApprovedPaymentsSum(0); // Reset on error
     } finally {
       setIsLoadingAllPayments(false);
+      setIsLoadingApprovedSum(false); // End loading sum
     }
   };
 
@@ -161,14 +171,19 @@ export default function AdminPaymentDashboard({
     if (!selectedStudent) return;
 
     setIsLoadingAllPayments(true);
+    setIsLoadingApprovedSum(true); // Re-fetch sum on successful update
     try {
       const refreshedPayments = await getPaymentsByStudent(selectedStudent.id);
       setStudentPayments(refreshedPayments);
+
+      const refreshedSum = await getApprovedPaymentsSumByStudent(selectedStudent.id);
+      setApprovedPaymentsSum(refreshedSum);
     } catch (error) {
       console.error("Error refreshing student payments:", error);
       alert("Failed to refresh payments. Please try again.");
     } finally {
       setIsLoadingAllPayments(false);
+      setIsLoadingApprovedSum(false);
     }
   };
 
@@ -181,12 +196,12 @@ export default function AdminPaymentDashboard({
         alert("Please select a student to print their records.");
         return;
       }
-      if (isLoadingAllPayments) {
-        alert("Payments are still loading. Please wait and try again.");
+      if (isLoadingAllPayments || isLoadingApprovedSum) {
+        alert("Payments data is still loading. Please wait and try again.");
         return;
       }
-      if (studentPayments.length === 0) {
-        alert("No payments available for the selected student to print.");
+      if (studentPayments.length === 0 && approvedPaymentsSum === 0) {
+        alert("No payment data available for the selected student to print.");
         return;
       }
 
@@ -362,6 +377,14 @@ export default function AdminPaymentDashboard({
               <h3 className="mb-4 text-lg font-bold text-gray-800">
                 {selectedStudent.full_name} ({selectedStudent.reg_number})
               </h3>
+              {isLoadingApprovedSum ? (
+                <p className="text-gray-500 text-center text-sm mb-4">Loading total approved payments...</p>
+              ) : (
+                <p className="text-gray-800 text-lg font-semibold mb-4">
+                  Total Approved Payments:{" "}
+                  <span className="text-green-600">Ksh {approvedPaymentsSum.toFixed(2)}</span>
+                </p>
+              )}
               {isLoadingAllPayments ? (
                 <p className="py-8 text-center text-gray-500">
                   Loading payments...
@@ -450,7 +473,7 @@ export default function AdminPaymentDashboard({
                 <div className="no-print mt-6 flex flex-wrap gap-4">
                   <button
                     onClick={() => handlePrint("student")}
-                    disabled={isLoadingAllPayments || studentPayments.length === 0}
+                    disabled={isLoadingAllPayments || studentPayments.length === 0 || isLoadingApprovedSum}
                     className="flex items-center rounded-lg bg-purple-600 px-4 py-2 text-white shadow-md transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <svg

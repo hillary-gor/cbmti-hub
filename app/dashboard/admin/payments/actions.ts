@@ -1,3 +1,4 @@
+// actions.ts (updated)
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -133,4 +134,31 @@ export async function getPaymentsByStudent(
   }
 
   return data ?? [];
+}
+
+/**
+ * Fetches the sum of approved payments for a specific student.
+ */
+export async function getApprovedPaymentsSumByStudent(studentId: string): Promise<number> {
+  const supabase = await createAdminClient();
+
+  if (!studentId || studentId.length < 8) {
+    console.warn('[Admin] Invalid student ID for sum calculation:', studentId);
+    return 0;
+  }
+
+  const { data, error } = await supabase
+    .from('fee_payments')
+    .select('amount')
+    .eq('student_id', studentId)
+    .eq('status', 'approved');
+
+  if (error) {
+    console.error(`[Admin] Error fetching approved payments sum for student ${studentId}:`, error);
+    return 0;
+  }
+
+  // Calculate sum from fetched amounts
+  const sum = (data ?? []).reduce((acc, payment) => acc + payment.amount, 0);
+  return sum;
 }
