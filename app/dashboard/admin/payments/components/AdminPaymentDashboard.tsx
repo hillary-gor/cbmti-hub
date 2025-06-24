@@ -7,7 +7,7 @@ import { useActionState } from "react";
 import {
   getStudentsByIntakeAndCourse,
   updatePaymentStatusByAdmin,
-  getApprovedPaymentsSumByStudent, // Import the new action
+  getApprovedPaymentsSumByStudent,
 } from "../actions";
 import {
   FeePayment,
