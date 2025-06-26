@@ -60,7 +60,7 @@ function PaymentStatusToggleButton({
   }, [formState, onUpdateSuccess]);
 
   return (
-    <form action={formAction} className="flex gap-2">
+    <form action={formAction} className="flex gap-2 items-center">
       <input type="hidden" name="paymentId" value={paymentId} />
       {currentStatus === "pending" && (
         <>
@@ -69,7 +69,7 @@ function PaymentStatusToggleButton({
             name="newStatus"
             value="approved"
             disabled={pending}
-            className="px-3 py-1 bg-green-500 text-white text-xs rounded-full hover:bg-green-600 disabled:opacity-50"
+            className="px-3 py-1 bg-green-500 text-white text-xs rounded-full hover:bg-green-600 disabled:opacity-50 transition-colors"
           >
             {pending ? "..." : "Approve"}
           </button>
@@ -78,25 +78,36 @@ function PaymentStatusToggleButton({
             name="newStatus"
             value="declined"
             disabled={pending}
-            className="px-3 py-1 bg-red-500 text-white text-xs rounded-full hover:bg-red-600 disabled:opacity-50"
+            className="px-3 py-1 bg-red-500 text-white text-xs rounded-full hover:bg-red-600 disabled:opacity-50 transition-colors"
           >
             {pending ? "..." : "Decline"}
           </button>
         </>
       )}
       {currentStatus === "approved" && (
-        <span className="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+        <span className="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full font-semibold">
           Approved
         </span>
       )}
       {currentStatus === "declined" && (
-        <span className="px-3 py-1 bg-red-100 text-red-800 text-xs rounded-full">
-          Declined
-        </span>
+        <>
+          <span className="px-3 py-1 bg-red-100 text-red-800 text-xs rounded-full font-semibold">
+            Declined
+          </span>
+          <button
+            type="submit"
+            name="newStatus"
+            value="approved"
+            disabled={pending}
+            className="px-3 py-1 bg-blue-500 text-white text-xs rounded-full hover:bg-blue-600 disabled:opacity-50 transition-colors"
+          >
+            {pending ? "..." : "Re-approve"}
+          </button>
+        </>
       )}
       {formState.message && (
         <span
-          className={`text-xs ${
+          className={`text-xs ml-2 ${
             formState.status === "error" ? "text-red-500" : "text-green-500"
           }`}
         >
@@ -127,8 +138,8 @@ export default function AdminPaymentDashboard({
   const [studentPayments, setStudentPayments] = useState<FeePayment[]>([]);
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [isLoadingAllPayments, setIsLoadingAllPayments] = useState(false);
-  const [approvedPaymentsSum, setApprovedPaymentsSum] = useState<number>(0); // New state for approved sum
-  const [isLoadingApprovedSum, setIsLoadingApprovedSum] = useState(false); // New loading state for sum
+  const [approvedPaymentsSum, setApprovedPaymentsSum] = useState<number>(0);
+  const [isLoadingApprovedSum, setIsLoadingApprovedSum] = useState(false);
 
   useEffect(() => {
     async function fetchStudents() {
@@ -141,7 +152,7 @@ export default function AdminPaymentDashboard({
       setIsLoadingStudents(false);
       setSelectedStudent(null);
       setStudentPayments([]);
-      setApprovedPaymentsSum(0); // Reset sum when filters change
+      setApprovedPaymentsSum(0);
     }
     fetchStudents();
   }, [selectedIntake, selectedCourse]);
@@ -149,21 +160,20 @@ export default function AdminPaymentDashboard({
   const handleStudentSelect = async (student: StudentWithRelations) => {
     setSelectedStudent(student);
     setIsLoadingAllPayments(true);
-    setIsLoadingApprovedSum(true); // Start loading sum
+    setIsLoadingApprovedSum(true);
     try {
       const fetchedPayments = await getPaymentsByStudent(student.id);
       setStudentPayments(fetchedPayments);
 
-      const sum = await getApprovedPaymentsSumByStudent(student.id); // Fetch sum
+      const sum = await getApprovedPaymentsSumByStudent(student.id);
       setApprovedPaymentsSum(sum);
     } catch (error) {
       console.error("Error fetching student data:", error);
-      alert("Failed to load student payments. Please try again.");
       setStudentPayments([]);
-      setApprovedPaymentsSum(0); // Reset on error
+      setApprovedPaymentsSum(0);
     } finally {
       setIsLoadingAllPayments(false);
-      setIsLoadingApprovedSum(false); // End loading sum
+      setIsLoadingApprovedSum(false);
     }
   };
 
@@ -171,7 +181,7 @@ export default function AdminPaymentDashboard({
     if (!selectedStudent) return;
 
     setIsLoadingAllPayments(true);
-    setIsLoadingApprovedSum(true); // Re-fetch sum on successful update
+    setIsLoadingApprovedSum(true);
     try {
       const refreshedPayments = await getPaymentsByStudent(selectedStudent.id);
       setStudentPayments(refreshedPayments);
@@ -180,7 +190,6 @@ export default function AdminPaymentDashboard({
       setApprovedPaymentsSum(refreshedSum);
     } catch (error) {
       console.error("Error refreshing student payments:", error);
-      alert("Failed to refresh payments. Please try again.");
     } finally {
       setIsLoadingAllPayments(false);
       setIsLoadingApprovedSum(false);
@@ -193,15 +202,15 @@ export default function AdminPaymentDashboard({
 
     if (printType === "student") {
       if (!selectedStudent) {
-        alert("Please select a student to print their records.");
+        console.error("Please select a student to print their records.");
         return;
       }
       if (isLoadingAllPayments || isLoadingApprovedSum) {
-        alert("Payments data is still loading. Please wait and try again.");
+        console.error("Payments data is still loading. Please wait and try again.");
         return;
       }
       if (studentPayments.length === 0 && approvedPaymentsSum === 0) {
-        alert("No payment data available for the selected student to print.");
+        console.error("No payment data available for the selected student to print.");
         return;
       }
 
@@ -209,7 +218,7 @@ export default function AdminPaymentDashboard({
       if (printAreaElement) {
         contentToPrint = printAreaElement.innerHTML;
       } else {
-        alert("Could not find the print area for student payments.");
+        console.error("Could not find the print area for student payments.");
         return;
       }
       printTitle = `Payments for ${selectedStudent.full_name} (${selectedStudent.reg_number})`;
@@ -220,7 +229,7 @@ export default function AdminPaymentDashboard({
       }
 
       if (!contentToPrint) {
-        alert(
+        console.error(
           "No content to print for the selected filter. Apply filters first."
         );
         return;
@@ -241,7 +250,7 @@ export default function AdminPaymentDashboard({
     }
 
     if (!contentToPrint) {
-      alert("Could not generate content for printing.");
+      console.error("Could not generate content for printing.");
       return;
     }
 
@@ -266,11 +275,10 @@ export default function AdminPaymentDashboard({
       printWindow.document.write("</head><body>");
       printWindow.document.write(`<h1>${printTitle}</h1>`);
       printWindow.document.write(contentToPrint);
-      printWindow.document.write("</body></html>");
       printWindow.document.close();
       printWindow.print();
     } else {
-      alert("Could not open print window. Please allow pop-ups.");
+      console.error("Could not open print window. Please allow pop-ups.");
     }
   };
 
@@ -430,18 +438,13 @@ export default function AdminPaymentDashboard({
                           }
                         >
                           <td className="whitespace-nowrap px-4 py-2 text-sm text-gray-800">
-                            {format(
-                              new Date(
-                                `${payment.parsed_date}T${payment.parsed_time}`
-                              ),
-                              "MMM dd,yyyy HH:mm"
-                            )}
+                            {payment.recorded_at ? format(new Date(payment.recorded_at), "MMM dd,yyyy HH:mm") : 'N/A'}
                           </td>
                           <td className="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-900">
-                            Ksh {payment.amount.toFixed(2)}
+                            Ksh {payment.amount?.toFixed(2) ?? '0.00'}
                           </td>
                           <td className="whitespace-nowrap px-4 py-2 text-sm text-gray-600">
-                            {payment.reference}
+                            {payment.reference || "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-4 py-2 text-sm text-gray-600">
                             {payment.source || "N/A"}
@@ -452,7 +455,7 @@ export default function AdminPaymentDashboard({
                                 View Message
                               </summary>
                               <p className="mt-2 whitespace-normal break-words text-xs">
-                                {payment.message_text}
+                                {payment.message_text || "No message provided."}
                               </p>
                             </details>
                           </td>
