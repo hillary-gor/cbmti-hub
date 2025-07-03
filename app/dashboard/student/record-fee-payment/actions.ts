@@ -3,11 +3,11 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
+import { format } from "date-fns";
 import {
   FeePayment,
   ParsedPaymentData,
   PaymentFormState,
-  PaymentSource,
   PaymentStatus,
 } from "@/types/fee_payment";
 
@@ -37,6 +37,16 @@ async function getStudentIdFromUserId(userId: string): Promise<string | null> {
   return studentData?.id || null;
 }
 
+// Helper to format time to HH:MM:SS
+function formatTimeForDB(timeStr: string | null): string | null {
+  if (!timeStr) return null;
+  const date = new Date(`2000-01-01 ${timeStr}`);
+  if (isNaN(date.getTime())) {
+    return null;
+  }
+  return format(date, "HH:mm:ss");
+}
+
 function parsePaymentMessage(message: string): ParsedPaymentData {
   const data: ParsedPaymentData = {
     amount: null,
@@ -45,27 +55,25 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
     parsed_time: null,
     institution: null,
     account_number: null,
-    source: null as PaymentSource | null,
+    source: null,
     isValid: false,
     errors: [],
   };
 
   message = message.trim();
 
-  // M-Pesa regex for "sent to" messages
-  const mpesaSentRegex =
-    /(?:M-Pesa Ref:\s*|)([A-Z0-9]+)\s+Confirmed\.\s+Ksh([0-9,]+\.?\d{0,2})\s+sent\s+to\s+([A-Z0-9\s.,]+?)(?:\s+for\s+account\s+([A-Z0-9]+)|)\s+on\s+(\d{1,2}\/\d{1,2}\/\d{2,4})\s+at\s+(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?)/i;
+  const mpesaRegex =
+    /(?:M-Pesa Ref:\s*|)([A-Z0-9]+)\s+Confirmed\.\s+(?:You have received|Ksh)\s*([0-9,]+\.?\d{0,2})\s+(?:from|sent to)\s+([A-Z0-9\s.,-]+?)(?:\s+for account\s+([A-Z0-9]+)|)\s+on\s+(\d{1,2}\/\d{1,2}\/\d{2,4})\s+at\s+(\d{1,2}:\d{2}(?:\s*(?:AM|PM|am|pm))?)/i;
 
-  // NCBA regex for "Your M-Pesa payment... was successful"
   const ncbaMpesaPaymentRegex =
-    /Your M-Pesa payment of (?:KES|Ksh)\s*([0-9,]+\.?\d{0,2})\s+to\s+([A-Z0-9\s.,]+?)(?:\s+(\d+)|)\s+was successful on (\d{1,2}\/\d{1,2}\/\d{2,4})\s+(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?)\.\s+M-Pesa Ref:\s*([A-Z0-9]+)\.\s*(NCBA|KCB|Equity|Co-op Bank)/i;
+    /Your M-Pesa payment of (?:KES|Ksh)\s*([0-9,]+\.?\d{0,2})\s+to\s+([A-Z0-9\s.,-]+?)(?:\s+(\d+)|)\s+was successful on (\d{1,2}\/\d{1,2}\/\d{2,4})\s+(\d{1,2}:\d{2}(?:\s*(?:AM|PM|am|pm))?)\.\s+M-Pesa Ref:\s*([A-Z0-9]+)\./i;
 
   let match;
 
-  // NCBA message format first as it's quite distinct
+  // Try NCBA format first
   match = message.match(ncbaMpesaPaymentRegex);
   if (match) {
-    data.source = "ncba";
+    data.source = "sms";
     data.amount = parseFloat(match[1].replace(/,/g, ""));
     data.institution = match[2].trim();
     data.account_number = match[3] || null;
@@ -78,23 +86,13 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
       "0"
     )}`;
 
-    // Time parsing (HH:MM AM/PM)
-    const timeStr = match[5].toUpperCase().replace(/\s/g, "");
-    if (timeStr.endsWith("AM") || timeStr.endsWith("PM")) {
-      const [hourMin, ampm] = [timeStr.slice(0, -2), timeStr.slice(-2)];
-      const [h, m] = hourMin.split(":");
-      let hours = parseInt(h);
-      if (ampm === "PM" && hours < 12) hours += 12;
-      if (ampm === "AM" && hours === 12) hours = 0;
-      data.parsed_time = `${String(hours).padStart(2, "0")}:${m}:00`;
-    } else {
-      data.parsed_time = `${match[5]}:00`.substring(0, 8);
-    }
+    // Time parsing (HH:MM AM/PM) and formatting to HH:MM:SS
+    data.parsed_time = formatTimeForDB(match[5]);
   } else {
-    // M-Pesa "sent to" message format
-    match = message.match(mpesaSentRegex);
+    // Try M-Pesa format
+    match = message.match(mpesaRegex);
     if (match) {
-      data.source = "mpesa";
+      data.source = "sms";
       data.reference = match[1];
       data.amount = parseFloat(match[2].replace(/,/g, ""));
       data.institution = match[3].trim();
@@ -108,21 +106,12 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
         "0"
       )}`;
 
-      // Time parsing (H:MM AM/PM or HH:MM AM/PM)
-      const timeStr = match[6].toUpperCase().replace(/\s/g, "");
-      if (timeStr.endsWith("AM") || timeStr.endsWith("PM")) {
-        const [hourMin, ampm] = [timeStr.slice(0, -2), timeStr.slice(-2)];
-        const [h, m] = hourMin.split(":");
-        let hours = parseInt(h);
-        if (ampm === "PM" && hours < 12) hours += 12;
-        if (ampm === "AM" && hours === 12) hours = 0;
-        data.parsed_time = `${String(hours).padStart(2, "0")}:${m}:00`;
-      } else {
-        data.parsed_time = `${match[6]}:00`.substring(0, 8);
-      }
+      // Time parsing (H:MM AM/PM or HH:MM AM/PM) and formatting to HH:MM:SS
+      data.parsed_time = formatTimeForDB(match[6]);
     }
   }
 
+  // Validation
   if (data.amount === null || isNaN(data.amount) || data.amount <= 0) {
     data.errors.push("Could not parse valid amount.");
   }
@@ -132,11 +121,15 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
   if (!data.parsed_date || !/^\d{4}-\d{2}-\d{2}$/.test(data.parsed_date)) {
     data.errors.push("Could not parse valid date (YYYY-MM-DD).");
   }
-  if (!data.parsed_time || !/^\d{2}:\d{2}:\d{2}$/.test(data.parsed_time)) {
+  if (
+    data.source === "sms" &&
+    (!data.parsed_time || !/^\d{2}:\d{2}:\d{2}$/.test(data.parsed_time))
+  ) {
+    // parsed_time is optional for bank deposits
     data.errors.push("Could not parse valid time (HH:MM:SS).");
   }
   if (!data.source) {
-    data.errors.push("Could not determine source (M-Pesa/NCBA).");
+    data.errors.push("Could not determine source (M-Pesa/NCBA/Bank).");
   }
 
   data.isValid = data.errors.length === 0;
@@ -148,9 +141,12 @@ export async function recordFeePayment(
   prevState: PaymentFormState,
   formData: FormData
 ): Promise<PaymentFormState> {
-  const messageText = formData.get("messageText") as string;
-  const userId = await getAuthenticatedUserId();
+  const paymentMethod = formData.get("paymentMethod") as
+    | "sms"
+    | "bank_cash"
+    | "bank_cheque";
 
+  const userId = await getAuthenticatedUserId();
   if (!userId) {
     redirect("/login");
   }
@@ -165,67 +161,196 @@ export async function recordFeePayment(
     };
   }
 
-  if (!messageText) {
-    return {
-      status: "error",
-      message: "Payment SMS message cannot be empty.",
-      parsedData: null,
-    };
-  }
-
-  const parsedData = parsePaymentMessage(messageText);
-
-  if (!parsedData.isValid) {
-    return {
-      status: "error",
-      message: `Parsing failed: ${parsedData.errors.join(", ")}`,
-      parsedData: parsedData,
-    };
-  }
-
   const supabase = await createClient();
 
   try {
-    const { data: existingPayments, error: duplicateCheckError } =
-      await supabase
-        .from("fee_payments")
-        .select("id")
-        .eq("reference", parsedData.reference)
-        .eq("parsed_date", parsedData.parsed_date)
-        .eq("parsed_time", parsedData.parsed_time)
-        .eq("amount", parsedData.amount)
-        .eq("student_id", studentId);
+    let finalRecord: Omit<FeePayment, "id" | "recorded_at">;
+    let parsedDataForPreview: ParsedPaymentData | null = null;
+    let successMessage: string;
 
-    if (duplicateCheckError) {
-      console.error("Duplicate check error:", duplicateCheckError);
+    if (paymentMethod === "sms") {
+      const messageText = formData.get("messageText") as string;
+      if (!messageText) {
+        return {
+          status: "error",
+          message: "Payment SMS message cannot be empty.",
+          parsedData: null,
+        };
+      }
+
+      parsedDataForPreview = parsePaymentMessage(messageText);
+
+      if (!parsedDataForPreview.isValid) {
+        return {
+          status: "error",
+          message: `Parsing failed: ${parsedDataForPreview.errors.join(", ")}`,
+          parsedData: parsedDataForPreview,
+        };
+      }
+
+      // Check for duplicate SMS payments
+      const { data: existingPayments, error: duplicateCheckError } =
+        await supabase
+          .from("fee_payments")
+          .select("id")
+          .eq("reference", parsedDataForPreview.reference)
+          .eq("parsed_date", parsedDataForPreview.parsed_date)
+          .eq("parsed_time", parsedDataForPreview.parsed_time)
+          .eq("amount", parsedDataForPreview.amount)
+          .eq("student_id", studentId);
+
+      if (duplicateCheckError) {
+        console.error("Duplicate check error:", duplicateCheckError);
+        return {
+          status: "error",
+          message: "Error checking for duplicates. Please try again.",
+          parsedData: null,
+        };
+      }
+
+      if (existingPayments && existingPayments.length > 0) {
+        return {
+          status: "error",
+          message:
+            "Duplicate payment detected. This payment has already been recorded.",
+          parsedData: parsedDataForPreview,
+        };
+      }
+
+      finalRecord = {
+        student_id: studentId,
+        amount: parsedDataForPreview.amount!,
+        reference: parsedDataForPreview.reference!,
+        institution: parsedDataForPreview.institution,
+        account_number: parsedDataForPreview.account_number,
+        message_text: messageText,
+        parsed_date: parsedDataForPreview.parsed_date!,
+        parsed_time: parsedDataForPreview.parsed_time,
+        status: "pending",
+        source: "sms",
+      };
+      successMessage = "SMS payment recorded successfully with pending status!";
+    } else if (
+      paymentMethod === "bank_cash" ||
+      paymentMethod === "bank_cheque"
+    ) {
+      const bankAmountStr = formData.get("bankAmount") as string;
+      const bankDateStr = formData.get("bankDate") as string;
+      const bankName = formData.get("bankName") as string;
+      const depositorName = (formData.get("depositorName") as string) || null;
+
+      const bankAmount = parseFloat(bankAmountStr);
+
+      if (isNaN(bankAmount) || bankAmount <= 0) {
+        return {
+          status: "error",
+          message: "Valid amount is required for bank deposits.",
+          parsedData: null,
+        };
+      }
+      if (!bankDateStr) {
+        return {
+          status: "error",
+          message: "Deposit date is required for bank deposits.",
+          parsedData: null,
+        };
+      }
+      if (!bankName || bankName.trim() === "") {
+        return {
+          status: "error",
+          message: "Bank name is required for bank deposits.",
+          parsedData: null,
+        };
+      }
+
+      let reference: string | null = null;
+      let descriptiveMessage: string;
+      const parsedTime = null;
+
+      if (paymentMethod === "bank_cash") {
+        reference = (formData.get("bankReference") as string)?.trim();
+        if (!reference) {
+          return {
+            status: "error",
+            message: "Cash deposit slip reference number is required.",
+            parsedData: null,
+          };
+        }
+        descriptiveMessage = `Bank Deposit (Cash) Ref: ${reference}`;
+      } else {
+        // bank_cheque
+        const chequeNumber = (formData.get("chequeNumber") as string)?.trim();
+        if (!chequeNumber) {
+          return {
+            status: "error",
+            message: "Cheque number is required for cheque deposits.",
+            parsedData: null,
+          };
+        }
+        reference = `CHEQUE_${chequeNumber}`;
+        descriptiveMessage = `Bank Deposit (Cheque) No: ${chequeNumber}`;
+      }
+
+      if (depositorName) {
+        descriptiveMessage += ` by ${depositorName}`;
+      }
+      descriptiveMessage += `. Bank: ${bankName}, Date: ${bankDateStr}.`;
+
+      // Check for duplicate bank payments (basic check)
+      const { data: existingPayments, error: duplicateCheckError } =
+        await supabase
+          .from("fee_payments")
+          .select("id")
+          .eq("reference", reference)
+          .eq("parsed_date", bankDateStr)
+          .eq("amount", bankAmount)
+          .eq("source", paymentMethod)
+          .eq("student_id", studentId);
+
+      if (duplicateCheckError) {
+        console.error("Duplicate check error:", duplicateCheckError);
+        return {
+          status: "error",
+          message: "Error checking for duplicates. Please try again.",
+          parsedData: null,
+        };
+      }
+
+      if (existingPayments && existingPayments.length > 0) {
+        return {
+          status: "error",
+          message:
+            "Duplicate payment detected. This bank payment has already been recorded.",
+          parsedData: null,
+        };
+      }
+
+      finalRecord = {
+        student_id: studentId,
+        amount: bankAmount,
+        reference: reference,
+        institution: bankName,
+        account_number: null,
+        message_text: descriptiveMessage,
+        parsed_date: bankDateStr,
+        parsed_time: parsedTime,
+        status: "pending",
+        source: paymentMethod,
+      };
+      successMessage = `${
+        paymentMethod === "bank_cash" ? "Cash" : "Cheque"
+      } deposit recorded successfully with pending status!`;
+    } else {
       return {
         status: "error",
-        message: "Error checking for duplicates. Please try again.",
+        message: "Invalid payment method selected.",
         parsedData: null,
       };
     }
 
-    if (existingPayments && existingPayments.length > 0) {
-      return {
-        status: "error",
-        message:
-          "Duplicate payment detected. This payment has already been recorded.",
-        parsedData: parsedData,
-      };
-    }
-
-    const { error: insertError } = await supabase.from("fee_payments").insert({
-      student_id: studentId,
-      amount: parsedData.amount,
-      reference: parsedData.reference,
-      institution: parsedData.institution,
-      account_number: parsedData.account_number,
-      message_text: messageText,
-      parsed_date: parsedData.parsed_date,
-      parsed_time: parsedData.parsed_time,
-      status: "pending",
-      source: parsedData.source,
-    });
+    const { error: insertError } = await supabase
+      .from("fee_payments")
+      .insert(finalRecord);
 
     if (insertError) {
       console.error("Insert error:", insertError);
@@ -239,8 +364,8 @@ export async function recordFeePayment(
     revalidatePath("/dashboard/students/record-fee-payment");
     return {
       status: "success",
-      message: "Payment recorded successfully with pending status!",
-      parsedData: parsedData,
+      message: successMessage,
+      parsedData: parsedDataForPreview,
     };
   } catch (error) {
     console.error("Unhandled error in recordFeePayment:", error);

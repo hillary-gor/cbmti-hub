@@ -1,13 +1,12 @@
-// lib/types/supabase.ts
+import { Database, Tables } from "@/types/supabase";
 
-import { Database, Tables } from '@/types/supabase';
+export type Course = Tables<"courses">;
+export type Intake = Tables<"intakes">;
+export type StudentRow = Tables<"students">;
 
-export type Course = Tables<'courses'>;
-export type Intake = Tables<'intakes'>;
-export type StudentRow = Tables<'students'>;
+export type PaymentStatus = "pending" | "approved" | "declined";
 
-export type PaymentStatus = 'pending' | 'approved' | 'declined';
-export type PaymentSource = 'mpesa' | 'ncba';
+export type PaymentSource = "sms" | "bank_cash" | "bank_cheque";
 
 export interface FeePayment {
   id: string;
@@ -18,7 +17,7 @@ export interface FeePayment {
   account_number: string | null;
   message_text: string;
   parsed_date: string;
-  parsed_time: string;
+  parsed_time: string | null;
   status: PaymentStatus;
   source: PaymentSource | null;
   recorded_at: string;
@@ -37,14 +36,14 @@ export interface ParsedPaymentData {
 }
 
 export interface PaymentFormState {
-  status: 'success' | 'error' | '';
+  status: "success" | "error" | "";
   message: string;
   parsedData?: ParsedPaymentData | null;
 }
 
 export interface StudentWithRelations extends StudentRow {
-  intake?: Tables<'intakes'> | null;
-  course?: Tables<'courses'> | null;
+  intake?: Tables<"intakes"> | null;
+  course?: Tables<"courses"> | null;
 }
 
 export type DB = Database;

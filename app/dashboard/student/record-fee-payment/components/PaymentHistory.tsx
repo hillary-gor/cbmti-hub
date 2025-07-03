@@ -98,7 +98,7 @@ export default function PaymentHistory({
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg"
                 >
-                  Date
+                  Date & Time
                 </th>
                 <th
                   scope="col"
@@ -127,46 +127,76 @@ export default function PaymentHistory({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredPayments.map((payment) => (
-                <tr
-                  key={payment.id}
-                  className={
-                    payment.status === "approved"
-                      ? "bg-gray-50 text-gray-500"
-                      : "hover:bg-gray-50"
+              {filteredPayments.map((payment) => {
+                const dateTimeString = payment.parsed_time
+                  ? `${payment.parsed_date}T${payment.parsed_time}`
+                  : payment.parsed_date;
+
+                let displayDateTime;
+                try {
+                  if (payment.parsed_time) {
+                    const formatString = "dd/MM/yyyy hh:mm aa";
+                    displayDateTime = format(
+                      new Date(dateTimeString),
+                      formatString
+                    );
+                  } else {
+                    // Changed format for bank payments to "dd/MM/yyyy" only
+                    const formatString = "dd/MM/yyyy";
+                    displayDateTime = format(
+                      new Date(dateTimeString),
+                      formatString
+                    );
                   }
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {format(
-                      new Date(`${payment.parsed_date}T${payment.parsed_time}`),
-                      "MMM dd,yyyy HH:mm"
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Ksh {payment.amount.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {payment.reference}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {payment.source || "N/A"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        payment.status === "pending"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : payment.status === "approved"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {payment.status.charAt(0).toUpperCase() +
-                        payment.status.slice(1)}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+                } catch (error) {
+                  console.error(
+                    "Error during date formatting for payment ID:",
+                    payment.id,
+                    "Error:",
+                    error
+                  );
+                  console.log("Problematic dateTimeString:", dateTimeString);
+                  displayDateTime = "Error Formatting Date";
+                }
+
+                return (
+                  <tr
+                    key={payment.id}
+                    className={
+                      payment.status === "approved"
+                        ? "bg-gray-50 text-gray-500"
+                        : "hover:bg-gray-50"
+                    }
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {displayDateTime}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      Ksh {payment.amount.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {payment.reference}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {payment.source || "N/A"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          payment.status === "pending"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : payment.status === "approved"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {payment.status.charAt(0).toUpperCase() +
+                          payment.status.slice(1)}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
