@@ -293,7 +293,7 @@ export default function PaymentForm({
                   Cash Deposit Slip Reference Number ({BANK_REFERENCE_LENGTH}{" "}
                   characters)
                 </label>
-                <div className="flex justify-center gap-2">
+                <div className="flex flex-wrap justify-center gap-2">
                   {bankReferenceDigits.map((digit, index) => (
                     <input
                       key={`bank-ref-${index}`}
@@ -323,7 +323,7 @@ export default function PaymentForm({
                       ref={(el) => {
                         bankRefInputRefs.current[index] = el;
                       }}
-                      className="w-10 h-12 text-center text-xl font-bold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                      className="w-9 h-10 text-center text-lg font-bold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                       required={paymentMethod === "bank_cash"}
                     />
                   ))}
@@ -346,7 +346,7 @@ export default function PaymentForm({
                 >
                   Cheque Number ({CHEQUE_NUMBER_LENGTH} digits)
                 </label>
-                <div className="flex justify-center gap-2">
+                <div className="flex flex-wrap justify-center gap-2">
                   {chequeNumberDigits.map((digit, index) => (
                     <input
                       key={`cheque-num-${index}`}
@@ -376,7 +376,7 @@ export default function PaymentForm({
                       ref={(el) => {
                         chequeNumInputRefs.current[index] = el;
                       }}
-                      className="w-10 h-12 text-center text-xl font-bold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                      className="w-9 h-10 text-center text-lg font-bold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                       required={paymentMethod === "bank_cheque"}
                     />
                   ))}
