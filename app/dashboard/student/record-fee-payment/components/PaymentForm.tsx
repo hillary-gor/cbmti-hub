@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { recordFeePayment } from "../actions";
+import { recordFeePayment } from "../actions"; // This line correctly imports recordFeePayment
 import { ParsedPaymentData, PaymentFormState } from "@/types/fee_payment";
 
 interface PaymentFormProps {
@@ -33,8 +33,8 @@ export default function PaymentForm({
 }: PaymentFormProps) {
   const [state, formAction] = useActionState(recordFeePayment, initialState);
   const [paymentMethod, setPaymentMethod] = useState<
-    "sms" | "bank_cash" | "bank_cheque"
-  >("sms");
+    "mpesa" | "ncba" | "bank_cash" | "bank_cheque"
+  >("mpesa"); // Changed initial state and type
   const [messageText, setMessageText] = useState("");
   const [bankAmount, setBankAmount] = useState<string>("");
   const [bankDate, setBankDate] = useState<string>("");
@@ -61,13 +61,15 @@ export default function PaymentForm({
   );
 
   useEffect(() => {
-    if (state.parsedData && state.parsedData.source === "sms") {
+    // Only update parsedPreview if the action returned data and it's an SMS type
+    if (state.parsedData && (state.parsedData.source === "mpesa" || state.parsedData.source === "ncba")) {
       setParsedPreview(state.parsedData);
       // Clear SMS message text if successfully parsed and recorded
       if (state.status === "success") {
         setMessageText("");
       }
     } else {
+      // Clear preview for non-SMS methods or if parsing failed/no data
       setParsedPreview(null);
     }
 
@@ -87,13 +89,17 @@ export default function PaymentForm({
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessageText(e.target.value);
-    setParsedPreview(null);
+    setParsedPreview(null); // Clear preview when message text changes
   };
 
   const handlePaymentMethodChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const newMethod = e.target.value as "sms" | "bank_cash" | "bank_cheque";
+    const newMethod = e.target.value as
+      | "mpesa"
+      | "ncba"
+      | "bank_cash"
+      | "bank_cheque"; // Changed type
     setPaymentMethod(newMethod);
     // Clear all method-specific input states and preview when changing method
     setMessageText("");
@@ -173,12 +179,23 @@ export default function PaymentForm({
               <input
                 type="radio"
                 name="paymentMethodRadio"
-                value="sms"
-                checked={paymentMethod === "sms"}
+                value="mpesa" // Changed value
+                checked={paymentMethod === "mpesa"}
                 onChange={handlePaymentMethodChange}
                 className="form-radio h-4 w-4 text-blue-600"
               />
-              <span className="ml-2 text-gray-700">M-Pesa/NCBA SMS</span>
+              <span className="ml-2 text-gray-700">M-Pesa SMS</span> {/* Changed label */}
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="paymentMethodRadio"
+                value="ncba" // New option
+                checked={paymentMethod === "ncba"}
+                onChange={handlePaymentMethodChange}
+                className="form-radio h-4 w-4 text-blue-600"
+              />
+              <span className="ml-2 text-gray-700">NCBA M-Pesa SMS</span> {/* New label */}
             </label>
             <label className="inline-flex items-center">
               <input
@@ -206,13 +223,13 @@ export default function PaymentForm({
         </div>
 
         {/* Conditional Rendering based on paymentMethod */}
-        {paymentMethod === "sms" && (
+        {(paymentMethod === "mpesa" || paymentMethod === "ncba") && ( // Changed condition
           <div>
             <label
               htmlFor="messageText"
               className="block text-gray-700 text-sm font-semibold mb-2"
             >
-              Paste Payment SMS Message (M-Pesa or NCBA)
+              Paste Payment SMS Message ({paymentMethod === "mpesa" ? "M-Pesa" : "NCBA"})
             </label>
             <textarea
               id="messageText"
@@ -221,8 +238,8 @@ export default function PaymentForm({
               value={messageText}
               onChange={handleMessageChange}
               className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-              placeholder="E.g., NGN... Confirmed. You have received Ksh..."
-              required={paymentMethod === "sms"}
+              placeholder={`E.g., ${paymentMethod === "mpesa" ? "NGN... Confirmed. You have received Ksh..." : "Your M-Pesa payment of KES..."}`} // Dynamic placeholder
+              required={paymentMethod === "mpesa" || paymentMethod === "ncba"} // Changed condition
             ></textarea>
           </div>
         )}
@@ -411,7 +428,7 @@ export default function PaymentForm({
         )}
 
         {/* Parsed Preview (only for SMS messages) */}
-        {paymentMethod === "sms" && parsedPreview && parsedPreview.isValid && (
+        {(paymentMethod === "mpesa" || paymentMethod === "ncba") && parsedPreview && parsedPreview.isValid && ( // Changed condition
           <div className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg mt-4">
             <h3 className="text-lg font-semibold mb-3">
               Parsed Payment Details (Preview)
@@ -446,7 +463,7 @@ export default function PaymentForm({
         )}
 
         {/* Parsing Errors (only for SMS messages) */}
-        {paymentMethod === "sms" &&
+        {(paymentMethod === "mpesa" || paymentMethod === "ncba") && // Changed condition
           parsedPreview &&
           !parsedPreview.isValid &&
           parsedPreview.errors.length > 0 && (

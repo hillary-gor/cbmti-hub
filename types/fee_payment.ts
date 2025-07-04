@@ -6,7 +6,7 @@ export type StudentRow = Tables<"students">;
 
 export type PaymentStatus = "pending" | "approved" | "declined";
 
-export type PaymentSource = "sms" | "bank_cash" | "bank_cheque";
+export type PaymentSource = "mpesa" | "ncba" | "bank_cash" | "bank_cheque"; // Updated line
 
 export interface FeePayment {
   id: string;

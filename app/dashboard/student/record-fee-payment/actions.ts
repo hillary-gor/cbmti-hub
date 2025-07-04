@@ -73,7 +73,7 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
   // Try NCBA format first
   match = message.match(ncbaMpesaPaymentRegex);
   if (match) {
-    data.source = "sms";
+    data.source = "ncba"; // Corrected source assignment
     data.amount = parseFloat(match[1].replace(/,/g, ""));
     data.institution = match[2].trim();
     data.account_number = match[3] || null;
@@ -92,7 +92,7 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
     // Try M-Pesa format
     match = message.match(mpesaRegex);
     if (match) {
-      data.source = "sms";
+      data.source = "mpesa"; // Corrected source assignment
       data.reference = match[1];
       data.amount = parseFloat(match[2].replace(/,/g, ""));
       data.institution = match[3].trim();
@@ -121,11 +121,11 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
   if (!data.parsed_date || !/^\d{4}-\d{2}-\d{2}$/.test(data.parsed_date)) {
     data.errors.push("Could not parse valid date (YYYY-MM-DD).");
   }
+  // Only validate time for M-Pesa/NCBA sources (which are "mpesa" or "ncba" after this fix)
   if (
-    data.source === "sms" &&
+    (data.source === "mpesa" || data.source === "ncba") &&
     (!data.parsed_time || !/^\d{2}:\d{2}:\d{2}$/.test(data.parsed_time))
   ) {
-    // parsed_time is optional for bank deposits
     data.errors.push("Could not parse valid time (HH:MM:SS).");
   }
   if (!data.source) {
@@ -142,7 +142,8 @@ export async function recordFeePayment(
   formData: FormData
 ): Promise<PaymentFormState> {
   const paymentMethod = formData.get("paymentMethod") as
-    | "sms"
+    | "mpesa" // Changed from "sms"
+    | "ncba" // Added "ncba"
     | "bank_cash"
     | "bank_cheque";
 
@@ -168,7 +169,8 @@ export async function recordFeePayment(
     let parsedDataForPreview: ParsedPaymentData | null = null;
     let successMessage: string;
 
-    if (paymentMethod === "sms") {
+    // Updated condition to check for both mpesa and ncba
+    if (paymentMethod === "mpesa" || paymentMethod === "ncba") {
       const messageText = formData.get("messageText") as string;
       if (!messageText) {
         return {
@@ -227,7 +229,7 @@ export async function recordFeePayment(
         parsed_date: parsedDataForPreview.parsed_date!,
         parsed_time: parsedDataForPreview.parsed_time,
         status: "pending",
-        source: "sms",
+        source: parsedDataForPreview.source!, // Use the parsed source ('mpesa' or 'ncba')
       };
       successMessage = "SMS payment recorded successfully with pending status!";
     } else if (
