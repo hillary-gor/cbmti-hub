@@ -1,85 +1,61 @@
-"use client";
+import { getCourseById } from '../../actions'; // Import the server action to fetch course
+import CourseEditForm from './course-edit-form'; // Import the client component form
+import { notFound } from 'next/navigation'; // For handling cases where course is not found
 
-import { useFormState } from "react-dom";
-import { updateCourse } from "./actions";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+// Removed the duplicate Course interface definition here.
+// The CourseData interface from '@/app/admin/actions' will be used instead.
+// interface Course {
+//   id: string;
+//   title: string;
+//   description: string;
+//   long_description: string | null;
+//   duration_weeks: number;
+//   level: 'Certificate' | 'Diploma' | 'Degree';
+//   price_string: string | null;
+//   image_url: string | null;
+//   features: string[] | null;
+//   next_intake_date: string | null; // Date string (YYYY-MM-DD)
+//   icon_name: string | null;
+//   is_featured: boolean;
+//   code: string | null;
+//   department_id: string | null;
+//   has_attachment: boolean | null;
+//   lecturer_id: string | null;
+//   intake_id: string | null;
+// }
 
-type Department = {
-  id: string;
-  name: string;
-};
+interface EditCoursePageProps {
+  params: {
+    id: string; // The course ID from the URL
+  };
+}
 
-type Course = {
-  id: string;
-  code: string;
-  name: string;
-  department_id: string;
-  departments: Department;
-};
+export default async function EditCoursePage({ params }: EditCoursePageProps) {
+  const { id } = params;
+  // getCourseById already returns data as CourseData type
+  const { data: course, error } = await getCourseById(id);
 
-type FormState = {
-  error?: string;
-};
+  if (error) {
+    console.error('Error fetching course for editing:', error);
+    // You might want a more user-friendly error page here
+    return (
+      <div className="min-h-screen bg-red-50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <p className="text-red-700 text-xl">Error loading course: {error}</p>
+      </div>
+    );
+  }
 
-export default function EditCoursePage() {
-  const { id } = useParams();
-
-  const [formState, formAction] = useFormState(
-    (_prev: FormState, formData: FormData) =>
-      updateCourse(id as string, formData),
-    { error: "" },
-  );
-
-  const [course, setCourse] = useState<Course | null>(null);
-  const [departments, setDepartments] = useState<Department[]>([]);
-
-  useEffect(() => {
-    async function fetchCourse() {
-      try {
-        const res = await fetch(`/api/admin/supabase-courses/${id}`);
-        if (!res.ok) throw new Error("Failed to fetch course");
-        const data = await res.json();
-        setCourse(data);
-        setDepartments([data.departments]);
-      } catch (err) {
-        console.error("❌ Failed to load course:", err);
-      }
-    }
-
-    fetchCourse();
-  }, [id]);
-
-  if (!course) return <p className="text-center py-6">Loading course...</p>;
+  if (!course) {
+    notFound(); // Next.js built-in to render a 404 page
+  }
 
   return (
-    <div className="max-w-xl mx-auto py-10 px-4 space-y-6">
-      <h1 className="text-2xl font-bold">Edit Course</h1>
-
-      <form action={formAction} className="space-y-4">
-        <Input name="code" defaultValue={course.code} required />
-        <Input name="name" defaultValue={course.name} required />
-
-        <select
-          name="department_id"
-          defaultValue={course.department_id}
-          className="w-full p-2 border rounded"
-        >
-          {departments.map((dept) => (
-            <option key={dept.id} value={dept.id}>
-              {dept.name}
-            </option>
-          ))}
-        </select>
-
-        <Button type="submit">💾 Save Changes</Button>
-
-        {formState?.error && (
-          <p className="text-red-600 text-sm mt-2">❌ {formState.error}</p>
-        )}
-      </form>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-2xl mx-auto space-y-10">
+        <h1 className="text-4xl font-bold text-center text-gray-900">Edit Course</h1>
+        {/* Pass the fetched course data to the client component form */}
+        <CourseEditForm initialData={course} />
+      </div>
     </div>
   );
 }
