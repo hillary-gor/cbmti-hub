@@ -104,7 +104,9 @@ export default function AdminCoursesPage() {
                     </span>
                     <div className="flex space-x-2">
                       {course.id && (
-                        <Link href={`/admin/courses/${course.id}/edit`}>
+                        <Link
+                          href={`/dashboard/admin/courses/${course.id}/edit`}
+                        >
                           <Button
                             variant="outline"
                             size="icon"

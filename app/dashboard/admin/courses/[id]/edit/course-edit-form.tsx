@@ -21,6 +21,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { updateCourse } from "../../actions";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import {
   UserCheck,
   Activity,
@@ -93,6 +94,7 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
   const [courseData, setCourseData] = useState<CourseData>(initialData);
+  const router = useRouter();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -121,9 +123,30 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
 
     if (result.success) {
       toast.success(result.message);
+      router.push("/dashboard/admin/courses");
     } else {
       toast.error(result.message);
     }
+  };
+
+  const getFeaturesString = (
+    features: string[] | string | null | undefined
+  ): string => {
+    if (Array.isArray(features)) {
+      return features.join(", ");
+    }
+    if (
+      typeof features === "string" &&
+      features.startsWith("{") &&
+      features.endsWith("}")
+    ) {
+      return features
+        .substring(1, features.length - 1)
+        .split(",")
+        .map((f) => f.trim())
+        .join(", ");
+    }
+    return features || "";
   };
 
   return (
@@ -239,7 +262,7 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
               id="features"
               name="features"
               placeholder="e.g., Patient Care, Medical Records"
-              value={courseData.features?.join(", ") || ""}
+              value={getFeaturesString(courseData.features)}
               onChange={handleChange}
             />
           </div>
