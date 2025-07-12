@@ -1,93 +1,126 @@
-'use client';
+"use client";
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { updateCourse } from '../../actions'; // Import the update server action
-import { toast } from 'sonner';
 import {
-  UserCheck, Activity, Utensils, Building2, Stethoscope, Heart, Brain,
-  Microscope, Syringe, Ambulance, FlaskConical, Dna, Pill, Hospital, Shield,
-  ClipboardCheck, TestTube, Thermometer, Bone, Eye, Ear, Hand, PlusCircle, Award // Added more medical-related icons from Lucide
-} from 'lucide-react';
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { updateCourse } from "../../actions";
+import { toast } from "sonner";
+import {
+  UserCheck,
+  Activity,
+  Utensils,
+  Building2,
+  Stethoscope,
+  Heart,
+  Brain,
+  Microscope,
+  Syringe,
+  Ambulance,
+  FlaskConical,
+  Dna,
+  Pill,
+  Hospital,
+  Shield,
+  ClipboardCheck,
+  TestTube,
+  Thermometer,
+  Bone,
+  Eye,
+  Ear,
+  Hand,
+  PlusCircle,
+  Award,
+} from "lucide-react";
 
-// Import the CourseData interface directly from actions.ts
-import type { CourseData } from '../../actions';
+import type { CourseData } from "../../actions";
 
-// Define a list of medical-related Lucide icons for the dropdown
 const medicalIcons = [
-  { name: 'UserCheck', component: UserCheck, label: 'Patient Care' },
-  { name: 'Activity', component: Activity, label: 'Activity / Vital Signs' },
-  { name: 'Utensils', component: Utensils, label: 'Nutrition' },
-  { name: 'Building2', component: Building2, label: 'Community Health' },
-  { name: 'Stethoscope', component: Stethoscope, label: 'Medical Diagnosis' },
-  { name: 'Heart', component: Heart, label: 'Cardiology' },
-  { name: 'Brain', component: Brain, label: 'Neurology' },
-  { name: 'Microscope', component: Microscope, label: 'Lab / Research' },
-  { name: 'Syringe', component: Syringe, label: 'Injections / Vaccines' },
-  { name: 'Ambulance', component: Ambulance, label: 'Emergency' },
-  { name: 'FlaskConical', component: FlaskConical, label: 'Chemistry / Pharma' },
-  { name: 'Dna', component: Dna, label: 'Genetics' },
-  { name: 'Pill', component: Pill, label: 'Pharmacy' },
-  { name: 'Hospital', component: Hospital, label: 'Hospital / Clinic' },
-  { name: 'Shield', component: Shield, label: 'Protection / Immunity' },
-  { name: 'ClipboardCheck', component: ClipboardCheck, label: 'Records / Checklists' },
-  { name: 'TestTube', component: TestTube, label: 'Testing' },
-  { name: 'Thermometer', component: Thermometer, label: 'Temperature' },
-  { name: 'Bone', component: Bone, label: 'Orthopedics' },
-  { name: 'Eye', component: Eye, label: 'Ophthalmology' },
-  { name: 'Ear', component: Ear, label: 'Audiology' },
-  { name: 'Hand', component: Hand, label: 'Therapy / Dexterity' },
-  { name: 'PlusCircle', component: PlusCircle, label: 'First Aid / General' },
-  { name: 'Award', component: Award, label: 'Achievement' },
+  { name: "UserCheck", component: UserCheck, label: "Patient Care" },
+  { name: "Activity", component: Activity, label: "Activity / Vital Signs" },
+  { name: "Utensils", component: Utensils, label: "Nutrition" },
+  { name: "Building2", component: Building2, label: "Community Health" },
+  { name: "Stethoscope", component: Stethoscope, label: "Medical Diagnosis" },
+  { name: "Heart", component: Heart, label: "Cardiology" },
+  { name: "Brain", component: Brain, label: "Neurology" },
+  { name: "Microscope", component: Microscope, label: "Lab / Research" },
+  { name: "Syringe", component: Syringe, label: "Injections / Vaccines" },
+  { name: "Ambulance", component: Ambulance, label: "Emergency" },
+  {
+    name: "FlaskConical",
+    component: FlaskConical,
+    label: "Chemistry / Pharma",
+  },
+  { name: "Dna", component: Dna, label: "Genetics" },
+  { name: "Pill", component: Pill, label: "Pharmacy" },
+  { name: "Hospital", component: Hospital, label: "Hospital / Clinic" },
+  { name: "Shield", component: Shield, label: "Protection / Immunity" },
+  {
+    name: "ClipboardCheck",
+    component: ClipboardCheck,
+    label: "Records / Checklists",
+  },
+  { name: "TestTube", component: TestTube, label: "Testing" },
+  { name: "Thermometer", component: Thermometer, label: "Temperature" },
+  { name: "Bone", component: Bone, label: "Orthopedics" },
+  { name: "Eye", component: Eye, label: "Ophthalmology" },
+  { name: "Ear", component: Ear, label: "Audiology" },
+  { name: "Hand", component: Hand, label: "Therapy / Dexterity" },
+  { name: "PlusCircle", component: PlusCircle, label: "First Aid / General" },
+  { name: "Award", component: Award, label: "Achievement" },
 ];
 
-// Use CourseData from actions.ts directly for initialData prop
 interface CourseEditFormProps {
   initialData: CourseData;
 }
 
-// Changed to default export
 export default function CourseEditForm({ initialData }: CourseEditFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
-  // Initialize state with initialData, which is now CourseData type
   const [courseData, setCourseData] = useState<CourseData>(initialData);
 
-  // Helper to format date for input type="date"
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
 
-    setCourseData(prev => ({
+    setCourseData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  // Special handler for Select component (shadcn/ui)
   const handleSelectChange = (value: string, name: string) => {
-    setCourseData(prev => ({
+    setCourseData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleUpdateCourse = async (formData: FormData) => {
     setLoading(true);
-    // Ensure ID is always passed for update
-    formData.append('id', courseData.id as string); // Cast to string as it must exist for update
+    formData.append("id", courseData.id as string);
 
     const result = await updateCourse(formData);
     setLoading(false);
 
     if (result.success) {
       toast.success(result.message);
-      // Optionally redirect or revalidate specific data
     } else {
       toast.error(result.message);
     }
@@ -96,8 +129,12 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">Edit Course Details</CardTitle>
-        <CardDescription>Modify the details for the course: {initialData.title}</CardDescription>
+        <CardTitle className="text-2xl font-bold">
+          Edit Course Details
+        </CardTitle>
+        <CardDescription>
+          Modify the details for the course: {initialData.title}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form ref={formRef} action={handleUpdateCourse} className="space-y-6">
@@ -130,7 +167,7 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
               name="long_description"
               rows={4}
               className="min-h-[80px]"
-              value={courseData.long_description || ''}
+              value={courseData.long_description || ""}
               onChange={handleChange}
             />
           </div>
@@ -148,7 +185,12 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
             </div>
             <div>
               <Label htmlFor="courseLevel">Level</Label>
-              <Select name="level" value={courseData.level} onValueChange={(value) => handleSelectChange(value, 'level')} required>
+              <Select
+                name="level"
+                value={courseData.level}
+                onValueChange={(value) => handleSelectChange(value, "level")}
+                required
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Level" />
                 </SelectTrigger>
@@ -166,7 +208,7 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
               <Input
                 id="priceString"
                 name="price_string"
-                value={courseData.price_string || ''}
+                value={courseData.price_string || ""}
                 onChange={handleChange}
               />
             </div>
@@ -175,7 +217,7 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
               <Input
                 id="courseCode"
                 name="code"
-                value={courseData.code || ''}
+                value={courseData.code || ""}
                 onChange={handleChange}
                 required
               />
@@ -187,7 +229,7 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
               id="imageUrl"
               name="image_url"
               type="url"
-              value={courseData.image_url || ''}
+              value={courseData.image_url || ""}
               onChange={handleChange}
             />
           </div>
@@ -197,14 +239,20 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
               id="features"
               name="features"
               placeholder="e.g., Patient Care, Medical Records"
-              value={courseData.features?.join(', ') || ''}
+              value={courseData.features?.join(", ") || ""}
               onChange={handleChange}
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="iconName">Icon Name (Lucide)</Label>
-              <Select name="icon_name" value={courseData.icon_name || ''} onValueChange={(value) => handleSelectChange(value, 'icon_name')}>
+              <Select
+                name="icon_name"
+                value={courseData.icon_name || ""}
+                onValueChange={(value) =>
+                  handleSelectChange(value, "icon_name")
+                }
+              >
                 <SelectTrigger id="iconName">
                   <SelectValue placeholder="Select an icon" />
                 </SelectTrigger>
@@ -215,7 +263,9 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
                       <SelectItem key={icon.name} value={icon.name}>
                         <div className="flex items-center">
                           <IconComponent className="h-4 w-4 mr-2" />
-                          <span>{icon.label} ({icon.name})</span>
+                          <span>
+                            {icon.label} ({icon.name})
+                          </span>
                         </div>
                       </SelectItem>
                     );
@@ -236,7 +286,7 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
             <Label htmlFor="isFeatured">Featured on Homepage</Label>
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Updating Course...' : 'Update Course'}
+            {loading ? "Updating Course..." : "Update Course"}
           </Button>
         </form>
       </CardContent>

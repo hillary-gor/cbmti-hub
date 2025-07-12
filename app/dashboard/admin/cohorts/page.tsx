@@ -1,5 +1,4 @@
 // app/dashboard/admin/cohorts/page.tsx
-
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
