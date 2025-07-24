@@ -16,7 +16,8 @@ const navItems = [
   { label: "🚶 Visitor Check-in", href: "/dashboard/admin/visitors/checkin" },
   { label: "📋 Visitor Records", href: "/dashboard/admin/visitors/records" },
   { label: "📚 Courses", href: "/dashboard/admin/courses" },
-  // { label: '📚 Intakes', href: '/dashboard/admin/intakes' },
+  { label: '📚 Intakes', href: '/dashboard/admin/intakes' },
+  { label: '📝 Applications', href: '/dashboard/admin/applications' },
   // { label: '👨‍🎓 Students', href: '/dashboard/admin/students' },
   {
     label: "📝 Unassigned Students",
