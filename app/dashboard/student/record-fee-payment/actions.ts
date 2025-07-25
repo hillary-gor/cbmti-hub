@@ -30,7 +30,7 @@ async function getStudentIdFromUserId(userId: string): Promise<string | null> {
   if (studentError) {
     console.error(
       "[Action] Error fetching student ID for user:",
-      studentError.message
+      studentError.message,
     );
     return null;
   }
@@ -83,7 +83,7 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
     const [day, month, year] = match[4].split("/");
     data.parsed_date = `${year}-${month.padStart(2, "0")}-${day.padStart(
       2,
-      "0"
+      "0",
     )}`;
 
     // Time parsing (HH:MM AM/PM) and formatting to HH:MM:SS
@@ -103,7 +103,7 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
       const fullYear = year.length === 2 ? `20${year}` : year;
       data.parsed_date = `${fullYear}-${month.padStart(2, "0")}-${day.padStart(
         2,
-        "0"
+        "0",
       )}`;
 
       // Time parsing (H:MM AM/PM or HH:MM AM/PM) and formatting to HH:MM:SS
@@ -139,7 +139,7 @@ function parsePaymentMessage(message: string): ParsedPaymentData {
 
 export async function recordFeePayment(
   prevState: PaymentFormState,
-  formData: FormData
+  formData: FormData,
 ): Promise<PaymentFormState> {
   const paymentMethod = formData.get("paymentMethod") as
     | "mpesa" // Changed from "sms"
@@ -380,7 +380,7 @@ export async function recordFeePayment(
 }
 
 export async function getFeePayments(
-  filterStatus?: PaymentStatus
+  filterStatus?: PaymentStatus,
 ): Promise<FeePayment[]> {
   const supabase = await createClient();
   const userId = await getAuthenticatedUserId();
@@ -393,7 +393,7 @@ export async function getFeePayments(
   const studentId = await getStudentIdFromUserId(userId);
   if (!studentId) {
     console.error(
-      `No student profile found for user ID: ${userId} when fetching payments.`
+      `No student profile found for user ID: ${userId} when fetching payments.`,
     );
     return [];
   }
@@ -423,7 +423,7 @@ export async function getFeePayments(
 
 export async function updatePaymentStatus(
   paymentId: string,
-  newStatus: PaymentStatus
+  newStatus: PaymentStatus,
 ) {
   const supabase = await createClient();
   const userId = await getAuthenticatedUserId();
@@ -435,7 +435,7 @@ export async function updatePaymentStatus(
   const studentId = await getStudentIdFromUserId(userId);
   if (!studentId) {
     console.error(
-      `No student profile found for user ID: ${userId} when updating payment status.`
+      `No student profile found for user ID: ${userId} when updating payment status.`,
     );
     return { status: "error", message: "Student profile not found." };
   }
@@ -467,7 +467,7 @@ export async function getApprovedPaymentsSumForStudent(): Promise<number> {
 
   if (!userId) {
     console.warn(
-      "[Server Action] Attempted to get approved payments sum without an authenticated user."
+      "[Server Action] Attempted to get approved payments sum without an authenticated user.",
     );
     return 0;
   }
@@ -476,7 +476,7 @@ export async function getApprovedPaymentsSumForStudent(): Promise<number> {
 
   if (!studentId) {
     console.warn(
-      `[Server Action] No student profile found for user ID: ${userId} when calculating approved sum.`
+      `[Server Action] No student profile found for user ID: ${userId} when calculating approved sum.`,
     );
     return 0;
   }
@@ -490,7 +490,7 @@ export async function getApprovedPaymentsSumForStudent(): Promise<number> {
   if (error) {
     console.error(
       `[Server Action] Error fetching approved payments sum for student ${studentId}:`,
-      error
+      error,
     );
     return 0;
   }

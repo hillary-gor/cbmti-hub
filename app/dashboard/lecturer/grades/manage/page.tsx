@@ -42,7 +42,7 @@ export default async function GradeManagePage({
     .eq("course_id", course_id);
 
   const gradesMap = new Map<string, Record<GradeField, number>>(
-    grades?.map((g) => [g.student_id, g]) ?? []
+    grades?.map((g) => [g.student_id, g]) ?? [],
   );
 
   return (

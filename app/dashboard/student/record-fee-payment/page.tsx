@@ -17,7 +17,7 @@ export default async function RecordFeePaymentPage() {
   if (authError || !user) {
     console.error(
       "Authentication error or user not logged in:",
-      authError?.message
+      authError?.message,
     );
     redirect("/login");
   }

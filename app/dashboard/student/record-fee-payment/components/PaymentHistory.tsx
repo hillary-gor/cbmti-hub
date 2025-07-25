@@ -138,14 +138,14 @@ export default function PaymentHistory({
                     const formatString = "dd/MM/yyyy hh:mm aa";
                     displayDateTime = format(
                       new Date(dateTimeString),
-                      formatString
+                      formatString,
                     );
                   } else {
                     // Changed format for bank payments to "dd/MM/yyyy" only
                     const formatString = "dd/MM/yyyy";
                     displayDateTime = format(
                       new Date(dateTimeString),
-                      formatString
+                      formatString,
                     );
                   }
                 } catch (error) {
@@ -153,7 +153,7 @@ export default function PaymentHistory({
                     "Error during date formatting for payment ID:",
                     payment.id,
                     "Error:",
-                    error
+                    error,
                   );
                   console.log("Problematic dateTimeString:", dateTimeString);
                   displayDateTime = "Error Formatting Date";
@@ -186,8 +186,8 @@ export default function PaymentHistory({
                           payment.status === "pending"
                             ? "bg-yellow-100 text-yellow-800"
                             : payment.status === "approved"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
                         }`}
                       >
                         {payment.status.charAt(0).toUpperCase() +

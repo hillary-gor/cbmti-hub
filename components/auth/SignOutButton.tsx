@@ -1,4 +1,5 @@
-'use client'
+// components/auth/SignOutButton.tsx
+"use client";
 
 import {
   Dialog,
@@ -10,37 +11,48 @@ import {
   DialogTrigger,
   DialogOverlay,
   DialogPortal,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { useRouter } from 'next/navigation'
-import { useTransition, useState } from 'react'
-import { LogOut } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useTransition, useState } from "react";
+import { LogOut } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import clsx from "clsx";
 
-export function SignOutButton() {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
-  const [open, setOpen] = useState(false)
+interface SignOutButtonProps {
+  isCollapsed?: boolean;
+}
+
+export function SignOutButton({ isCollapsed = false }: SignOutButtonProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [open, setOpen] = useState(false);
 
   const handleConfirm = () => {
     startTransition(async () => {
-      const res = await fetch('/auth/signout', { method: 'POST' })
+      const res = await fetch("/auth/signout", { method: "POST" });
       if (res.redirected) {
-        setOpen(false)
-        router.push(res.url)
+        setOpen(false);
+        router.push(res.url);
       }
-    })
-  }
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
+          className={clsx(
+            "text-red-500 hover:text-red-600 transition-colors w-full",
+            isCollapsed
+              ? "justify-center p-3"
+              : "flex items-center gap-2 text-sm font-medium",
+          )}
+          title={isCollapsed ? "Sign Out" : undefined}
         >
-          <LogOut className="w-4 h-4" />
-          Sign out
+          <LogOut className={clsx("w-4 h-4", isCollapsed ? "" : "mr-2")} />
+          {!isCollapsed && <span>Sign out</span>}
         </Button>
       </DialogTrigger>
 
@@ -48,7 +60,6 @@ export function SignOutButton() {
         <AnimatePresence>
           {open && (
             <>
-              {/* Overlay */}
               <DialogOverlay asChild>
                 <motion.div
                   className="fixed inset-0 bg-black/50 z-50"
@@ -59,13 +70,12 @@ export function SignOutButton() {
                 />
               </DialogOverlay>
 
-              {/* Dialog content with animation INSIDE */}
               <DialogContent className="z-50 max-w-sm sm:rounded-2xl p-6">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
                   className="flex flex-col items-center text-center"
                 >
                   <LogOut className="w-8 h-8 text-red-500 mb-3" />
@@ -116,7 +126,7 @@ export function SignOutButton() {
                           Signing out…
                         </span>
                       ) : (
-                        'Yes, sign out'
+                        "Yes, sign out"
                       )}
                     </Button>
                   </DialogFooter>
@@ -127,5 +137,5 @@ export function SignOutButton() {
         </AnimatePresence>
       </DialogPortal>
     </Dialog>
-  )
+  );
 }

@@ -35,14 +35,16 @@ export async function fetchStudentOverview(): Promise<StudentOverview | null> {
 
   const { data: studentRaw, error: studentError } = await supabase
     .from("students")
-    .select(`
+    .select(
+      `
       id,
       full_name,
       reg_number,
       enrollment_year,
       course:course_id(title, code),
       intake:intake_id(label)
-    `)
+    `,
+    )
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -52,8 +54,12 @@ export async function fetchStudentOverview(): Promise<StudentOverview | null> {
   }
 
   // Supabase returns related joins as arrays — I unwrap them
-  const course = Array.isArray(studentRaw.course) ? studentRaw.course[0] : studentRaw.course;
-  const intake = Array.isArray(studentRaw.intake) ? studentRaw.intake[0] : studentRaw.intake;
+  const course = Array.isArray(studentRaw.course)
+    ? studentRaw.course[0]
+    : studentRaw.course;
+  const intake = Array.isArray(studentRaw.intake)
+    ? studentRaw.intake[0]
+    : studentRaw.intake;
 
   const student = {
     id: studentRaw.id,
@@ -64,13 +70,34 @@ export async function fetchStudentOverview(): Promise<StudentOverview | null> {
     intake,
   };
 
-  const [gradesRes, feesRes, certsRes, transcriptRes, attendanceRes] = await Promise.all([
-    supabase.from("grades").select("subject, score").eq("student_id", student.id).limit(5),
-    supabase.from("student_fees").select("amount_due, due_date").eq("student_id", student.id).limit(1),
-    supabase.from("certificates").select("title, file_url").eq("student_id", student.id),
-    supabase.from("v_transcript_data").select("file_url, gpa").eq("student_id", student.id).maybeSingle(),
-    supabase.from("attendance").select("date, status").eq("student_id", student.id).order("date", { ascending: false }).limit(5),
-  ]);
+  const [gradesRes, feesRes, certsRes, transcriptRes, attendanceRes] =
+    await Promise.all([
+      supabase
+        .from("grades")
+        .select("subject, score")
+        .eq("student_id", student.id)
+        .limit(5),
+      supabase
+        .from("student_fees")
+        .select("amount_due, due_date")
+        .eq("student_id", student.id)
+        .limit(1),
+      supabase
+        .from("certificates")
+        .select("title, file_url")
+        .eq("student_id", student.id),
+      supabase
+        .from("v_transcript_data")
+        .select("file_url, gpa")
+        .eq("student_id", student.id)
+        .maybeSingle(),
+      supabase
+        .from("attendance")
+        .select("date, status")
+        .eq("student_id", student.id)
+        .order("date", { ascending: false })
+        .limit(5),
+    ]);
 
   if (
     gradesRes.error ||

@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import { Button } from "@/components/ui/button";
 
 export default function UpdatePasswordPage() {
-  const [password, setPassword] = useState('');
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
+  const [password, setPassword] = useState("");
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
   const router = useRouter();
   const supabase = createClient();
 
@@ -17,12 +17,12 @@ export default function UpdatePasswordPage() {
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      setStatus('error');
+      setStatus("error");
       setMessage(error.message);
     } else {
-      setStatus('success');
-      setMessage('Password updated successfully.');
-      setTimeout(() => router.push('/login'), 2000);
+      setStatus("success");
+      setMessage("Password updated successfully.");
+      setTimeout(() => router.push("/login"), 2000);
     }
   };
 
@@ -45,8 +45,10 @@ export default function UpdatePasswordPage() {
           Update Password
         </Button>
       </form>
-      {status !== 'idle' && (
-        <p className={`mt-4 text-center text-sm ${status === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+      {status !== "idle" && (
+        <p
+          className={`mt-4 text-center text-sm ${status === "success" ? "text-green-600" : "text-red-600"}`}
+        >
           {message}
         </p>
       )}

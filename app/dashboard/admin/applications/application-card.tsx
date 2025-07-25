@@ -111,14 +111,14 @@ export function ApplicationCard({
           <div className="flex items-center space-x-3">
             <Badge
               className={`${getStatusColor(
-                application.application_status
+                application.application_status,
               )} px-3 py-1 rounded-full flex items-center space-x-1`}
             >
               {getStatusIcon(application.application_status)}
               <span>
                 {(application.application_status ?? "UNKNOWN").replace(
                   "_",
-                  " "
+                  " ",
                 )}
               </span>
             </Badge>

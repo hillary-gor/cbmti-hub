@@ -151,7 +151,7 @@ export default function EditIntakePage() {
 
   const handleInputChange = <K extends keyof IntakeFormData>(
     field: K,
-    value: IntakeFormData[K]
+    value: IntakeFormData[K],
   ) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
@@ -202,7 +202,7 @@ export default function EditIntakePage() {
     ) {
       setSubmitStatus("error");
       setSubmitMessage(
-        "Please fill in all required fields and ensure total spots is positive."
+        "Please fill in all required fields and ensure total spots is positive.",
       );
       setIsSubmitting(false);
       return;
@@ -403,7 +403,7 @@ export default function EditIntakePage() {
                           onChange={(e) =>
                             handleInputChange(
                               "status",
-                              e.target.value as "active" | "closed"
+                              e.target.value as "active" | "closed",
                             )
                           } // Type assertion
                           className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -439,7 +439,7 @@ export default function EditIntakePage() {
                           onChange={(e) =>
                             handleInputChange(
                               "level",
-                              e.target.value as "Certificate" | "Diploma"
+                              e.target.value as "Certificate" | "Diploma",
                             )
                           } // Type assertion
                           className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -606,7 +606,7 @@ export default function EditIntakePage() {
                           onChange={(e) =>
                             handleInputChange(
                               "total_spots",
-                              Number.parseInt(e.target.value)
+                              Number.parseInt(e.target.value),
                             )
                           }
                           min="1"
@@ -625,7 +625,7 @@ export default function EditIntakePage() {
                           onChange={(e) =>
                             handleInputChange(
                               "enrolled_students",
-                              Number.parseInt(e.target.value)
+                              Number.parseInt(e.target.value),
                             )
                           }
                           min="0"
@@ -823,7 +823,7 @@ export default function EditIntakePage() {
                           {Math.round(
                             ((formData.enrolled_students || 0) /
                               (formData.total_spots || 1)) *
-                              100
+                              100,
                           )}
                           %
                         </span>

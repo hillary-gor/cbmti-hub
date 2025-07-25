@@ -1,14 +1,14 @@
 // app/dashboard/admin/payments/page.tsx
 
-import { Suspense } from 'react';
-import AdminPaymentDashboard from './components/AdminPaymentDashboard';
+import { Suspense } from "react";
+import AdminPaymentDashboard from "./components/AdminPaymentDashboard";
 import {
   getIntakes,
   getCourses,
-  getStudentsByIntakeAndCourse
-} from './actions';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/utils/supabase/server';
+  getStudentsByIntakeAndCourse,
+} from "./actions";
+import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
 
 export const revalidate = 0;
 
@@ -16,22 +16,22 @@ export default async function AdminPaymentsPage() {
   const supabase = await createClient();
   const {
     data: { user },
-    error: authError
+    error: authError,
   } = await supabase.auth.getUser();
 
   if (authError) {
-    console.error('Error fetching user:', authError.message);
-    redirect('/login');
+    console.error("Error fetching user:", authError.message);
+    redirect("/login");
   }
 
   if (!user) {
-    redirect('/login');
+    redirect("/login");
   }
 
   const [intakes, courses, students] = await Promise.all([
     getIntakes(),
     getCourses(),
-    getStudentsByIntakeAndCourse()
+    getStudentsByIntakeAndCourse(),
   ]);
 
   return (

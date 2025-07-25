@@ -137,7 +137,7 @@ export default function CreateIntakePage() {
 
   const handleInputChange = (
     field: keyof IntakeFormData,
-    value: string | number
+    value: string | number,
   ) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
@@ -192,7 +192,7 @@ export default function CreateIntakePage() {
     ) {
       setSubmitStatus("error");
       setSubmitMessage(
-        "Please fill in all required fields and ensure total spots is positive."
+        "Please fill in all required fields and ensure total spots is positive.",
       );
       setIsSubmitting(false);
       return;
@@ -361,7 +361,7 @@ export default function CreateIntakePage() {
                           onChange={(e) =>
                             handleInputChange(
                               "status",
-                              e.target.value as "active" | "closed"
+                              e.target.value as "active" | "closed",
                             )
                           }
                           className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -397,7 +397,7 @@ export default function CreateIntakePage() {
                           onChange={(e) =>
                             handleInputChange(
                               "level",
-                              e.target.value as "Certificate" | "Diploma"
+                              e.target.value as "Certificate" | "Diploma",
                             )
                           }
                           className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -760,7 +760,7 @@ export default function CreateIntakePage() {
                           {Math.round(
                             ((formData.enrolled_students || 0) /
                               (formData.total_spots || 1)) *
-                              100
+                              100,
                           )}
                           %
                         </span>

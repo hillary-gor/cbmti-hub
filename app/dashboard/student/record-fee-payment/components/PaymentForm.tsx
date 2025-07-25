@@ -44,25 +44,29 @@ export default function PaymentForm({
   // For individual reference number cells (Cash Deposit)
   const BANK_REFERENCE_LENGTH = 12;
   const [bankReferenceDigits, setBankReferenceDigits] = useState<string[]>(
-    Array(BANK_REFERENCE_LENGTH).fill("")
+    Array(BANK_REFERENCE_LENGTH).fill(""),
   );
   const bankRefInputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   // For individual cheque number cells (Cheque Deposit)
   const CHEQUE_NUMBER_LENGTH = 12;
   const [chequeNumberDigits, setChequeNumberDigits] = useState<string[]>(
-    Array(CHEQUE_NUMBER_LENGTH).fill("")
+    Array(CHEQUE_NUMBER_LENGTH).fill(""),
   );
   const chequeNumInputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   // For the preview section, we'll only show parsed data from SMS
   const [parsedPreview, setParsedPreview] = useState<ParsedPaymentData | null>(
-    initialParsedData
+    initialParsedData,
   );
 
   useEffect(() => {
     // Only update parsedPreview if the action returned data and it's an SMS type
-    if (state.parsedData && (state.parsedData.source === "mpesa" || state.parsedData.source === "ncba")) {
+    if (
+      state.parsedData &&
+      (state.parsedData.source === "mpesa" ||
+        state.parsedData.source === "ncba")
+    ) {
       setParsedPreview(state.parsedData);
       // Clear SMS message text if successfully parsed and recorded
       if (state.status === "success") {
@@ -93,7 +97,7 @@ export default function PaymentForm({
   };
 
   const handlePaymentMethodChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const newMethod = e.target.value as
       | "mpesa"
@@ -119,7 +123,7 @@ export default function PaymentForm({
     digits: string[],
     setDigits: React.Dispatch<React.SetStateAction<string[]>>,
     inputRefsArray: React.MutableRefObject<Array<HTMLInputElement | null>>,
-    length: number
+    length: number,
   ) => {
     const value = e.target.value;
     if (value.length > 1) return;
@@ -139,7 +143,7 @@ export default function PaymentForm({
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number,
     digits: string[],
-    inputRefsArray: React.MutableRefObject<Array<HTMLInputElement | null>>
+    inputRefsArray: React.MutableRefObject<Array<HTMLInputElement | null>>,
   ) => {
     if (e.key === "Backspace" && !digits[index] && index > 0) {
       inputRefsArray.current[index - 1]?.focus();
@@ -184,7 +188,8 @@ export default function PaymentForm({
                 onChange={handlePaymentMethodChange}
                 className="form-radio h-4 w-4 text-blue-600"
               />
-              <span className="ml-2 text-gray-700">M-Pesa SMS</span> {/* Changed label */}
+              <span className="ml-2 text-gray-700">M-Pesa SMS</span>{" "}
+              {/* Changed label */}
             </label>
             <label className="inline-flex items-center">
               <input
@@ -195,7 +200,8 @@ export default function PaymentForm({
                 onChange={handlePaymentMethodChange}
                 className="form-radio h-4 w-4 text-blue-600"
               />
-              <span className="ml-2 text-gray-700">NCBA M-Pesa SMS</span> {/* New label */}
+              <span className="ml-2 text-gray-700">NCBA M-Pesa SMS</span>{" "}
+              {/* New label */}
             </label>
             <label className="inline-flex items-center">
               <input
@@ -229,7 +235,8 @@ export default function PaymentForm({
               htmlFor="messageText"
               className="block text-gray-700 text-sm font-semibold mb-2"
             >
-              Paste Payment SMS Message ({paymentMethod === "mpesa" ? "M-Pesa" : "NCBA"})
+              Paste Payment SMS Message (
+              {paymentMethod === "mpesa" ? "M-Pesa" : "NCBA"})
             </label>
             <textarea
               id="messageText"
@@ -326,7 +333,7 @@ export default function PaymentForm({
                           bankReferenceDigits,
                           setBankReferenceDigits,
                           bankRefInputRefs,
-                          BANK_REFERENCE_LENGTH
+                          BANK_REFERENCE_LENGTH,
                         )
                       }
                       onKeyDown={(e) =>
@@ -334,7 +341,7 @@ export default function PaymentForm({
                           e,
                           index,
                           bankReferenceDigits,
-                          bankRefInputRefs
+                          bankRefInputRefs,
                         )
                       }
                       ref={(el) => {
@@ -379,7 +386,7 @@ export default function PaymentForm({
                           chequeNumberDigits,
                           setChequeNumberDigits,
                           chequeNumInputRefs,
-                          CHEQUE_NUMBER_LENGTH
+                          CHEQUE_NUMBER_LENGTH,
                         )
                       }
                       onKeyDown={(e) =>
@@ -387,7 +394,7 @@ export default function PaymentForm({
                           e,
                           index,
                           chequeNumberDigits,
-                          chequeNumInputRefs
+                          chequeNumInputRefs,
                         )
                       }
                       ref={(el) => {
@@ -428,39 +435,41 @@ export default function PaymentForm({
         )}
 
         {/* Parsed Preview (only for SMS messages) */}
-        {(paymentMethod === "mpesa" || paymentMethod === "ncba") && parsedPreview && parsedPreview.isValid && ( // Changed condition
-          <div className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg mt-4">
-            <h3 className="text-lg font-semibold mb-3">
-              Parsed Payment Details (Preview)
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-              <p>
-                <strong>Amount:</strong> Ksh{" "}
-                {parsedPreview.amount?.toFixed(2) || "N/A"}
-              </p>
-              <p>
-                <strong>Reference:</strong> {parsedPreview.reference || "N/A"}
-              </p>
-              <p>
-                <strong>Date:</strong> {parsedPreview.parsed_date || "N/A"}
-              </p>
-              <p>
-                <strong>Time:</strong> {parsedPreview.parsed_time || "N/A"}
-              </p>
-              <p>
-                <strong>Institution:</strong>{" "}
-                {parsedPreview.institution || "N/A"}
-              </p>
-              <p>
-                <strong>Account No:</strong>{" "}
-                {parsedPreview.account_number || "N/A"}
-              </p>
-              <p>
-                <strong>Source:</strong> {parsedPreview.source || "N/A"}
-              </p>
+        {(paymentMethod === "mpesa" || paymentMethod === "ncba") &&
+          parsedPreview &&
+          parsedPreview.isValid && ( // Changed condition
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg mt-4">
+              <h3 className="text-lg font-semibold mb-3">
+                Parsed Payment Details (Preview)
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <p>
+                  <strong>Amount:</strong> Ksh{" "}
+                  {parsedPreview.amount?.toFixed(2) || "N/A"}
+                </p>
+                <p>
+                  <strong>Reference:</strong> {parsedPreview.reference || "N/A"}
+                </p>
+                <p>
+                  <strong>Date:</strong> {parsedPreview.parsed_date || "N/A"}
+                </p>
+                <p>
+                  <strong>Time:</strong> {parsedPreview.parsed_time || "N/A"}
+                </p>
+                <p>
+                  <strong>Institution:</strong>{" "}
+                  {parsedPreview.institution || "N/A"}
+                </p>
+                <p>
+                  <strong>Account No:</strong>{" "}
+                  {parsedPreview.account_number || "N/A"}
+                </p>
+                <p>
+                  <strong>Source:</strong> {parsedPreview.source || "N/A"}
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Parsing Errors (only for SMS messages) */}
         {(paymentMethod === "mpesa" || paymentMethod === "ncba") && // Changed condition

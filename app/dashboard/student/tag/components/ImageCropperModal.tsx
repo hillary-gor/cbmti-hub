@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState, useCallback } from 'react';
-import Cropper, { Area, Point } from 'react-easy-crop';
-import { Dialog } from '@headlessui/react';
-import getCroppedImg from '@/lib/cropImage';
+import React, { useState, useCallback } from "react";
+import Cropper, { Area, Point } from "react-easy-crop";
+import { Dialog } from "@headlessui/react";
+import getCroppedImg from "@/lib/cropImage";
 
 type Props = {
   file: File;
@@ -16,12 +16,9 @@ const ImageCropperModal = ({ file, onClose, onCropComplete }: Props) => {
   const [zoom, setZoom] = useState<number>(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
-  const onCropCompleteCb = useCallback(
-    (_: Area, croppedPixels: Area) => {
-      setCroppedAreaPixels(croppedPixels);
-    },
-    []
-  );
+  const onCropCompleteCb = useCallback((_: Area, croppedPixels: Area) => {
+    setCroppedAreaPixels(croppedPixels);
+  }, []);
 
   const handleConfirm = async () => {
     if (!croppedAreaPixels) return;
@@ -70,7 +67,7 @@ export default ImageCropperModal;
 function readFile(file: File): Promise<string> {
   return new Promise((resolve) => {
     const reader = new FileReader();
-    reader.addEventListener('load', () => resolve(reader.result as string));
+    reader.addEventListener("load", () => resolve(reader.result as string));
     reader.readAsDataURL(file);
   });
 }

@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
           setAll(cookiesToSet) {
             try {
               cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
+                cookieStore.set(name, value, options),
               );
             } catch (e) {
               // The `setAll` method was called from a Server Component.
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
             }
           },
         },
-      }
+      },
     );
 
     // Ensure the 'type' matches what was used to send the OTP.

@@ -21,7 +21,11 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function EditProfileClient({ initialData }: { initialData: FormData }) {
+export default function EditProfileClient({
+  initialData,
+}: {
+  initialData: FormData;
+}) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
@@ -50,7 +54,8 @@ export default function EditProfileClient({ initialData }: { initialData: FormDa
     const dataToSend = {
       ...data,
       religion: data.religion === "Other" ? customReligion : data.religion,
-      marital_status: data.marital_status === "Other" ? customMarital : data.marital_status,
+      marital_status:
+        data.marital_status === "Other" ? customMarital : data.marital_status,
     };
 
     const form = new FormData();
@@ -74,8 +79,15 @@ export default function EditProfileClient({ initialData }: { initialData: FormDa
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold text-[#0049AB]">Edit Profile</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Input label="Full Name" {...register("full_name")} error={errors.full_name?.message} />
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        <Input
+          label="Full Name"
+          {...register("full_name")}
+          error={errors.full_name?.message}
+        />
         <Input label="Phone Number" {...register("phone_number")} />
         <Input label="Town/City" {...register("town_city")} />
         <Input label="Address" {...register("address")} />
@@ -85,7 +97,9 @@ export default function EditProfileClient({ initialData }: { initialData: FormDa
 
         {/* Marital Status */}
         <div className="col-span-1">
-          <label className="block text-sm font-medium mb-1">Marital Status</label>
+          <label className="block text-sm font-medium mb-1">
+            Marital Status
+          </label>
           <select
             {...register("marital_status")}
             className="w-full border rounded px-3 py-2 text-sm dark:bg-zinc-800 dark:text-white"
@@ -137,7 +151,9 @@ export default function EditProfileClient({ initialData }: { initialData: FormDa
           <div className="col-span-full text-red-600 text-sm">{error}</div>
         )}
         {success && (
-          <div className="col-span-full text-green-600 text-sm">Profile updated successfully.</div>
+          <div className="col-span-full text-green-600 text-sm">
+            Profile updated successfully.
+          </div>
         )}
 
         <div className="col-span-full">

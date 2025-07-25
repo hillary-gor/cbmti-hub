@@ -11,7 +11,7 @@ export type ActionResponse = {
 
 export async function checkInVisitor(
   prevState: ActionResponse,
-  formData: FormData
+  formData: FormData,
 ): Promise<ActionResponse> {
   const supabase = await createClient();
 
@@ -62,7 +62,7 @@ export async function checkInVisitor(
 export async function getVisitors(
   filterStatus: "checked_in" | "checked_out" | "all" = "checked_in",
   startDate?: string,
-  endDate?: string
+  endDate?: string,
 ): Promise<{ visitors: Visitor[] | null; error: string | null }> {
   const supabase = await createClient();
 
@@ -90,7 +90,7 @@ export async function getVisitors(
       parsedEndDate.setDate(parsedEndDate.getDate() + 1);
       query = query.lt(
         "check_in_time",
-        parsedEndDate.toISOString().split("T")[0]
+        parsedEndDate.toISOString().split("T")[0],
       );
     } else {
       console.warn(`Invalid endDate provided to getVisitors: ${endDate}`);
@@ -113,7 +113,7 @@ export async function getVisitors(
 }
 
 export async function checkOutVisitor(
-  visitorId: string
+  visitorId: string,
 ): Promise<ActionResponse> {
   const supabase = await createClient();
 
@@ -144,7 +144,7 @@ export async function checkOutVisitor(
 }
 
 export async function deleteVisitor(
-  visitorId: string
+  visitorId: string,
 ): Promise<ActionResponse> {
   const supabase = await createClient();
 

@@ -82,7 +82,10 @@ export default function IntakesLoading() {
                     </div>
                     <div className="flex space-x-1">
                       {Array.from({ length: 4 }).map((_, j) => (
-                        <div key={j} className="w-8 h-8 bg-gray-200 rounded-xl animate-pulse"></div>
+                        <div
+                          key={j}
+                          className="w-8 h-8 bg-gray-200 rounded-xl animate-pulse"
+                        ></div>
                       ))}
                     </div>
                   </div>
@@ -121,5 +124,5 @@ export default function IntakesLoading() {
         </div>
       </section>
     </div>
-  )
+  );
 }

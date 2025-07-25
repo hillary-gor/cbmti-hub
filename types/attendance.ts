@@ -16,7 +16,7 @@ export interface Intake {
   label: string;
   year: number; // Example: Add other properties if relevant
   month: string;
-  status: 'active' | 'archived' | 'upcoming';
+  status: "active" | "archived" | "upcoming";
   // Include other relevant intake properties if fetched in your queries
 }
 
@@ -26,7 +26,7 @@ export interface CourseIntakeJoined {
   id: string; // The ID of the entry in public.course_intakes
   course_id: string; // Foreign key to public.courses
   intake_id: string; // Foreign key to public.intakes
-  
+
   // These are the nested relations from your Supabase query:
   courses: Course | null; // Joined Course details
   intakes: Intake | null; // Joined Intake details

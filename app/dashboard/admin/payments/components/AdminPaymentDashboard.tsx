@@ -40,7 +40,7 @@ function PaymentStatusToggleButton({
 }) {
   const updatePaymentStatusAction = async (
     prevState: PaymentUpdateFormState,
-    formData: FormData
+    formData: FormData,
   ): Promise<PaymentUpdateFormState> => {
     const paymentId = formData.get("paymentId") as string;
     const newStatus = formData.get("newStatus") as PaymentStatus;
@@ -49,7 +49,7 @@ function PaymentStatusToggleButton({
 
   const [formState, formAction] = useActionState(
     updatePaymentStatusAction,
-    initialPaymentUpdateState
+    initialPaymentUpdateState,
   );
   const { pending } = useFormStatus();
 
@@ -146,7 +146,7 @@ export default function AdminPaymentDashboard({
       setIsLoadingStudents(true);
       const fetchedStudents = await getStudentsByIntakeAndCourse(
         selectedIntake,
-        selectedCourse
+        selectedCourse,
       );
       setStudents(fetchedStudents);
       setIsLoadingStudents(false);
@@ -186,7 +186,9 @@ export default function AdminPaymentDashboard({
       const refreshedPayments = await getPaymentsByStudent(selectedStudent.id);
       setStudentPayments(refreshedPayments);
 
-      const refreshedSum = await getApprovedPaymentsSumByStudent(selectedStudent.id);
+      const refreshedSum = await getApprovedPaymentsSumByStudent(
+        selectedStudent.id,
+      );
       setApprovedPaymentsSum(refreshedSum);
     } catch (error) {
       console.error("Error refreshing student payments:", error);
@@ -206,11 +208,15 @@ export default function AdminPaymentDashboard({
         return;
       }
       if (isLoadingAllPayments || isLoadingApprovedSum) {
-        console.error("Payments data is still loading. Please wait and try again.");
+        console.error(
+          "Payments data is still loading. Please wait and try again.",
+        );
         return;
       }
       if (studentPayments.length === 0 && approvedPaymentsSum === 0) {
-        console.error("No payment data available for the selected student to print.");
+        console.error(
+          "No payment data available for the selected student to print.",
+        );
         return;
       }
 
@@ -230,7 +236,7 @@ export default function AdminPaymentDashboard({
 
       if (!contentToPrint) {
         console.error(
-          "No content to print for the selected filter. Apply filters first."
+          "No content to print for the selected filter. Apply filters first.",
         );
         return;
       }
@@ -258,7 +264,7 @@ export default function AdminPaymentDashboard({
     if (printWindow) {
       printWindow.document.write(`<html><head><title>${printTitle}</title>`);
       printWindow.document.write(
-        '<script src="https://cdn.tailwindcss.com"></script>'
+        '<script src="https://cdn.tailwindcss.com"></script>',
       );
       printWindow.document.write("<style>");
       printWindow.document.write(`
@@ -340,9 +346,7 @@ export default function AdminPaymentDashboard({
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-          <h2 className="mb-4 text-xl font-semibold text-gray-700">
-            Students
-          </h2>
+          <h2 className="mb-4 text-xl font-semibold text-gray-700">Students</h2>
           {isLoadingStudents ? (
             <p className="py-8 text-center text-gray-500">
               Loading students...
@@ -386,11 +390,15 @@ export default function AdminPaymentDashboard({
                 {selectedStudent.full_name} ({selectedStudent.reg_number})
               </h3>
               {isLoadingApprovedSum ? (
-                <p className="text-gray-500 text-center text-sm mb-4">Loading total approved payments...</p>
+                <p className="text-gray-500 text-center text-sm mb-4">
+                  Loading total approved payments...
+                </p>
               ) : (
                 <p className="text-gray-800 text-lg font-semibold mb-4">
                   Total Approved Payments:{" "}
-                  <span className="text-green-600">Ksh {approvedPaymentsSum.toFixed(2)}</span>
+                  <span className="text-green-600">
+                    Ksh {approvedPaymentsSum.toFixed(2)}
+                  </span>
                 </p>
               )}
               {isLoadingAllPayments ? (
@@ -402,10 +410,7 @@ export default function AdminPaymentDashboard({
                   No payments submitted by this student.
                 </p>
               ) : (
-                <div
-                  className="overflow-x-auto"
-                  id="payments-table-container"
-                >
+                <div className="overflow-x-auto" id="payments-table-container">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
@@ -438,10 +443,15 @@ export default function AdminPaymentDashboard({
                           }
                         >
                           <td className="whitespace-nowrap px-4 py-2 text-sm text-gray-800">
-                            {payment.recorded_at ? format(new Date(payment.recorded_at), "MMM dd,yyyy HH:mm") : 'N/A'}
+                            {payment.recorded_at
+                              ? format(
+                                  new Date(payment.recorded_at),
+                                  "MMM dd,yyyy HH:mm",
+                                )
+                              : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-900">
-                            Ksh {payment.amount?.toFixed(2) ?? '0.00'}
+                            Ksh {payment.amount?.toFixed(2) ?? "0.00"}
                           </td>
                           <td className="whitespace-nowrap px-4 py-2 text-sm text-gray-600">
                             {payment.reference || "N/A"}
@@ -476,7 +486,11 @@ export default function AdminPaymentDashboard({
                 <div className="no-print mt-6 flex flex-wrap gap-4">
                   <button
                     onClick={() => handlePrint("student")}
-                    disabled={isLoadingAllPayments || studentPayments.length === 0 || isLoadingApprovedSum}
+                    disabled={
+                      isLoadingAllPayments ||
+                      studentPayments.length === 0 ||
+                      isLoadingApprovedSum
+                    }
                     className="flex items-center rounded-lg bg-purple-600 px-4 py-2 text-white shadow-md transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <svg

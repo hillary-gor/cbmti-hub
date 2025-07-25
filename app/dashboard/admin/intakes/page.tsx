@@ -1,10 +1,15 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Calendar,
   Users,
@@ -29,15 +34,15 @@ import {
   GraduationCap,
   Heart,
   Pill,
-} from "lucide-react"
-import Link from "next/link"
+} from "lucide-react";
+import Link from "next/link";
 import {
   getIntakes,
   deleteIntake,
   toggleIntakeStatus,
   duplicateIntake,
   type IntakeFormData,
-} from "./actions"
+} from "./actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,7 +53,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
 // Mapping for icons used in the preview
 const ICON_COMPONENTS: { [key: string]: React.ElementType } = {
@@ -58,98 +63,106 @@ const ICON_COMPONENTS: { [key: string]: React.ElementType } = {
   graduation: GraduationCap,
   heart: Heart,
   pill: Pill,
-}
+};
 
 export default function IntakesPage() {
-  const [intakes, setIntakes] = useState<IntakeFormData[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "closed">("all")
-  const [levelFilter, setLevelFilter] = useState<"all" | "Certificate" | "Diploma">("all")
-  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null)
+  const [intakes, setIntakes] = useState<IntakeFormData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "closed">(
+    "all",
+  );
+  const [levelFilter, setLevelFilter] = useState<
+    "all" | "Certificate" | "Diploma"
+  >("all");
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
-    loadIntakes()
-  }, [])
+    loadIntakes();
+  }, []);
 
   const loadIntakes = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const data = await getIntakes()
-      setIntakes(data)
+      const data = await getIntakes();
+      setIntakes(data);
     } catch (err) {
-      setError("Failed to load intakes.")
-      console.error("Failed to load intakes:", err)
+      setError("Failed to load intakes.");
+      console.error("Failed to load intakes:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
-    setActionLoadingId(id)
+    setActionLoadingId(id);
     try {
-      await deleteIntake(id)
-      loadIntakes()
+      await deleteIntake(id);
+      loadIntakes();
     } catch (err) {
-      console.error("Failed to delete intake:", err)
+      console.error("Failed to delete intake:", err);
     } finally {
-      setActionLoadingId(null)
+      setActionLoadingId(null);
     }
-  }
+  };
 
   const handleToggleStatus = async (id: string) => {
-    setActionLoadingId(id)
+    setActionLoadingId(id);
     try {
-      await toggleIntakeStatus(id)
-      loadIntakes()
+      await toggleIntakeStatus(id);
+      loadIntakes();
     } catch (err) {
-      console.error("Failed to toggle status:", err)
+      console.error("Failed to toggle status:", err);
     } finally {
-      setActionLoadingId(null)
+      setActionLoadingId(null);
     }
-  }
+  };
 
   const handleDuplicate = async (id: string) => {
-    setActionLoadingId(id)
+    setActionLoadingId(id);
     try {
-      await duplicateIntake(id)
-      loadIntakes()
+      await duplicateIntake(id);
+      loadIntakes();
     } catch (err) {
-      console.error("Failed to duplicate intake:", err)
+      console.error("Failed to duplicate intake:", err);
     } finally {
-      setActionLoadingId(null)
+      setActionLoadingId(null);
     }
-  }
+  };
 
   const filteredIntakes = intakes.filter((intake) => {
     const matchesSearch =
       intake.course_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       intake.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      intake.location.toLowerCase().includes(searchTerm.toLowerCase())
+      intake.location.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = statusFilter === "all" || intake.status === statusFilter
-    const matchesLevel = levelFilter === "all" || intake.level === levelFilter
+    const matchesStatus =
+      statusFilter === "all" || intake.status === statusFilter;
+    const matchesLevel = levelFilter === "all" || intake.level === levelFilter;
 
-    return matchesSearch && matchesStatus && matchesLevel
-  })
+    return matchesSearch && matchesStatus && matchesLevel;
+  });
 
-  const totalIntakes = intakes.length
-  const activeIntakes = intakes.filter((i) => i.status === "active").length
-  const closedIntakes = intakes.filter((i) => i.status === "closed").length
-  const totalEnrolled = intakes.reduce((sum, i) => sum + i.enrolled_students, 0)
-  const totalSpots = intakes.reduce((sum, i) => sum + i.total_spots, 0)
+  const totalIntakes = intakes.length;
+  const activeIntakes = intakes.filter((i) => i.status === "active").length;
+  const closedIntakes = intakes.filter((i) => i.status === "closed").length;
+  const totalEnrolled = intakes.reduce(
+    (sum, i) => sum + i.enrolled_students,
+    0,
+  );
+  const totalSpots = intakes.reduce((sum, i) => sum + i.total_spots, 0);
 
   // Function to render icon based on icon_name
   const renderIcon = (iconName: string | null | undefined) => {
-    const IconComponent = iconName ? ICON_COMPONENTS[iconName] : null
+    const IconComponent = iconName ? ICON_COMPONENTS[iconName] : null;
     return IconComponent ? (
       <IconComponent className="w-8 h-8 text-white" />
     ) : (
       <GraduationCap className="w-8 h-8 text-white" />
-    )
-  }
+    );
+  };
 
   return (
     <div className="min-h-screen bg-white pt-20">
@@ -157,7 +170,10 @@ export default function IntakesPage() {
       <header className="relative z-50 bg-gradient-to-r from-blue-600/10 to-cyan-400/10 backdrop-blur-md border-b border-blue-200/30">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
-            <Link href="/dashboard/admin/intakes" className="flex items-center space-x-3">
+            <Link
+              href="/dashboard/admin/intakes"
+              className="flex items-center space-x-3"
+            >
               <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
                 <GraduationCap className="w-7 h-7 text-white" />
               </div>
@@ -165,7 +181,9 @@ export default function IntakesPage() {
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
                   Intake Manager
                 </h1>
-                <p className="text-sm text-blue-600 font-medium">Manage all course enrollments</p>
+                <p className="text-sm text-blue-600 font-medium">
+                  Manage all course enrollments
+                </p>
               </div>
             </Link>
             <Link href="/dashboard/admin/intakes/create">
@@ -198,35 +216,56 @@ export default function IntakesPage() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Effortlessly track, organize, and update all your course enrollment periods.
+              Effortlessly track, organize, and update all your course
+              enrollment periods.
             </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
             <Card className="bg-white/80 backdrop-blur-xl border-2 border-blue-100/50 shadow-xl rounded-3xl p-6 text-center transition-all duration-300 hover:scale-105 hover:shadow-2xl">
               <Target className="w-12 h-12 text-blue-500 mx-auto mb-3" />
-              <CardTitle className="text-3xl font-bold text-gray-900">{totalIntakes}</CardTitle>
-              <CardDescription className="text-gray-600">Total Intakes</CardDescription>
+              <CardTitle className="text-3xl font-bold text-gray-900">
+                {totalIntakes}
+              </CardTitle>
+              <CardDescription className="text-gray-600">
+                Total Intakes
+              </CardDescription>
             </Card>
             <Card className="bg-white/80 backdrop-blur-xl border-2 border-green-100/50 shadow-xl rounded-3xl p-6 text-center transition-all duration-300 hover:scale-105 hover:shadow-2xl">
               <Clock className="w-12 h-12 text-green-500 mx-auto mb-3" />
-              <CardTitle className="text-3xl font-bold text-gray-900">{activeIntakes}</CardTitle>
-              <CardDescription className="text-gray-600">Active Intakes</CardDescription>
+              <CardTitle className="text-3xl font-bold text-gray-900">
+                {activeIntakes}
+              </CardTitle>
+              <CardDescription className="text-gray-600">
+                Active Intakes
+              </CardDescription>
             </Card>
             <Card className="bg-white/80 backdrop-blur-xl border-2 border-red-100/50 shadow-xl rounded-3xl p-6 text-center transition-all duration-300 hover:scale-105 hover:shadow-2xl">
               <Calendar className="w-12 h-12 text-red-500 mx-auto mb-3" />
-              <CardTitle className="text-3xl font-bold text-gray-900">{closedIntakes}</CardTitle>
-              <CardDescription className="text-gray-600">Closed Intakes</CardDescription>
+              <CardTitle className="text-3xl font-bold text-gray-900">
+                {closedIntakes}
+              </CardTitle>
+              <CardDescription className="text-gray-600">
+                Closed Intakes
+              </CardDescription>
             </Card>
             <Card className="bg-white/80 backdrop-blur-xl border-2 border-purple-100/50 shadow-xl rounded-3xl p-6 text-center transition-all duration-300 hover:scale-105 hover:shadow-2xl">
               <Users className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-              <CardTitle className="text-3xl font-bold text-gray-900">{totalEnrolled}</CardTitle>
-              <CardDescription className="text-gray-600">Enrolled Students</CardDescription>
+              <CardTitle className="text-3xl font-bold text-gray-900">
+                {totalEnrolled}
+              </CardTitle>
+              <CardDescription className="text-gray-600">
+                Enrolled Students
+              </CardDescription>
             </Card>
             <Card className="bg-white/80 backdrop-blur-xl border-2 border-orange-100/50 shadow-xl rounded-3xl p-6 text-center transition-all duration-300 hover:scale-105 hover:shadow-2xl">
               <Target className="w-12 h-12 text-orange-500 mx-auto mb-3" />
-              <CardTitle className="text-3xl font-bold text-gray-900">{totalSpots}</CardTitle>
-              <CardDescription className="text-gray-600">Total Spots Available</CardDescription>
+              <CardTitle className="text-3xl font-bold text-gray-900">
+                {totalSpots}
+              </CardTitle>
+              <CardDescription className="text-gray-600">
+                Total Spots Available
+              </CardDescription>
             </Card>
           </div>
         </div>
@@ -251,7 +290,11 @@ export default function IntakesPage() {
                 <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "closed")}
+                  onChange={(e) =>
+                    setStatusFilter(
+                      e.target.value as "all" | "active" | "closed",
+                    )
+                  }
                   className="appearance-none pr-10 pl-10 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
                 >
                   <option value="all">All Statuses</option>
@@ -264,7 +307,11 @@ export default function IntakesPage() {
                 <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <select
                   value={levelFilter}
-                  onChange={(e) => setLevelFilter(e.target.value as "all" | "Certificate" | "Diploma")}
+                  onChange={(e) =>
+                    setLevelFilter(
+                      e.target.value as "all" | "Certificate" | "Diploma",
+                    )
+                  }
                   className="appearance-none pr-10 pl-10 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
                 >
                   <option value="all">All Levels</option>
@@ -340,13 +387,15 @@ export default function IntakesPage() {
           ) : filteredIntakes.length === 0 ? (
             <div className="text-center py-20">
               <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-gray-900 mb-2">No Intakes Found</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                No Intakes Found
+              </h2>
               <p className="text-gray-600 mb-6">
                 {searchTerm || statusFilter !== "all" || levelFilter !== "all"
                   ? "Your search or filter criteria did not match any intakes."
                   : "Start by creating a new intake to see it here!"}
               </p>
-            <Link href="/dashboard/admin/intakes/create">
+              <Link href="/dashboard/admin/intakes/create">
                 <Button className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600">
                   <Plus className="w-4 h-4 mr-2" />
                   Create New Intake
@@ -366,7 +415,7 @@ export default function IntakesPage() {
                         <div
                           className="w-16 h-16 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg"
                           style={{
-                            background: `linear-gradient(135deg, ${intake.color_gradient_from || '#A0A0A0'}, ${intake.color_gradient_to || '#D0D0D0'})`,
+                            background: `linear-gradient(135deg, ${intake.color_gradient_from || "#A0A0A0"}, ${intake.color_gradient_to || "#D0D0D0"})`,
                           }}
                         >
                           {renderIcon(intake.icon_name)}
@@ -398,11 +447,16 @@ export default function IntakesPage() {
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                Are you absolutely sure?
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the
-                                <span className="font-bold text-gray-900 mx-1">{intake.label}</span> intake and
-                                remove its data from our servers.
+                                This action cannot be undone. This will
+                                permanently delete the
+                                <span className="font-bold text-gray-900 mx-1">
+                                  {intake.label}
+                                </span>{" "}
+                                intake and remove its data from our servers.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -445,7 +499,9 @@ export default function IntakesPage() {
                             <Copy className="w-4 h-4" />
                           )}
                         </Button>
-                        <Link href={`/dashboard/admin/intakes/${intake.id}/edit`}>
+                        <Link
+                          href={`/dashboard/admin/intakes/${intake.id}/edit`}
+                        >
                           <Button
                             variant="ghost"
                             size="icon"
@@ -458,7 +514,9 @@ export default function IntakesPage() {
                       </div>
                     </div>
 
-                    <p className="text-gray-700 text-lg font-semibold mb-2">{intake.price_string}</p>
+                    <p className="text-gray-700 text-lg font-semibold mb-2">
+                      {intake.price_string}
+                    </p>
                     <Badge
                       className={`text-sm px-3 py-1 rounded-full ${
                         intake.status === "active"
@@ -476,11 +534,17 @@ export default function IntakesPage() {
                     <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
                       <div className="flex items-center space-x-2">
                         <Calendar className="w-4 h-4 text-gray-500" />
-                        <span>Opens: {new Date(intake.opens_on).toLocaleDateString()}</span>
+                        <span>
+                          Opens:{" "}
+                          {new Date(intake.opens_on).toLocaleDateString()}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Calendar className="w-4 h-4 text-gray-500" />
-                        <span>Starts: {new Date(intake.start_date).toLocaleDateString()}</span>
+                        <span>
+                          Starts:{" "}
+                          {new Date(intake.start_date).toLocaleDateString()}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <MapPin className="w-4 h-4 text-gray-500" />
@@ -489,7 +553,8 @@ export default function IntakesPage() {
                       <div className="flex items-center space-x-2">
                         <Users className="w-4 h-4 text-gray-500" />
                         <span>
-                          {intake.enrolled_students}/{intake.total_spots} Enrolled
+                          {intake.enrolled_students}/{intake.total_spots}{" "}
+                          Enrolled
                         </span>
                       </div>
                     </div>
@@ -498,7 +563,11 @@ export default function IntakesPage() {
                       <div className="flex justify-between items-center text-sm text-gray-600">
                         <span>Enrollment Progress</span>
                         <span className="font-semibold">
-                          {Math.round((intake.enrolled_students / intake.total_spots) * 100)}%
+                          {Math.round(
+                            (intake.enrolled_students / intake.total_spots) *
+                              100,
+                          )}
+                          %
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -506,7 +575,7 @@ export default function IntakesPage() {
                           className="h-2 rounded-full transition-all duration-500"
                           style={{
                             width: `${(intake.enrolled_students / intake.total_spots) * 100}%`,
-                            background: `linear-gradient(135deg, ${intake.color_gradient_from || '#A0A0A0'}, ${intake.color_gradient_to || '#D0D0D0'})`,
+                            background: `linear-gradient(135deg, ${intake.color_gradient_from || "#A0A0A0"}, ${intake.color_gradient_to || "#D0D0D0"})`,
                           }}
                         ></div>
                       </div>
@@ -525,5 +594,5 @@ export default function IntakesPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

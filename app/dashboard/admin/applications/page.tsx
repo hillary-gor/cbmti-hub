@@ -34,7 +34,7 @@ export default function ApplicationsPage() {
     "ALL" | "PENDING" | "APPROVED" | "REJECTED" | "UNDER_REVIEW"
   >("ALL");
   const [selectedApplications, setSelectedApplications] = useState<string[]>(
-    []
+    [],
   );
   const [isPending, startTransition] = useTransition();
 
@@ -67,14 +67,14 @@ export default function ApplicationsPage() {
           app.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
           app.phone.includes(searchTerm) ||
-          app.id_number.includes(searchTerm)
+          app.id_number.includes(searchTerm),
       );
     }
 
     // Filter by status
     if (statusFilter !== "ALL") {
       filtered = filtered.filter(
-        (app) => app.application_status === statusFilter
+        (app) => app.application_status === statusFilter,
       );
     }
 
@@ -85,16 +85,16 @@ export default function ApplicationsPage() {
     return {
       total: applications.length,
       pending: applications.filter(
-        (app) => app.application_status === "PENDING"
+        (app) => app.application_status === "PENDING",
       ).length,
       approved: applications.filter(
-        (app) => app.application_status === "APPROVED"
+        (app) => app.application_status === "APPROVED",
       ).length,
       rejected: applications.filter(
-        (app) => app.application_status === "REJECTED"
+        (app) => app.application_status === "REJECTED",
       ).length,
       underReview: applications.filter(
-        (app) => app.application_status === "UNDER_REVIEW"
+        (app) => app.application_status === "UNDER_REVIEW",
       ).length,
     };
   };
@@ -105,7 +105,7 @@ export default function ApplicationsPage() {
     startTransition(async () => {
       const formData = new FormData();
       selectedApplications.forEach((id) =>
-        formData.append("applicationIds", id)
+        formData.append("applicationIds", id),
       );
       formData.append("action", action);
 
@@ -121,7 +121,7 @@ export default function ApplicationsPage() {
 
   const toggleApplicationSelection = (id: string) => {
     setSelectedApplications((prev) =>
-      prev.includes(id) ? prev.filter((appId) => appId !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((appId) => appId !== id) : [...prev, id],
     );
   };
 
@@ -150,7 +150,7 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="relative"> 
+    <div className="relative">
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="mb-8">
@@ -285,7 +285,7 @@ export default function ApplicationsPage() {
                           | "PENDING"
                           | "APPROVED"
                           | "REJECTED"
-                          | "UNDER_REVIEW"
+                          | "UNDER_REVIEW",
                       )
                     }
                     className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-blue-500 bg-white"

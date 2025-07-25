@@ -1,65 +1,65 @@
-'use client'
+"use client";
 
-import { useForm, useWatch } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { useState, useTransition } from 'react'
-import { updateUserProfile } from './actions'
-import { createClient } from '@/utils/supabase/client'
-import Image from 'next/image'
-import Cropper, { Area } from 'react-easy-crop'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import getCroppedImg from '@/lib/cropImage'
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useState, useTransition } from "react";
+import { updateUserProfile } from "./actions";
+import { createClient } from "@/utils/supabase/client";
+import Image from "next/image";
+import Cropper, { Area } from "react-easy-crop";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import getCroppedImg from "@/lib/cropImage";
 
 const schema = z
   .object({
-    full_name: z.string().min(2, 'Full name is required'),
-    phone: z.string().min(10, 'Phone number must be at least 10 digits'),
-    gender: z.enum(['Male', 'Female', 'Other'], {
-      required_error: 'Gender is required',
+    full_name: z.string().min(2, "Full name is required"),
+    phone: z.string().min(10, "Phone number must be at least 10 digits"),
+    gender: z.enum(["Male", "Female", "Other"], {
+      required_error: "Gender is required",
     }),
-    dob: z.string().min(1, 'Date of birth is required'),
-    location: z.string().min(2, 'Location is required'),
-    role: z.enum(['student', 'admin', 'lecturer'], {
-      required_error: 'Role is required',
+    dob: z.string().min(1, "Date of birth is required"),
+    location: z.string().min(2, "Location is required"),
+    role: z.enum(["student", "admin", "lecturer"], {
+      required_error: "Role is required",
     }),
     user_id: z.string().optional(),
     avatar_url: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    if ((data.role === 'admin' || data.role === 'lecturer') && !data.user_id) {
+    if ((data.role === "admin" || data.role === "lecturer") && !data.user_id) {
       ctx.addIssue({
-        path: ['user_id'],
+        path: ["user_id"],
         code: z.ZodIssueCode.custom,
-        message: 'User ID is required for Admin or Lecturer',
-      })
+        message: "User ID is required for Admin or Lecturer",
+      });
     }
-  })
+  });
 
-type FormData = z.infer<typeof schema>
+type FormData = z.infer<typeof schema>;
 
 const countries = [
-  'Kenya',
-  'Uganda',
-  'Tanzania',
-  'Nigeria',
-  'South Africa',
-  'Ethiopia',
-  'Rwanda',
-  'Ghana',
-  'Zambia',
-  'Malawi',
-]
+  "Kenya",
+  "Uganda",
+  "Tanzania",
+  "Nigeria",
+  "South Africa",
+  "Ethiopia",
+  "Rwanda",
+  "Ghana",
+  "Zambia",
+  "Malawi",
+];
 
 export function AccountForm({ userId }: { userId: string }) {
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
-  const [imageSrc, setImageSrc] = useState<string | null>(null)
-  const [cropDialogOpen, setCropDialogOpen] = useState(false)
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
-  const [isPending, startTransition] = useTransition()
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const {
     register,
@@ -70,50 +70,50 @@ export function AccountForm({ userId }: { userId: string }) {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      role: 'student',
+      role: "student",
     },
-  })
+  });
 
-  const role = useWatch({ control, name: 'role' })
-  const supabase = createClient()
+  const role = useWatch({ control, name: "role" });
+  const supabase = createClient();
 
   const handleAvatarUpload = async (file: File) => {
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = () => {
-      setImageSrc(reader.result as string)
-      setCropDialogOpen(true)
-    }
-    reader.readAsDataURL(file)
-  }
+      setImageSrc(reader.result as string);
+      setCropDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleCropConfirm = async () => {
-    if (!imageSrc || !croppedAreaPixels) return
+    if (!imageSrc || !croppedAreaPixels) return;
 
-    const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels)
-    const filePath = `avatars/${userId}_${Date.now()}.jpg`
+    const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+    const filePath = `avatars/${userId}_${Date.now()}.jpg`;
 
     const { error: uploadError } = await supabase.storage
-      .from('avatars')
+      .from("avatars")
       .upload(filePath, croppedBlob, {
-        contentType: 'image/jpeg',
+        contentType: "image/jpeg",
         upsert: true,
-      })
+      });
 
     if (uploadError) {
-      alert('Upload failed.')
-      return
+      alert("Upload failed.");
+      return;
     }
 
-    const { data } = supabase.storage.from('avatars').getPublicUrl(filePath)
-    const publicUrl = data?.publicUrl
-    setValue('avatar_url', publicUrl, { shouldValidate: true })
-    setAvatarPreview(publicUrl)
-    setCropDialogOpen(false)
-  }
+    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
+    const publicUrl = data?.publicUrl;
+    setValue("avatar_url", publicUrl, { shouldValidate: true });
+    setAvatarPreview(publicUrl);
+    setCropDialogOpen(false);
+  };
 
   const onSubmit = (data: FormData) => {
-    startTransition(() => updateUserProfile(userId, data))
-  }
+    startTransition(() => updateUserProfile(userId, data));
+  };
 
   return (
     <>
@@ -129,7 +129,7 @@ export function AccountForm({ userId }: { userId: string }) {
           {/* Name */}
           <div>
             <label className="font-semibold">Full Name</label>
-            <input {...register('full_name')} className="input" />
+            <input {...register("full_name")} className="input" />
             {errors.full_name && (
               <p className="text-red-500">{errors.full_name.message}</p>
             )}
@@ -138,7 +138,7 @@ export function AccountForm({ userId }: { userId: string }) {
           {/* Phone */}
           <div>
             <label className="font-semibold">Phone</label>
-            <input {...register('phone')} className="input" />
+            <input {...register("phone")} className="input" />
             {errors.phone && (
               <p className="text-red-500">{errors.phone.message}</p>
             )}
@@ -147,7 +147,7 @@ export function AccountForm({ userId }: { userId: string }) {
           {/* Gender */}
           <div>
             <label className="font-semibold">Gender</label>
-            <select {...register('gender')} className="input">
+            <select {...register("gender")} className="input">
               <option value="">Select gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -161,14 +161,14 @@ export function AccountForm({ userId }: { userId: string }) {
           {/* DOB */}
           <div>
             <label className="font-semibold">Date of Birth</label>
-            <input type="date" {...register('dob')} className="input" />
+            <input type="date" {...register("dob")} className="input" />
             {errors.dob && <p className="text-red-500">{errors.dob.message}</p>}
           </div>
 
           {/* Country */}
           <div>
             <label className="font-semibold">Country</label>
-            <select {...register('location')} className="input">
+            <select {...register("location")} className="input">
               <option value="">Select country</option>
               {countries.map((country) => (
                 <option key={country} value={country}>
@@ -184,7 +184,7 @@ export function AccountForm({ userId }: { userId: string }) {
           {/* Role */}
           <div>
             <label className="font-semibold">Role</label>
-            <select {...register('role')} className="input">
+            <select {...register("role")} className="input">
               <option value="student">Student</option>
               <option value="lecturer">Lecturer</option>
               <option value="admin">Admin</option>
@@ -195,10 +195,10 @@ export function AccountForm({ userId }: { userId: string }) {
           </div>
 
           {/* User ID */}
-          {(role === 'admin' || role === 'lecturer') && (
+          {(role === "admin" || role === "lecturer") && (
             <div>
               <label className="font-semibold">User ID (Staff ID)</label>
-              <input {...register('user_id')} className="input" />
+              <input {...register("user_id")} className="input" />
               {errors.user_id && (
                 <p className="text-red-500">{errors.user_id.message}</p>
               )}
@@ -212,8 +212,8 @@ export function AccountForm({ userId }: { userId: string }) {
               type="file"
               accept="image/*"
               onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) handleAvatarUpload(file)
+                const file = e.target.files?.[0];
+                if (file) handleAvatarUpload(file);
               }}
               className="input"
             />
@@ -238,7 +238,7 @@ export function AccountForm({ userId }: { userId: string }) {
             disabled={isPending}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-10 rounded-full text-lg"
           >
-            {isPending ? 'Saving...' : 'Save & Continue'}
+            {isPending ? "Saving..." : "Save & Continue"}
           </button>
         </div>
       </form>
@@ -279,7 +279,12 @@ export function AccountForm({ userId }: { userId: string }) {
           </div>
 
           <div className="flex justify-between p-4 border-t bg-background">
-            <Button variant="outline" size="sm" onClick={() => setCropDialogOpen(false)} className="w-1/2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCropDialogOpen(false)}
+              className="w-1/2"
+            >
               Cancel
             </Button>
             <Button size="sm" onClick={handleCropConfirm} className="w-1/2">
@@ -289,5 +294,5 @@ export function AccountForm({ userId }: { userId: string }) {
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }

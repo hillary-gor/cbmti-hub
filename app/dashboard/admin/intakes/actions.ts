@@ -11,7 +11,7 @@ if (!supabaseUrl) {
 }
 if (!supabaseAnonKey) {
   throw new Error(
-    "Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable."
+    "Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable.",
   );
 }
 
@@ -215,7 +215,7 @@ export async function getIntakes(): Promise<IntakeFormData[]> {
 }
 
 export async function getIntakeById(
-  id: string
+  id: string,
 ): Promise<IntakeFormData | null> {
   try {
     const { data, error } = await supabase

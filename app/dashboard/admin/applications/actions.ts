@@ -7,7 +7,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error(
-    "Server configuration error: Supabase URL or Anon Key environment variables are missing."
+    "Server configuration error: Supabase URL or Anon Key environment variables are missing.",
   );
   throw new Error("Server configuration error: Supabase credentials missing.");
 }
@@ -110,7 +110,7 @@ export async function fetchApplications() {
     if (!Array.isArray(rawApplications)) {
       console.error(
         "Supabase returned non-array data for applications:",
-        rawApplications
+        rawApplications,
       );
       return {
         success: false,
@@ -149,7 +149,7 @@ export async function fetchApplications() {
         intake_title: app.intakes?.course_title || "N/A",
         intake_month: app.intakes?.month || "N/A",
         intake_year: app.intakes?.year || null,
-      })
+      }),
     );
 
     return {
@@ -160,7 +160,7 @@ export async function fetchApplications() {
   } catch (error) {
     console.error(
       "An unexpected error occurred during fetchApplications:",
-      error
+      error,
     );
     return {
       success: false,
@@ -218,7 +218,7 @@ export async function updateApplicationStatus(formData: FormData) {
   } catch (error) {
     console.error(
       "An unexpected error occurred during updateApplicationStatus:",
-      error
+      error,
     );
     return {
       success: false,
@@ -235,7 +235,7 @@ export async function getApplicationById(id: string) {
         `
         *,
         intakes (course_title, month, year)
-      `
+      `,
       )
       .eq("id", id)
       .single();
@@ -296,7 +296,7 @@ export async function getApplicationById(id: string) {
   } catch (error) {
     console.error(
       "An unexpected error occurred during getApplicationById:",
-      error
+      error,
     );
     return {
       success: false,
@@ -361,7 +361,7 @@ export async function bulkUpdateApplications(formData: FormData) {
   } catch (error) {
     console.error(
       "An unexpected error occurred during bulkUpdateApplications:",
-      error
+      error,
     );
     return {
       success: false,

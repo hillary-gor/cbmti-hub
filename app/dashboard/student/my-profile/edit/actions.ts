@@ -39,7 +39,10 @@ export async function updateStudentProfile(formData: FormData) {
   });
 
   if (!parsed.success) {
-    return { error: "Validation failed", issues: parsed.error.flatten().fieldErrors };
+    return {
+      error: "Validation failed",
+      issues: parsed.error.flatten().fieldErrors,
+    };
   }
 
   const { error } = await supabase

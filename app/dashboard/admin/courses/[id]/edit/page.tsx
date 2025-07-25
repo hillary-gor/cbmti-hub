@@ -28,7 +28,9 @@ export default async function EditCoursePage({
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto space-y-10">
-        <h1 className="text-4xl font-bold text-center text-gray-900">Edit Course</h1>
+        <h1 className="text-4xl font-bold text-center text-gray-900">
+          Edit Course
+        </h1>
         <CourseEditForm initialData={course} />
       </div>
     </div>

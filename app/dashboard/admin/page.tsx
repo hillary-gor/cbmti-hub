@@ -25,9 +25,16 @@ import {
   Zap,
   Shield,
   Database,
+  Mail,
+  Phone,
+  Calendar,
+  MapPin,
+  User,
+  Globe,
+  Briefcase,
+  UserCircle,
 } from "lucide-react";
 
-// Supabase client import from your utils/supabase/client.ts
 import { createClient } from "@/utils/supabase/client";
 import { SupabaseClient } from "@supabase/supabase-js";
 
@@ -104,7 +111,6 @@ const tiles = [
   },
 ];
 
-// Data for system statistics cards
 const systemStats = [
   {
     title: "Total Students",
@@ -140,7 +146,6 @@ const systemStats = [
   },
 ];
 
-// Data for recent activities list
 const recentActivities = [
   {
     title: "New application submitted",
@@ -172,7 +177,6 @@ const recentActivities = [
   },
 ];
 
-// Data for pending tasks list
 const pendingTasks = [
   {
     title: "Assign students to current intakes",
@@ -247,7 +251,7 @@ export default function AdminDashboardPage() {
         } else {
           currentUserId = crypto.randomUUID();
           console.warn(
-            "No active Supabase session found. Using a placeholder user and random ID."
+            "No active Supabase session found. Using a placeholder user and random ID.",
           );
         }
 
@@ -257,7 +261,7 @@ export default function AdminDashboardPage() {
           const { data, error } = await supabaseClient
             .from("users")
             .select(
-              "full_name, avatar_url, email, phone, gender, dob, location, username, website, role"
+              "full_name, avatar_url, email, phone, gender, dob, location, username, website, role",
             )
             .eq("id", currentUserId)
             .single();
@@ -265,7 +269,7 @@ export default function AdminDashboardPage() {
           if (error && error.code !== "PGRST116") {
             console.error(
               "Error fetching user from Supabase 'users' table:",
-              error
+              error,
             );
             setCurrentUser({
               name:
@@ -354,107 +358,154 @@ export default function AdminDashboardPage() {
 
   if (!isAuthReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30">
-        <p className="text-gray-700 text-lg">Loading dashboard...</p>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="relative">
-      {" "}
-      {/* Use a simple relative div */}
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Header Section */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-3">
-              {/* Conditional rendering for user photo or default icon */}
-              {currentUser?.photoURL ? (
-                <div className="w-12 h-12 rounded-full overflow-hidden shadow-lg border-2 border-white">
-                  <Image
-                    src={currentUser.photoURL}
-                    alt="User Avatar"
-                    width={48}
-                    height={48}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
-                  <Shield className="w-6 h-6 text-white" />
-                </div>
-              )}
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                  Admin Control Center
-                </h1>
-                <p className="text-gray-600 flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-blue-500" />
-                  <span>Welcome, {currentUser?.name || "Admin User"}!</span>
-                </p>
-                {currentUser?.email && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Email: {currentUser.email}
-                  </p>
-                )}
-                {currentUser?.phone && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Phone: {currentUser.phone}
-                  </p>
-                )}
-                {currentUser?.role && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Role: {currentUser.role}
-                  </p>
-                )}
-                {currentUser?.gender && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Gender: {currentUser.gender}
-                  </p>
-                )}
-                {currentUser?.dob && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    DOB: {currentUser.dob}
-                  </p>
-                )}
-                {currentUser?.location && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Location: {currentUser.location}
-                  </p>
-                )}
-                {currentUser?.username && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Username: {currentUser.username}
-                  </p>
-                )}
-                {currentUser?.website && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Website: {currentUser.website}
-                  </p>
-                )}
-                {userId && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    User ID: {userId}
-                  </p>
-                )}
-              </div>
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Header Section - Modern Futuristic UI/UX */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+          <Card className="flex-1 bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-md border border-blue-400/20 shadow-xl rounded-2xl p-6 relative overflow-hidden group">
+            {/* Background elements for futuristic feel */}
+            <div className="absolute inset-0 z-0 opacity-20">
+              <div className="absolute top-0 left-0 w-24 h-24 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+              <div className="absolute top-0 right-0 w-24 h-24 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+              <div className="absolute bottom-0 left-1/2 w-24 h-24 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
             </div>
-          </div>
-          <div className="mt-4 lg:mt-0">
-            <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-4 shadow-lg">
-              <div className="flex items-center space-x-4">
-                <div className="text-right">
-                  <p className="text-sm text-gray-600">Current Time</p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    {currentTime.toLocaleTimeString()}
-                  </p>
+
+            <CardContent className="p-0 relative z-10">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                {/* Avatar/Icon Section */}
+                <div className="relative flex-shrink-0">
+                  {currentUser?.photoURL ? (
+                    <div className="w-20 h-20 rounded-full overflow-hidden shadow-2xl border-4 border-blue-400/50 ring-4 ring-blue-300/30 group-hover:ring-blue-500/50 transition-all duration-300 ease-in-out">
+                      <Image
+                        src={currentUser.photoURL}
+                        alt="User Avatar"
+                        width={80}
+                        height={80}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-full flex items-center justify-center shadow-2xl border-4 border-blue-400/50 ring-4 ring-blue-300/30 group-hover:ring-blue-500/50 transition-all duration-300 ease-in-out">
+                      <UserCircle className="w-10 h-10 text-white" />
+                    </div>
+                  )}
+                  {/* Online indicator */}
+                  <span className="absolute bottom-0 right-0 block w-5 h-5 bg-green-500 rounded-full ring-2 ring-white animate-pulse"></span>
                 </div>
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-white" />
+
+                {/* User Info */}
+                <div className="flex-1">
+                  <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-700 to-purple-600 bg-clip-text text-transparent leading-tight">
+                    Admin Control Center
+                  </h1>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 flex items-center gap-2 mt-2">
+                    <Sparkles className="w-5 h-5 text-blue-500" />
+                    <span className="font-semibold">
+                      Welcome, {currentUser?.name || "Admin User"}!
+                    </span>
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 mt-4 text-gray-600 dark:text-gray-300 text-sm">
+                    {currentUser?.email && (
+                      <p className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span>{currentUser.email}</span>
+                      </p>
+                    )}
+                    {currentUser?.phone && (
+                      <p className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span>{currentUser.phone}</span>
+                      </p>
+                    )}
+                    {currentUser?.role && (
+                      <p className="flex items-center gap-2">
+                        <Briefcase className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span>{currentUser.role}</span>
+                      </p>
+                    )}
+                    {currentUser?.gender && (
+                      <p className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span>{currentUser.gender}</span>
+                      </p>
+                    )}
+                    {currentUser?.dob && (
+                      <p className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span>{currentUser.dob}</span>
+                      </p>
+                    )}
+                    {currentUser?.location && (
+                      <p className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span>{currentUser.location}</span>
+                      </p>
+                    )}
+                    {currentUser?.username && (
+                      <p className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span>{currentUser.username}</span>
+                      </p>
+                    )}
+                    {currentUser?.website && (
+                      <p className="flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <a
+                          href={currentUser.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline text-blue-600"
+                        >
+                          {currentUser.website.replace(
+                            /^(https?:\/\/)?(www\.)?/,
+                            "",
+                          )}
+                        </a>
+                      </p>
+                    )}
+                    {userId && (
+                      <p className="flex items-center gap-2 col-span-full text-xs text-gray-500">
+                        <span className="font-mono bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-md">
+                          ID: {userId}
+                        </span>
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            </CardContent>
+          </Card>
+
+          {/* Current Time Card - Moved to the right for desktop */}
+          <div className="mt-6 lg:mt-0 lg:ml-8 flex-shrink-0">
+            <Card className="bg-gradient-to-br from-white/80 to-gray-50/70 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-4 shadow-lg flex items-center justify-center h-full min-w-[180px]">
+              <CardContent className="p-0 text-center">
+                <div className="flex items-center justify-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center shadow-md">
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Current Time
+                    </p>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">
+                      {currentTime.toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
@@ -595,8 +646,8 @@ export default function AdminDashboardPage() {
                             activity.type === "application"
                               ? "bg-purple-100 text-purple-600"
                               : activity.type === "payment"
-                              ? "bg-green-100 text-green-600"
-                              : "bg-blue-100 text-blue-600"
+                                ? "bg-green-100 text-green-600"
+                                : "bg-blue-100 text-blue-600"
                           }`}
                         >
                           <IconComponent className="w-5 h-5" />
@@ -643,8 +694,8 @@ export default function AdminDashboardPage() {
                             task.priority === "high"
                               ? "bg-red-100 text-red-600"
                               : task.priority === "medium"
-                              ? "bg-yellow-100 text-yellow-600"
-                              : "bg-gray-100 text-gray-600"
+                                ? "bg-yellow-100 text-yellow-600"
+                                : "bg-gray-100 text-gray-600"
                           }`}
                         >
                           <IconComponent className="w-4 h-4" />
@@ -659,8 +710,8 @@ export default function AdminDashboardPage() {
                                 task.priority === "high"
                                   ? "destructive"
                                   : task.priority === "medium"
-                                  ? "default"
-                                  : "secondary"
+                                    ? "default"
+                                    : "secondary"
                               }
                               className="text-xs"
                             >

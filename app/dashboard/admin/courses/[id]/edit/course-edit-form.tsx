@@ -97,7 +97,7 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
   const router = useRouter();
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
 
@@ -130,7 +130,7 @@ export default function CourseEditForm({ initialData }: CourseEditFormProps) {
   };
 
   const getFeaturesString = (
-    features: string[] | string | null | undefined
+    features: string[] | string | null | undefined,
   ): string => {
     if (Array.isArray(features)) {
       return features.join(", ");

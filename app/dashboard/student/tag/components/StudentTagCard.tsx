@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import html2canvas from 'html2canvas-pro';
-import jsPDF from 'jspdf';
-import { useRef, useState } from 'react';
-import ImageCropperModal from './ImageCropperModal';
+import Image from "next/image";
+import html2canvas from "html2canvas-pro";
+import jsPDF from "jspdf";
+import { useRef, useState } from "react";
+import ImageCropperModal from "./ImageCropperModal";
 
 type Props = {
   name: string;
@@ -31,28 +31,28 @@ const StudentTagCard = ({
   const downloadAsImage = async () => {
     if (!tagRef.current) return;
     const canvas = await html2canvas(tagRef.current);
-    const image = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
+    const image = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
     link.href = image;
-    link.download = `${name.replaceAll(' ', '_')}_tag.png`;
+    link.download = `${name.replaceAll(" ", "_")}_tag.png`;
     link.click();
   };
 
   const downloadAsPDF = async () => {
     if (!tagRef.current) return;
     const canvas = await html2canvas(tagRef.current);
-    const imgData = canvas.toDataURL('image/png');
+    const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'px',
+      orientation: "landscape",
+      unit: "px",
       format: [1050, 600],
     });
-    pdf.addImage(imgData, 'PNG', 0, 0, 1050, 600);
-    pdf.save(`${name.replaceAll(' ', '_')}_tag.pdf`);
+    pdf.addImage(imgData, "PNG", 0, 0, 1050, 600);
+    pdf.save(`${name.replaceAll(" ", "_")}_tag.pdf`);
   };
 
   const handleImageClick = () => {
-    document.getElementById('photo-upload')?.click();
+    document.getElementById("photo-upload")?.click();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,14 +85,15 @@ const StudentTagCard = ({
           id="student-tag"
           ref={tagRef}
           className="w-[1050px] h-[600px] rounded-xl shadow-lg border overflow-hidden flex flex-col mx-auto"
-          style={{ backgroundColor: '#ffffff', color: '#111827' }}
+          style={{ backgroundColor: "#ffffff", color: "#111827" }}
         >
           {/* Header */}
           <div
             className="flex items-center justify-between px-8 py-4"
             style={{
-              background: 'linear-gradient(to right, #1e3a8a, #7e22ce, #db2777)',
-              color: '#ffffff',
+              background:
+                "linear-gradient(to right, #1e3a8a, #7e22ce, #db2777)",
+              color: "#ffffff",
             }}
           >
             <div className="flex items-center gap-3">
@@ -116,7 +117,7 @@ const StudentTagCard = ({
               onClick={handleImageClick}
             >
               <Image
-                src={currentPhotoUrl || '/fallback-avatar.png'}
+                src={currentPhotoUrl || "/fallback-avatar.png"}
                 alt={`${name}'s photo`}
                 fill
                 className="object-cover"
@@ -129,13 +130,13 @@ const StudentTagCard = ({
             </div>
 
             <div className="flex flex-col justify-center text-lg gap-4">
-              <h2 className="text-5xl font-bold" style={{ color: '#1e3a8a' }}>
+              <h2 className="text-5xl font-bold" style={{ color: "#1e3a8a" }}>
                 {name}
               </h2>
               <p>
-                <strong className="text-5xl" style={{ color: '#dc2626' }}>
+                <strong className="text-5xl" style={{ color: "#dc2626" }}>
                   Course:
-                </strong>{' '}
+                </strong>{" "}
                 <span className="text-4xl font-semibold">{course}</span>
               </p>
 
@@ -143,8 +144,8 @@ const StudentTagCard = ({
                 <div
                   className="text-5xl inline-block px-4 py-1 rounded-full font-semibold"
                   style={{
-                    backgroundColor: '#e9d5ff',
-                    color: '#6b21a8',
+                    backgroundColor: "#e9d5ff",
+                    color: "#6b21a8",
                   }}
                 >
                   Effective Date: {effectiveDate}
@@ -152,8 +153,8 @@ const StudentTagCard = ({
                 <div
                   className="text-5xl inline-block px-4 py-1 rounded-full font-semibold"
                   style={{
-                    backgroundColor: '#fecaca',
-                    color: '#b91c1c',
+                    backgroundColor: "#fecaca",
+                    color: "#b91c1c",
                   }}
                 >
                   Due Date: {dueDate}
@@ -165,7 +166,7 @@ const StudentTagCard = ({
           {/* Footer */}
           <div
             className="flex text-4xl justify-between items-center px-8 py-2 border-t"
-            style={{ color: '#6b7280' }}
+            style={{ color: "#6b7280" }}
           >
             <span>www.codebluemedical.co.ke</span>
             <span>+254 7 510 918 42</span>

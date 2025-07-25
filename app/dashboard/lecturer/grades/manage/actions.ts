@@ -39,7 +39,7 @@ export async function upsertStudentGrade(formData: FormData) {
   ] as const;
   const grades: Record<(typeof gradeFields)[number], number> =
     Object.fromEntries(
-      gradeFields.map((field) => [field, Number(formData.get(field)) || 0])
+      gradeFields.map((field) => [field, Number(formData.get(field)) || 0]),
     ) as Record<(typeof gradeFields)[number], number>;
 
   const payload = {

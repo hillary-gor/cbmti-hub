@@ -12,7 +12,8 @@ export default async function MyProfilePage() {
 
   const { data: student } = await supabase
     .from("students")
-    .select(`
+    .select(
+      `
       full_name,
       reg_number,
       gender,
@@ -25,7 +26,8 @@ export default async function MyProfilePage() {
       enrollment_year,
       course:course_id(title, code),
       intake:intake_id(label, year, month)
-    `)
+    `,
+    )
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -34,8 +36,12 @@ export default async function MyProfilePage() {
   }
 
   // 🛠 Unwrap FK relations (always returned as arrays)
-  const course = Array.isArray(student.course) ? student.course[0] : student.course;
-  const intake = Array.isArray(student.intake) ? student.intake[0] : student.intake;
+  const course = Array.isArray(student.course)
+    ? student.course[0]
+    : student.course;
+  const intake = Array.isArray(student.intake)
+    ? student.intake[0]
+    : student.intake;
 
   return (
     <div className="space-y-8 p-6">
@@ -47,7 +53,10 @@ export default async function MyProfilePage() {
           <InfoCard label="Full Name" value={student.full_name} />
           <InfoCard label="Reg Number" value={student.reg_number} />
           <InfoCard label="Gender" value={student.gender ?? "N/A"} />
-          <InfoCard label="Date of Birth" value={student.date_of_birth ?? "N/A"} />
+          <InfoCard
+            label="Date of Birth"
+            value={student.date_of_birth ?? "N/A"}
+          />
           <InfoCard label="Nationality" value={student.nationality ?? "N/A"} />
         </div>
       </section>
@@ -56,7 +65,10 @@ export default async function MyProfilePage() {
         <h2 className="text-lg font-semibold mb-3">Contact Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <InfoCard label="Email" value={student.email ?? user.email} />
-          <InfoCard label="Phone Number" value={student.phone_number ?? "N/A"} />
+          <InfoCard
+            label="Phone Number"
+            value={student.phone_number ?? "N/A"}
+          />
           <InfoCard label="Town/City" value={student.town_city ?? "N/A"} />
           <InfoCard label="Address" value={student.address ?? "N/A"} />
         </div>
@@ -71,7 +83,9 @@ export default async function MyProfilePage() {
           />
           <InfoCard
             label="Intake"
-            value={intake ? `${intake.label} ${intake.month} ${intake.year}` : "N/A"}
+            value={
+              intake ? `${intake.label} ${intake.month} ${intake.year}` : "N/A"
+            }
           />
           <InfoCard
             label="Enrollment Year"
@@ -87,7 +101,9 @@ function InfoCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-white dark:bg-zinc-900 border rounded-lg shadow-sm p-4">
       <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-1">{label}</h3>
-      <p className="text-base font-medium text-gray-800 dark:text-white">{value}</p>
+      <p className="text-base font-medium text-gray-800 dark:text-white">
+        {value}
+      </p>
     </div>
   );
 }

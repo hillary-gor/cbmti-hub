@@ -1,4 +1,4 @@
-import { Area } from 'react-easy-crop'
+import { Area } from "react-easy-crop";
 
 /**
  * Crop an image using a canvas and return a Blob.
@@ -6,21 +6,21 @@ import { Area } from 'react-easy-crop'
  */
 export default async function getCroppedImg(
   imageSrc: string,
-  pixelCrop: Area
+  pixelCrop: Area,
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const image = new Image()
-    image.crossOrigin = 'anonymous'
-    image.src = imageSrc
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.src = imageSrc;
 
     image.onload = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = pixelCrop.width
-      canvas.height = pixelCrop.height
+      const canvas = document.createElement("canvas");
+      canvas.width = pixelCrop.width;
+      canvas.height = pixelCrop.height;
 
-      const ctx = canvas.getContext('2d')
+      const ctx = canvas.getContext("2d");
       if (!ctx) {
-        return reject(new Error('Canvas context not available'))
+        return reject(new Error("Canvas context not available"));
       }
 
       ctx.drawImage(
@@ -32,18 +32,18 @@ export default async function getCroppedImg(
         0,
         0,
         pixelCrop.width,
-        pixelCrop.height
-      )
+        pixelCrop.height,
+      );
 
       canvas.toBlob((blob) => {
         if (blob) {
-          resolve(blob)
+          resolve(blob);
         } else {
-          reject(new Error('Canvas toBlob conversion failed'))
+          reject(new Error("Canvas toBlob conversion failed"));
         }
-      }, 'image/jpeg')
-    }
+      }, "image/jpeg");
+    };
 
-    image.onerror = () => reject(new Error('Failed to load image'))
-  })
+    image.onerror = () => reject(new Error("Failed to load image"));
+  });
 }

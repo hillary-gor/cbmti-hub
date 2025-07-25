@@ -47,11 +47,11 @@ export default function AdminCoursesPage() {
   const handleDeleteCourse = async (courseId: string) => {
     if (
       window.confirm(
-        "Are you sure you want to delete this course? This action cannot be undone."
+        "Are you sure you want to delete this course? This action cannot be undone.",
       )
     ) {
       toast.info(
-        `Delete functionality for course ${courseId} not yet implemented.`
+        `Delete functionality for course ${courseId} not yet implemented.`,
       );
     }
   };

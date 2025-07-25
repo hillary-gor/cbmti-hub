@@ -11,7 +11,8 @@ export default async function Page() {
 
   const { data: student } = await supabase
     .from("students")
-    .select(`
+    .select(
+      `
       full_name,
       phone_number,
       address,
@@ -21,7 +22,8 @@ export default async function Page() {
       national_id,
       marital_status,
       religion
-    `)
+    `,
+    )
     .eq("user_id", user.id)
     .maybeSingle();
 

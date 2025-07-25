@@ -166,7 +166,7 @@ export async function createIntake(formData: FormData) {
       if (associationError) {
         console.error(
           "Error inserting course-intake associations:",
-          associationError
+          associationError,
         );
         return {
           success: false,
@@ -193,7 +193,7 @@ export async function createIntake(formData: FormData) {
 }
 
 export async function getCourseById(
-  id: string
+  id: string,
 ): Promise<{ data: CourseData | null; error: string | null }> {
   const supabaseAdmin = await createAdminClient();
   try {

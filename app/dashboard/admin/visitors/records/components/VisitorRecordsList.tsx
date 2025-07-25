@@ -24,7 +24,7 @@ export default function VisitorRecordsList({
   const router = useRouter();
   const [visitors, setVisitors] = useState<Visitor[]>(initialVisitors);
   const [filter, setFilter] = useState<"checked_in" | "checked_out" | "all">(
-    currentFilter
+    currentFilter,
   );
   const [startDate, setStartDate] = useState<string>(currentStartDate);
   const [endDate, setEndDate] = useState<string>(currentEndDate);
@@ -37,7 +37,7 @@ export default function VisitorRecordsList({
   };
 
   const [actionMessage, setActionMessage] = useState<ActionResponse | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export default function VisitorRecordsList({
     newFilter: "checked_in" | "checked_out" | "all",
     newStartDate: string,
     newEndDate: string,
-    newSearchTerm: string
+    newSearchTerm: string,
   ) => {
     const params = new URLSearchParams();
     if (newFilter !== "checked_in") params.set("status", newFilter);
@@ -131,7 +131,7 @@ export default function VisitorRecordsList({
   };
 
   const handleFilterChange = (
-    newFilter: "checked_in" | "checked_out" | "all"
+    newFilter: "checked_in" | "checked_out" | "all",
   ) => {
     setFilter(newFilter);
     updateUrlParams(newFilter, startDate, endDate, searchTerm);
@@ -167,8 +167,8 @@ export default function VisitorRecordsList({
           prevVisitors.map((v) =>
             v.id === visitorId
               ? { ...v, check_out_time: new Date().toISOString() }
-              : v
-          )
+              : v,
+          ),
         );
       }
     });
@@ -177,7 +177,7 @@ export default function VisitorRecordsList({
   const handleDelete = async (visitorId: string) => {
     if (
       !confirm(
-        "Are you sure you want to delete this visitor record? This action cannot be undone."
+        "Are you sure you want to delete this visitor record? This action cannot be undone.",
       )
     ) {
       return;
@@ -188,7 +188,7 @@ export default function VisitorRecordsList({
       setActionMessage(response);
       if (response.status === "success") {
         setVisitors((prevVisitors) =>
-          prevVisitors.filter((v) => v.id !== visitorId)
+          prevVisitors.filter((v) => v.id !== visitorId),
         );
       }
     });

@@ -21,7 +21,7 @@ export async function createClient() {
               cookieStore.set(name, value, options);
             });
           } catch (e) {
-            console.warn('Error setting cookie in server component:', e);
+            console.warn("Error setting cookie in server component:", e);
           }
         },
       },

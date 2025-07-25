@@ -35,7 +35,9 @@ export default function LecturerGradesPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedCourse && selectedIntake) {
-      router.push(`/dashboard/lecturer/grades/manage?course_id=${selectedCourse}&intake_id=${selectedIntake}`);
+      router.push(
+        `/dashboard/lecturer/grades/manage?course_id=${selectedCourse}&intake_id=${selectedIntake}`,
+      );
     }
   };
 
@@ -43,9 +45,14 @@ export default function LecturerGradesPage() {
     <div className="max-w-5xl mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold text-[#0049AB]">Grade Entry</h1>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
         <div>
-          <label className="block text-sm font-medium mb-1">Select Intake</label>
+          <label className="block text-sm font-medium mb-1">
+            Select Intake
+          </label>
           <select
             value={selectedIntake}
             onChange={(e) => setSelectedIntake(e.target.value)}
@@ -62,7 +69,9 @@ export default function LecturerGradesPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Select Course</label>
+          <label className="block text-sm font-medium mb-1">
+            Select Course
+          </label>
           <select
             value={selectedCourse}
             onChange={(e) => setSelectedCourse(e.target.value)}
@@ -80,7 +89,10 @@ export default function LecturerGradesPage() {
         </div>
 
         <div className="col-span-full mt-2">
-          <button type="submit" className="bg-[#0049AB] text-white px-4 py-2 rounded hover:opacity-90">
+          <button
+            type="submit"
+            className="bg-[#0049AB] text-white px-4 py-2 rounded hover:opacity-90"
+          >
             Continue
           </button>
         </div>

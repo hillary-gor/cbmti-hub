@@ -1,8 +1,8 @@
 // app/dashboard/student/tag/page.tsx
 
-import { createClient } from '@/utils/supabase/server';
-import StudentTagCard from './components/StudentTagCard';
-import { format } from 'date-fns';
+import { createClient } from "@/utils/supabase/server";
+import StudentTagCard from "./components/StudentTagCard";
+import { format } from "date-fns";
 
 // Define the expected shape
 type StudentProfile = {
@@ -31,15 +31,17 @@ export default async function StudentTagPage() {
   }
 
   const { data: profile } = await supabase
-    .from('students')
-    .select(`
+    .from("students")
+    .select(
+      `
       full_name,
       reg_number,
       created_at,
       merged_file_url,
       course:course_id ( title )
-    `)
-    .eq('user_id', user.id)
+    `,
+    )
+    .eq("user_id", user.id)
     .maybeSingle<StudentProfile>();
 
   if (!profile) {
@@ -57,8 +59,8 @@ export default async function StudentTagPage() {
     <StudentTagCard
       name={profile.full_name}
       regNo={profile.reg_number}
-      course={profile.course?.title ?? 'Course N/A'}
-      effectiveDate={format(createdAt, 'MMM yyyy')}
+      course={profile.course?.title ?? "Course N/A"}
+      effectiveDate={format(createdAt, "MMM yyyy")}
       dueDate={`Dec 31, ${year}`}
       photoUrl={profile.merged_file_url}
     />

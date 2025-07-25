@@ -23,23 +23,23 @@ export default async function VisitorRecordsPage({
   const statusRaw = Array.isArray(status) ? status[0] : status;
   const currentStartDate = Array.isArray(startDate)
     ? startDate[0]
-    : startDate ?? "";
-  const currentEndDate = Array.isArray(endDate) ? endDate[0] : endDate ?? "";
+    : (startDate ?? "");
+  const currentEndDate = Array.isArray(endDate) ? endDate[0] : (endDate ?? "");
   const currentSearchTerm = Array.isArray(searchTerm)
     ? searchTerm[0]
-    : searchTerm ?? "";
+    : (searchTerm ?? "");
 
   const validStatus: "checked_out" | "all" | "checked_in" =
     statusRaw === "checked_out"
       ? "checked_out"
       : statusRaw === "all"
-      ? "all"
-      : "checked_in";
+        ? "all"
+        : "checked_in";
 
   const { visitors, error } = await getVisitors(
     validStatus,
     currentStartDate,
-    currentEndDate
+    currentEndDate,
   );
 
   if (error) {

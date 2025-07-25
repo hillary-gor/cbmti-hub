@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import type { FC } from 'react';
-import { QRCodeSVG as QRCode } from 'qrcode.react';
+import React from "react";
+import type { FC } from "react";
+import { QRCodeSVG as QRCode } from "qrcode.react";
 
 interface QRCodeDisplayProps {
   qrValue: string;
