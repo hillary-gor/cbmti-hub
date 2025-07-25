@@ -1,3 +1,4 @@
+// page.tsx
 "use client";
 
 import Link from "next/link";
@@ -360,14 +361,10 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30">
-      {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-cyan-400/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
-
-      <div className="relative z-10 container mx-auto px-4 py-8 space-y-8">
+    <div className="relative">
+      {" "}
+      {/* Use a simple relative div */}
+      <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
