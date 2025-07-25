@@ -1,3 +1,4 @@
+// page.tsx
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
@@ -139,27 +140,17 @@ export default function ApplicationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-cyan-50/30 pt-20">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="text-gray-600">Loading applications...</p>
-            </div>
-          </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-600">Loading applications...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-cyan-50/30 pt-20">
-      {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-cyan-400/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-cyan-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
-
+    <div className="relative"> 
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="mb-8">
