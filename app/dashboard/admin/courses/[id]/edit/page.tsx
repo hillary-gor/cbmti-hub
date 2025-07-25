@@ -1,20 +1,19 @@
-import { getCourseById } from '../../actions';
-import CourseEditForm from './course-edit-form';
-import { notFound } from 'next/navigation';
+import { getCourseById } from "../../actions";
+import CourseEditForm from "./course-edit-form";
+import { notFound } from "next/navigation";
 
-interface EditCoursePageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function EditCoursePage({ params }: EditCoursePageProps) {
+export default async function EditCoursePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  // ✅ Await params to extract the id
   const { id } = await params;
 
   const { data: course, error } = await getCourseById(id);
 
   if (error) {
-    console.error('Error fetching course for editing:', error);
+    console.error("Error fetching course for editing:", error);
     return (
       <div className="min-h-screen bg-red-50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
         <p className="text-red-700 text-xl">Error loading course: {error}</p>
