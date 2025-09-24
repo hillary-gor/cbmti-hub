@@ -48,7 +48,7 @@ export default function GraduateVerification() {
       />
 
       <h1 className="text-3xl font-semibold mb-6 text-center">
-        Graduate Verification
+        Qualifications Verification
       </h1>
 
       <div className="w-full max-w-md flex flex-col gap-3">
