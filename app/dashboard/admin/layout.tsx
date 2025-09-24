@@ -1,4 +1,4 @@
-// layout.tsx
+// app/dashboard/admin/layout.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -73,6 +73,11 @@ const navItems = [
         href: "/dashboard/admin/legacy-students",
         icon: ScrollText,
       },
+      {
+        label: "Graduate Upload",
+        href: "/dashboard/admin/graduate-upload",
+        icon: FileText,
+      },
     ],
   },
   {
@@ -117,7 +122,7 @@ function AdminNav({
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-900",
                     isActive
                       ? "bg-blue-600 text-white shadow-md"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-zinc-800 dark:hover:text-blue-400",
+                      : "text-gray-700 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-zinc-800 dark:hover:text-blue-400"
                   )}
                   title={isCollapsed ? item.label : undefined}
                 >
@@ -141,8 +146,9 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isDesktopSidebarExpanded, setIsDesktopSidebarExpanded] =
-    useState(false);
+  const [isDesktopSidebarExpanded, setIsDesktopSidebarExpanded] = useState(
+    false
+  );
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const pathname = usePathname();
@@ -262,7 +268,7 @@ export default function AdminLayout({
       <aside
         className={clsx(
           "hidden lg:flex flex-col bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 shadow-xl transition-all duration-300 ease-in-out",
-          isDesktopSidebarExpanded ? "w-72" : "w-20",
+          isDesktopSidebarExpanded ? "w-72" : "w-20"
         )}
         onMouseEnter={() => setIsDesktopSidebarExpanded(true)}
         onMouseLeave={() => setIsDesktopSidebarExpanded(false)}
@@ -272,7 +278,7 @@ export default function AdminLayout({
             "flex items-center py-5 border-b border-gray-200 dark:border-zinc-700",
             isDesktopSidebarExpanded
               ? "px-6 justify-start"
-              : "justify-center px-0",
+              : "justify-center px-0"
           )}
         >
           <h2
@@ -280,7 +286,7 @@ export default function AdminLayout({
               "font-extrabold text-gray-900 dark:text-white transition-opacity duration-200",
               isDesktopSidebarExpanded
                 ? "text-2xl opacity-100"
-                : "text-xl opacity-0 w-0 overflow-hidden",
+                : "text-xl opacity-0 w-0 overflow-hidden"
             )}
           >
             {isDesktopSidebarExpanded && "CBMTI"}
@@ -295,7 +301,7 @@ export default function AdminLayout({
         <div
           className={clsx(
             "mt-auto p-6 border-t border-gray-200 dark:border-zinc-700",
-            !isDesktopSidebarExpanded && "flex justify-center",
+            !isDesktopSidebarExpanded && "flex justify-center"
           )}
         >
           <SignOutButton isCollapsed={!isDesktopSidebarExpanded} />
