@@ -37,6 +37,11 @@ const tiles = [
     href: "/dashboard/student/my-profile",
   },
   {
+    title: "My Handbook",
+    icon: UserCircle,
+    href: "/dashboard/student/student-handbook",
+  },
+  {
     title: "Transcript",
     icon: FileText,
     href: "/dashboard/student/transcript",

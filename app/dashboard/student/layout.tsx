@@ -21,6 +21,7 @@ import {
   Wallet,
   CalendarCheck,
   Eye,
+  UserCircle,
 } from "lucide-react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 
@@ -32,6 +33,11 @@ const navSections = [
         label: "My Profile",
         href: "/dashboard/student/my-profile",
         icon: User,
+      },
+      {
+        label: "My Handbook",
+        icon: UserCircle,
+        href: "/dashboard/student/student-handbook",
       },
       { label: "My Tag", href: "/dashboard/student/tag", icon: Tag },
       { label: "Settings", href: "/dashboard/settings", icon: Settings },
@@ -130,8 +136,9 @@ export default function StudentLayout({
   children: React.ReactNode;
 }) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isDesktopSidebarExpanded, setIsDesktopSidebarExpanded] =
-    useState(false);
+  const [isDesktopSidebarExpanded, setIsDesktopSidebarExpanded] = useState(
+    false
+  );
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const pathname = usePathname();
