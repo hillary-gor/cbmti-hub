@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { loginWithEmailPassword, loginWithGoogle } from "./actions";
 import { LoadingButton } from "@/components/ui/loading-button";
 import Image from "next/image";
@@ -27,7 +27,7 @@ export default function LoginPage() {
 
       {/* Right Form Section */}
       <div className="w-full md:w-1/2 relative flex items-center justify-center p-6">
-        {/* Top-right Register Link */}
+        {/* Top-right Register Link
         <div className="absolute top-4 right-4 flex items-center gap-1 text-sm">
           <span className="text-gray-600 dark:text-gray-300">
             Don’t have an account?
@@ -37,7 +37,7 @@ export default function LoginPage() {
               Register
             </Button>
           </a>
-        </div>
+        </div> */}
 
         <div className="w-full max-w-sm space-y-6 bg-white dark:bg-zinc-900 shadow-xl p-6 rounded-2xl border border-gray-200 dark:border-zinc-800">
           {/* Logo */}

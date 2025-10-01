@@ -66,11 +66,11 @@ export default function Hero() {
                 Access Your Account
               </Button>
             </Link>
-            <Link href="/signup">
+            {/* <Link href="/signup">
               <Button variant="outline" size="lg">
                 Join eHub
               </Button>
-            </Link>
+            </Link> */}
           </div>
 
           <section aria-labelledby="features-heading">
